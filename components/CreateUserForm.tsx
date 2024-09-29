@@ -10,7 +10,7 @@ interface Department {
   _id: string;
   department_name: string;
 }
-
+ 
 interface Role {
   _id: string;
   role_name: string;
