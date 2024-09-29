@@ -52,7 +52,18 @@ export async function PUT(req: Request) {
     await connectToDatabase();
     const { id, ...updateData } = await req.json();
 
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+    // Ensure roles, departments, and branches are converted to ObjectIds
+    if (updateData.roles) {
+      updateData.roles = updateData.roles.map((roleId: string) => new mongoose.Types.ObjectId(roleId));
+    }
+    if (updateData.departments) {
+      updateData.departments = updateData.departments.map((deptId: string) => new mongoose.Types.ObjectId(deptId));
+    }
+    if (updateData.branches) {
+      updateData.branches = updateData.branches.map((branchId: string) => new mongoose.Types.ObjectId(branchId));
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).populate('roles departments branches');
     if (!updatedUser) return new Response(JSON.stringify({ message: 'User not found' }), { status: 404 });
 
     return new Response(JSON.stringify({ message: 'User updated successfully!', user: updatedUser }), { status: 200 });
@@ -60,6 +71,7 @@ export async function PUT(req: Request) {
     return new Response(JSON.stringify({ message: 'Error updating user', error }), { status: 500 });
   }
 }
+
 
 // DELETE a user
 export async function DELETE(req: Request) {
