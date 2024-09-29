@@ -58,7 +58,7 @@ export default function RolePage() {
           departments={departments}
         />
       )}
-
+ 
       {/* Role Table */}
       <div className="mt-6">
         <DataTable columns={columns} data={roles} />
