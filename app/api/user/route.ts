@@ -74,8 +74,13 @@ export async function PUT(req: Request) {
     await connectToDatabase();
     const { id, ...updateData } = await req.json();
 
+    console.log(id);
+    
+
      // Find the user in MongoDB
      const user = await User.findById(id);
+     console.log(user);
+     
      if (!user) return new Response(JSON.stringify({ message: 'User not found' }), { status: 404 });
  
 
@@ -94,7 +99,7 @@ export async function PUT(req: Request) {
     if (!updatedUser) return new Response(JSON.stringify({ message: 'User not found' }), { status: 404 });
 
       // Update Clerk's public metadata with updated roles and dbid
-    await clerkClient.users.updateUserMetadata(user.clerkId, {
+    await clerkClient.users.updateUserMetadata(user.clerkid, {
       publicMetadata: {
         roles: updateData.roles,
         dbid: updatedUser._id.toString(), // Ensure MongoDB user ID is present in Clerk metadata
