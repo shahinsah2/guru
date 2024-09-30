@@ -39,6 +39,7 @@ const modules = [
   'Procurement',
   'Sales',
   'Finance',
+  'Users',
 ];
 
 interface CreateRoleFormProps {

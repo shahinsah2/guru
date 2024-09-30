@@ -1,4 +1,5 @@
 import NavBar from "@/components/NavBar";
+import { ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
 
 
 export default function Layout({
@@ -8,8 +9,13 @@ export default function Layout({
   }>) {
   return (
     <>
-      <NavBar />
+    <ClerkLoading>
+      <h1>Loading...</h1>
+    </ClerkLoading>
+    <ClerkLoaded>
+      <NavBar /> 
       <main>{children}</main>
+      </ClerkLoaded>
     </>
   );
 }

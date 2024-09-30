@@ -20,6 +20,10 @@ export async function POST(req: Request) {
     await connectToDatabase();
     const branchData = await req.json();
 
+    console.log('==branchData====');
+    console.log(branchData);
+    console.log('===branchData===');
+
     const newBranch = new Branch(branchData);
     await newBranch.save();
 

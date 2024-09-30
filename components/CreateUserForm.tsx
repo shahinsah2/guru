@@ -72,9 +72,9 @@ interface CreateUserFormProps {
 
 export default function CreateUserForm({
   onClose,
-  departments,
-  roles,
-  branches,
+  departments = [], // Ensure default empty arrays for props
+  roles = [], // Ensure default empty arrays for props
+  branches = [], // Ensure default empty arrays for props
   user,
 }: CreateUserFormProps) {
   const {
@@ -94,7 +94,9 @@ export default function CreateUserForm({
       departments: Array.isArray(user?.departments)
         ? user?.departments.map(department => (typeof department === 'object' ? department._id : department))
         : [],
-      branches: Array.isArray(user?.branches) ? user?.branches.map(branch => (typeof branch === 'object' ? branch._id : branch)) : [],
+      branches: Array.isArray(user?.branches)
+        ? user?.branches.map(branch => (typeof branch === 'object' ? branch._id : branch))
+        : [],
       address: {
         pincode: user?.address?.pincode || '',
         country: user?.address?.country || '',
@@ -211,11 +213,15 @@ export default function CreateUserForm({
       <div className="mb-4">
         <label className="block text-sm font-medium">Roles</label>
         <select {...register('roles')} multiple className="w-full border border-gray-300 px-4 py-2 rounded-md">
-          {roles.map((role) => (
-            <option key={role._id} value={role._id}>
-              {role.role_name}
-            </option>
-          ))}
+          {roles.length > 0 ? (
+            roles.map((role) => (
+              <option key={role._id} value={role._id}>
+                {role.role_name}
+              </option>
+            ))
+          ) : (
+            <option value="">No roles available</option>
+          )}
         </select>
         {errors.roles && <p className="text-red-500">{errors.roles.message}</p>}
       </div>
@@ -224,11 +230,15 @@ export default function CreateUserForm({
       <div className="mb-4">
         <label className="block text-sm font-medium">Departments</label>
         <select {...register('departments')} multiple className="w-full border border-gray-300 px-4 py-2 rounded-md">
-          {departments.map((dept) => (
-            <option key={dept._id} value={dept._id}>
-              {dept.department_name}
-            </option>
-          ))}
+          {departments.length > 0 ? (
+            departments.map((dept) => (
+              <option key={dept._id} value={dept._id}>
+                {dept.department_name}
+              </option>
+            ))
+          ) : (
+            <option value="">No departments available</option>
+          )}
         </select>
         {errors.departments && <p className="text-red-500">{errors.departments.message}</p>}
       </div>
@@ -237,11 +247,15 @@ export default function CreateUserForm({
       <div className="mb-4">
         <label className="block text-sm font-medium">Branches</label>
         <select {...register('branches')} multiple className="w-full border border-gray-300 px-4 py-2 rounded-md">
-          {branches.map((branch) => (
-            <option key={branch._id} value={branch._id}>
-              {branch.branch_name}
-            </option>
-          ))}
+          {branches.length > 0 ? (
+            branches.map((branch) => (
+              <option key={branch._id} value={branch._id}>
+                {branch.branch_name}
+              </option>
+            ))
+          ) : (
+            <option value="">No branches available</option>
+          )}
         </select>
         {errors.branches && <p className="text-red-500">{errors.branches.message}</p>}
       </div>

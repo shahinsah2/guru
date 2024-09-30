@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Menu from './Menu';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,11 +19,11 @@ export default function NavBar() {
         <div className="flex justify-between items-center h-16">
           {/* Left Side: Logo + Company Name */}
           <div className="flex items-center space-x-4">
-            <Image src="/logo.png" alt="Guru Goutam Logo" width={40} height={40} />
             <Link href="/dashboard">
-              <span className="text-2xl font-semibold text-orange-600">
+            <Image src="/logo.png" alt="Guru Goutam Logo" width={200} height={60} />
+              {/* <span className="text-2xl font-semibold text-orange-600">
                 Guru Goutam
-              </span>
+              </span> */}
             </Link>          
           
           <div className="hidden md:flex space-x-6">
@@ -43,13 +44,12 @@ export default function NavBar() {
               />
             </Link>
             <div className="flex items-center space-x-2">
-              <Image
-                className="h-8 w-8 rounded-full"
-                src="/avatar.png"
-                alt="User Avatar"
-                width={36}
-                height={36}
-              />
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
               <span className="text-sm font-medium text-gray-800">Ajay Kumar</span>
             </div>
           </div>

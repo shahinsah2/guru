@@ -25,7 +25,9 @@ const UserSchema = new Schema({
   phone_number: { type: String, required: false },
   address: { type: AddressSchema, required: false },
   active_status: { type: Boolean, default: true },
-  team_head: { type: Schema.Types.ObjectId, ref: 'User' }  // Reference to another user as team head
+  team_head: { type: Schema.Types.ObjectId, ref: 'User' },
+  clerkid: { type: String, required: false },
+  
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);
