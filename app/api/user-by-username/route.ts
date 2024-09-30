@@ -3,7 +3,7 @@
 import { connectToDatabase } from '@/lib/database';
 import User from '@/lib/database/models/User.model';
 
-// Fetch user by Clerk username (login_id)
+// Fetch user by Clerk username (login_id) 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
