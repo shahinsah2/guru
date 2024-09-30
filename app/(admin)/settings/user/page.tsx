@@ -56,7 +56,7 @@ export default function UserPage() {
     canDelete: false,
   });
 
-  // Fetch current user's roles and module access permissions 
+  // Fetch current user's roles and module access permissions
   useEffect(() => {
     if (clerkUser?.username) {
       const fetchUserPermissions = async () => {
