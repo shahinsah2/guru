@@ -4,25 +4,18 @@ import { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import modulePermissions from '@/lib/config/modulePermissions';
 
 // Define validation schema for role and permissions
+const moduleAccessSchema = z.object({
+  module_name: z.string().min(1),
+  permissions: z.record(z.boolean()), // Allows any permission keys with boolean values
+});
+
 const roleSchema = z.object({
   role_name: z.string().min(1, 'Role name is required'),
   department: z.string().min(1, 'Department is required'),
-  module_access: z.array(z.object({
-    module_name: z.string().min(1),
-    can_add: z.boolean(),
-    can_edit: z.boolean(),
-    can_delete: z.boolean(),
-    can_activate: z.boolean(),
-    can_deactivate: z.boolean(),
-    can_search: z.boolean(),
-    can_import: z.boolean(),
-    can_export: z.boolean(),
-    can_print: z.boolean(),
-    can_generate_pdf: z.boolean(),
-    can_logout: z.boolean(),
-  })),
+  module_access: z.array(moduleAccessSchema),
 });
 
 type RoleFormData = z.infer<typeof roleSchema>;
@@ -32,23 +25,18 @@ interface Department {
   department_name: string;
 }
 
-const modules = [
-  'Inventory',
-  'CRM',
-  'Operations',
-  'Procurement',
-  'Sales',
-  'Finance',
-  'Users',
-];
-
 interface CreateRoleFormProps {
   onClose: () => void;
   departments: Department[];
 }
 
 export default function CreateRoleForm({ onClose, departments }: CreateRoleFormProps) {
-  const { register, handleSubmit, control, formState: { errors } } = useForm<RoleFormData>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<RoleFormData>({
     resolver: zodResolver(roleSchema),
   });
 
@@ -59,24 +47,22 @@ export default function CreateRoleForm({ onClose, departments }: CreateRoleFormP
 
   const [addedModules, setAddedModules] = useState<string[]>([]); // Track added modules
 
-  // Prevent adding duplicate modules
-  const addModule = (module: string) => {
-    if (!addedModules.includes(module)) {
+  // Get the list of modules from the configuration
+  const modules = Object.keys(modulePermissions);
+
+  const addModule = (module: keyof typeof modulePermissions) => {
+    if (!addedModules.includes(module as string)) {
+      // Initialize permissions based on the module configuration
+      const permissions = modulePermissions[module].reduce<Record<string, boolean>>((acc, permission) => {
+        acc[permission] = false;
+        return acc;
+      }, {});
+
       append({
-        module_name: module,
-        can_add: false,
-        can_edit: false,
-        can_delete: false,
-        can_activate: false,
-        can_deactivate: false,
-        can_search: false,
-        can_import: false,
-        can_export: false,
-        can_print: false,
-        can_generate_pdf: false,
-        can_logout: false,
+        module_name: module as string, // Explicitly cast module to string
+        permissions: permissions,
       });
-      setAddedModules([...addedModules, module]); // Track added module
+      setAddedModules([...addedModules, module as string]); // Track added module
     }
   };
 
@@ -125,6 +111,7 @@ export default function CreateRoleForm({ onClose, departments }: CreateRoleFormP
           {...register('department')}
           className="w-full border border-gray-300 px-4 py-2 rounded-md"
         >
+          <option value="">Select Department</option>
           {departments.map((dept) => (
             <option key={dept._id} value={dept._id}>
               {dept.department_name}
@@ -142,7 +129,7 @@ export default function CreateRoleForm({ onClose, departments }: CreateRoleFormP
               key={module}
               type="button"
               onClick={() => addModule(module)}
-              className="bg-gray-200 px-2 py-1 rounded"
+              className={`px-2 py-1 rounded ${addedModules.includes(module) ? 'bg-gray-400' : 'bg-gray-200'}`}
               disabled={addedModules.includes(module)} // Disable button if module is already added
             >
               + {module}
@@ -163,34 +150,25 @@ export default function CreateRoleForm({ onClose, departments }: CreateRoleFormP
               </button>
             </div>
             <div className="grid grid-cols-2 gap-2 mt-2">
-              <label><input type="checkbox" {...register(`module_access.${index}.can_add`)} /> Can Add</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_edit`)} /> Can Edit</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_delete`)} /> Can Delete</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_activate`)} /> Can Activate</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_deactivate`)} /> Can Deactivate</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_search`)} /> Can Search</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_import`)} /> Can Import</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_export`)} /> Can Export</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_print`)} /> Can Print</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_generate_pdf`)} /> Can Generate PDF</label>
-              <label><input type="checkbox" {...register(`module_access.${index}.can_logout`)} /> Can Logout</label>
+              {modulePermissions[field.module_name as keyof typeof modulePermissions].map((permission) => (
+                <label key={permission}>
+                  <input
+                    type="checkbox"
+                    {...register(`module_access.${index}.permissions.${permission}` as const)}
+                  />{' '}
+                  {permission.replace(/_/g, ' ').replace(/can /i, 'Can ')}
+                </label>
+              ))}
             </div>
           </div>
         ))}
       </div>
 
       <div className="flex justify-end">
-        <button
-          type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-        >
+        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
           Create Role
         </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="ml-4 text-red-500 hover:text-red-600"
-        >
+        <button type="button" onClick={onClose} className="ml-4 text-red-500 hover:text-red-600">
           Cancel
         </button>
       </div>
