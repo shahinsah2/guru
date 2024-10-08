@@ -1,15 +1,10 @@
+// @/app/(admin)/settings/role/page.jsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import CreateRoleForm from '@/components/CreateRoleForm';
 import { DataTable } from '@/components/DataTable'; // Import the generic DataTable component
-
-// Define the types for role
-interface Role {
-  _id: string;
-  role_name: string;
-  department_name: string;
-}
 
 // Define the columns for the role table
 const columns = [
@@ -25,7 +20,7 @@ const columns = [
 
 export default function RolePage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {

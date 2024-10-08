@@ -1,3 +1,5 @@
+// @/components/CreateRoleForm.jsx
+
 'use client';
 
 import { useState } from 'react';
@@ -18,25 +20,8 @@ const roleSchema = z.object({
   module_access: z.array(moduleAccessSchema),
 });
 
-type RoleFormData = z.infer<typeof roleSchema>;
-
-interface Department {
-  _id: string;
-  department_name: string;
-}
-
-interface CreateRoleFormProps {
-  onClose: () => void;
-  departments: Department[];
-}
-
-export default function CreateRoleForm({ onClose, departments }: CreateRoleFormProps) {
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<RoleFormData>({
+export default function CreateRoleForm({ onClose, departments }) {
+  const { register, handleSubmit, control, formState: { errors } } = useForm({
     resolver: zodResolver(roleSchema),
   });
 
@@ -45,33 +30,33 @@ export default function CreateRoleForm({ onClose, departments }: CreateRoleFormP
     name: 'module_access',
   });
 
-  const [addedModules, setAddedModules] = useState<string[]>([]); // Track added modules
+  const [addedModules, setAddedModules] = useState([]); // Track added modules
 
   // Get the list of modules from the configuration
   const modules = Object.keys(modulePermissions);
 
-  const addModule = (module: keyof typeof modulePermissions) => {
-    if (!addedModules.includes(module as string)) {
+  const addModule = (module) => {
+    if (!addedModules.includes(module)) {
       // Initialize permissions based on the module configuration
-      const permissions = modulePermissions[module].reduce<Record<string, boolean>>((acc, permission) => {
+      const permissions = modulePermissions[module].reduce((acc, permission) => {
         acc[permission] = false;
         return acc;
       }, {});
 
       append({
-        module_name: module as string, // Explicitly cast module to string
+        module_name: module, // Explicitly cast module to string
         permissions: permissions,
       });
-      setAddedModules([...addedModules, module as string]); // Track added module
+      setAddedModules([...addedModules, module]); // Track added module
     }
   };
 
-  const removeModule = (index: number, module: string) => {
+  const removeModule = (index, module) => {
     remove(index);
     setAddedModules(addedModules.filter((m) => m !== module)); // Remove from tracked modules
   };
 
-  const onSubmit = async (data: RoleFormData) => {
+  const onSubmit = async (data) => {
     try {
       const response = await fetch('/api/role', {
         method: 'POST',
@@ -150,11 +135,11 @@ export default function CreateRoleForm({ onClose, departments }: CreateRoleFormP
               </button>
             </div>
             <div className="grid grid-cols-2 gap-2 mt-2">
-              {modulePermissions[field.module_name as keyof typeof modulePermissions].map((permission) => (
+              {modulePermissions[field.module_name].map((permission) => (
                 <label key={permission}>
                   <input
                     type="checkbox"
-                    {...register(`module_access.${index}.permissions.${permission}` as const)}
+                    {...register(`module_access.${index}.permissions.${permission}`)}
                   />{' '}
                   {permission.replace(/_/g, ' ').replace(/can /i, 'Can ')}
                 </label>

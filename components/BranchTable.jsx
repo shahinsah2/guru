@@ -1,15 +1,11 @@
+// @/components/BranchTable.jsx
+
 'use client';
 
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-interface Branch {
-  _id: string;
-  branch_name: string;
-  pincode: string;
-}
-
-const columns: ColumnDef<Branch>[] = [
+const columns = [
   {
     accessorKey: 'branch_name',
     header: 'Branch Name',
@@ -20,7 +16,7 @@ const columns: ColumnDef<Branch>[] = [
   },
 ];
 
-export default function BranchTable({ branches }: { branches: Branch[] }) {
+export default function BranchTable({ branches }) {
   const table = useReactTable({
     data: branches,
     columns,

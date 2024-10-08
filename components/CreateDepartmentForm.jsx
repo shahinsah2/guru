@@ -1,3 +1,5 @@
+// @/components/CreateDepartmentForm.jsx
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -10,18 +12,12 @@ const departmentSchema = z.object({
   description: z.string().optional(),
 });
 
-type DepartmentFormData = z.infer<typeof departmentSchema>;
-
-interface CreateDepartmentFormProps {
-  onClose: () => void;
-}
-
-export default function CreateDepartmentForm({ onClose }: CreateDepartmentFormProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm<DepartmentFormData>({
+export default function CreateDepartmentForm({ onClose }) {
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(departmentSchema),
   });
 
-  const onSubmit = async (data: DepartmentFormData) => {
+  const onSubmit = async (data) => {
     try {
       const response = await fetch('/api/department', {
         method: 'POST',

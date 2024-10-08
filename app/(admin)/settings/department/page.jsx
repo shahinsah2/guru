@@ -1,15 +1,10 @@
+// @/app/(admin)/settings/department/page.jsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import CreateDepartmentForm from '@/components/CreateDepartmentForm';
 import { DataTable } from '@/components/DataTable'; // Import the generic DataTable component
-
-// Define the types for department
-interface Department {
-  _id: string;
-  department_name: string;
-  description: string;
-}
 
 // Define the columns for the department table
 const columns = [
@@ -25,7 +20,7 @@ const columns = [
 
 export default function DepartmentPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
     async function fetchDepartments() {

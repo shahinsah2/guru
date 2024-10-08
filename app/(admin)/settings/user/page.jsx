@@ -1,4 +1,4 @@
-// app/(admin)/settings/user/page.tsx
+// @/app/(admin)/settings/user/page.jsx
 
 'use client';
 
@@ -6,50 +6,16 @@ import { useState, useEffect } from 'react';
 import CreateUserForm from '@/components/CreateUserForm';
 import { DataTable } from '@/components/DataTable';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
-import { useUser } from '@clerk/nextjs'; 
-
-interface User {
-  _id: string;
-  first_name: string;
-  last_name: string;
-  login_id: string;
-  user_code: string;
-  emailid: string;
-  phone_number: string;
-  roles: { _id: string }[]; // Role ObjectId references
-  departments: { department_name: string; _id: string }[];
-  branches: { branch_name: string; _id: string }[];
-}
-
-interface Role {
-  _id: string;
-  role_name: string;
-  module_access: Array<{
-    module_name: string;
-    can_add: boolean;
-    can_edit: boolean;
-    can_delete: boolean;
-  }>;
-}
-
-interface Department {
-  _id: string;
-  department_name: string;
-}
-
-interface Branch {
-  _id: string;
-  branch_name: string;
-}
+import { useUser } from '@clerk/nextjs';
 
 export default function UserPage() {
   const { user: clerkUser } = useUser(); // Clerk user object
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null); 
+  const [users, setUsers] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [userPermissions, setUserPermissions] = useState({
     canAdd: false,
     canEdit: false,
@@ -67,8 +33,8 @@ export default function UserPage() {
           const userRoles = currentUser?.roles || [];
 
           // Fetch role details for the user's roles
-          const roleIds = userRoles.map((role: { _id: string }) => role._id);
-          
+          const roleIds = userRoles.map((role) => role._id);
+
           // Fetch roles by their IDs using the new API
           const rolesRes = await fetch('/api/role-by-ids', {
             method: 'POST',
@@ -80,13 +46,9 @@ export default function UserPage() {
 
           const roleData = await rolesRes.json();
 
-          console.log('==roleData==');
-          console.log(roleData);
-          console.log('====roleData===');
-
           // Find the 'Users' module access permissions
           let permissions = { canAdd: false, canEdit: false, canDelete: false };
-          roleData.forEach((role: Role) => {
+          roleData.forEach((role) => {
             const userModule = role.module_access.find(module => module.module_name === 'Users');
             if (userModule) {
               permissions = {
@@ -104,7 +66,6 @@ export default function UserPage() {
 
       fetchUserPermissions();
     }
-
   }, [clerkUser]);
 
   useEffect(() => {
@@ -124,7 +85,7 @@ export default function UserPage() {
     fetchData();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this user?')) {
       try {
         const response = await fetch('/api/user', {
@@ -146,12 +107,12 @@ export default function UserPage() {
     }
   };
 
-  const handleEdit = (user: User) => {
+  const handleEdit = (user) => {
     setSelectedUser(user); // Set the selected user for editing
     setIsFormOpen(true);
   };
 
-  const handleFormClose = async (updatedUser?: User | null) => {
+  const handleFormClose = async (updatedUser) => {
     setIsFormOpen(false);
     setSelectedUser(null); // Clear the selected user after closing the form
 
@@ -162,7 +123,6 @@ export default function UserPage() {
     }
   };
 
-
   const columns = [
     { accessorKey: 'first_name', header: 'First Name' },
     { accessorKey: 'last_name', header: 'Last Name' },
@@ -171,7 +131,7 @@ export default function UserPage() {
     {
       accessorKey: 'actions',
       header: 'Actions',
-      cell: ({ row }: { row: { original: User } }) => (
+      cell: ({ row }) => (
         <div className="flex space-x-2">
           {userPermissions.canEdit && (
             <button

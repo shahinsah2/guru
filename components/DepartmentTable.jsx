@@ -1,15 +1,11 @@
+// @/components/DepartmentTable.jsx
+
 'use client';
 
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-interface Department {
-  _id: string;
-  department_name: string;
-  description: string;
-}
-
-const columns: ColumnDef<Department>[] = [
+const columns = [
   {
     accessorKey: 'department_name',
     header: 'Department Name',
@@ -20,7 +16,7 @@ const columns: ColumnDef<Department>[] = [
   },
 ];
 
-export default function DepartmentTable({ departments }: { departments: Department[] }) {
+export default function DepartmentTable({ departments }) {
   const table = useReactTable({
     data: departments,
     columns,

@@ -1,15 +1,10 @@
+// @/app/(admin)/settings/branch/page.jsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import CreateBranchForm from '@/components/CreateBranchForm';
 import { DataTable } from '@/components/DataTable'; // Import the generic DataTable component
-
-// Define the types for branch
-interface Branch {
-  _id: string;
-  branch_name: string;
-  pincode: string;
-}
 
 // Define the columns for the branch table
 const columns = [
@@ -25,7 +20,7 @@ const columns = [
 
 export default function BranchPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [branches, setBranches] = useState<Branch[]>([]);
+  const [branches, setBranches] = useState([]);
 
   useEffect(() => {
     async function fetchBranches() {

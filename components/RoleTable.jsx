@@ -1,15 +1,11 @@
+// @/components/RoleTable.jsx
+
 'use client';
 
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-interface Role {
-  _id: string;
-  role_name: string;
-  department_name: string;
-}
-
-const columns: ColumnDef<Role>[] = [
+const columns = [
   {
     accessorKey: 'role_name',
     header: 'Role Name',
@@ -20,7 +16,7 @@ const columns: ColumnDef<Role>[] = [
   },
 ];
 
-export default function RoleTable({ roles }: { roles: Role[] }) {
+export default function RoleTable({ roles }) {
   const table = useReactTable({
     data: roles,
     columns,

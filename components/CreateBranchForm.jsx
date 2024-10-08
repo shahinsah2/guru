@@ -1,3 +1,5 @@
+// @/components/CreateBranchForm.jsx
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -15,22 +17,16 @@ const branchSchema = z.object({
   address: z.string().optional(),
 });
 
-type BranchFormData = z.infer<typeof branchSchema>;
-
-interface CreateBranchFormProps {
-  onClose: () => void;
-}
-
-export default function CreateBranchForm({ onClose }: CreateBranchFormProps) {
+export default function CreateBranchForm({ onClose }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<BranchFormData>({
+  } = useForm({
     resolver: zodResolver(branchSchema),
   });
 
-  const onSubmit = async (data: BranchFormData) => {
+  const onSubmit = async (data) => {
     try {
       const response = await fetch('/api/branch', {
         method: 'POST',

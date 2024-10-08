@@ -1,45 +1,11 @@
+// @/components/CreateUserForm.jsx
+
 'use client';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-
-// Define types for Department, Role, Branch, and Address
-interface Department {
-  _id: string;
-  department_name: string;
-}
-
-interface Role {
-  _id: string;
-  role_name: string;
-}
-
-interface Branch {
-  _id: string;
-  branch_name: string;
-}
-
-interface Address {
-  pincode?: string;
-  country?: string;
-  state?: string;
-  city?: string;
-}
-
-interface UserData {
-  _id?: string;
-  first_name: string;
-  last_name: string;
-  login_id: string;
-  emailid: string;
-  phone_number: string;
-  roles: Array<{ _id: string } | string>;
-  departments: Array<{ _id: string } | string>;
-  branches: Array<{ _id: string } | string>;
-  address?: Address; // Address is nested under the user
-}
 
 // Define the validation schema using Zod
 const userSchema = z.object({
@@ -60,29 +26,19 @@ const userSchema = z.object({
   }).optional(),
 });
 
-type UserFormData = z.infer<typeof userSchema>;
-
-interface CreateUserFormProps {
-  onClose: () => void;
-  departments: Department[];
-  roles: Role[];
-  branches: Branch[];
-  user?: UserData | null; // Optional user prop for editing
-}
-
 export default function CreateUserForm({
   onClose,
-  departments = [], // Ensure default empty arrays for props
-  roles = [], // Ensure default empty arrays for props
-  branches = [], // Ensure default empty arrays for props
+  departments = [],
+  roles = [],
+  branches = [],
   user,
-}: CreateUserFormProps) {
+}) {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<UserFormData>({
+  } = useForm({
     resolver: zodResolver(userSchema),
     defaultValues: {
       first_name: user?.first_name || '',
@@ -127,7 +83,7 @@ export default function CreateUserForm({
     }
   }, [user, reset]);
 
-  const onSubmit = async (data: UserFormData) => {
+  const onSubmit = async (data) => {
     try {
       const cleanData = {
         ...data,
