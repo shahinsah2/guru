@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// app/api/role/route.ts
+// app/api/role/route.js
 import { connectToDatabase } from '@/lib/database';
 import Role from '@/lib/database/models/Role.model';
 
@@ -10,8 +9,8 @@ export async function GET() {
     const roles = await Role.find().populate('department');
 
     // Format the roles to send proper structure in response
-    const formattedRoles = roles.map((role: any) => {
-      const formattedModuleAccess = role.module_access.map((module: any) => {
+    const formattedRoles = roles.map((role) => {
+      const formattedModuleAccess = role.module_access.map((module) => {
         const { module_name, ...permissions } = module;
         return {
           module_name,
@@ -31,7 +30,7 @@ export async function GET() {
 }
 
 // POST (create) a new role
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     await connectToDatabase();
     const roleData = await req.json();
@@ -39,7 +38,7 @@ export async function POST(req: Request) {
     console.log('Role data received:', roleData);
 
     // Unpack permissions and reformat them properly for saving
-    const formattedModuleAccess = roleData.module_access.map((module: any) => {
+    const formattedModuleAccess = roleData.module_access.map((module) => {
       const { permissions, module_name } = module;
 
       // Explicitly extract the permission fields
@@ -65,13 +64,13 @@ export async function POST(req: Request) {
 }
 
 // PUT (update) a role
-export async function PUT(req: Request) {
+export async function PUT(req) {
   try {
     await connectToDatabase();
     const { id, ...updateData } = await req.json();
 
     // Unpack permissions and reformat them properly for saving
-    const formattedModuleAccess = updateData.module_access.map((module: any) => {
+    const formattedModuleAccess = updateData.module_access.map((module) => {
       const { permissions, module_name } = module;
 
       // Explicitly extract the permission fields
@@ -91,7 +90,7 @@ export async function PUT(req: Request) {
 }
 
 // DELETE a role
-export async function DELETE(req: Request) {
+export async function DELETE(req) {
   try {
     await connectToDatabase();
     const { id } = await req.json();

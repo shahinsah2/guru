@@ -2,71 +2,20 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { PermissionsContext } from '@/app/(admin)/settings/layout'; // Import context
 import CreateUserForm from '@/components/CreateUserForm';
 import { DataTable } from '@/components/DataTable';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
-import { useUser } from '@clerk/nextjs';
 
 export default function UserPage() {
-  const { user: clerkUser } = useUser(); // Clerk user object
+  const userPermissions = useContext(PermissionsContext); // Get permissions from context
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
   const [branches, setBranches] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [userPermissions, setUserPermissions] = useState({
-    canAdd: false,
-    canEdit: false,
-    canDelete: false,
-  });
-
-  // Fetch current user's roles and module access permissions
-  useEffect(() => {
-    if (clerkUser?.username) {
-      const fetchUserPermissions = async () => {
-        try {
-          const userRes = await fetch(`/api/user-by-username?username=${clerkUser.username}`);
-          const currentUser = await userRes.json();
-
-          const userRoles = currentUser?.roles || [];
-
-          // Fetch role details for the user's roles
-          const roleIds = userRoles.map((role) => role._id);
-
-          // Fetch roles by their IDs using the new API
-          const rolesRes = await fetch('/api/role-by-ids', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ roleIds }),
-          });
-
-          const roleData = await rolesRes.json();
-
-          // Find the 'Users' module access permissions
-          let permissions = { canAdd: false, canEdit: false, canDelete: false };
-          roleData.forEach((role) => {
-            const userModule = role.module_access.find(module => module.module_name === 'Users');
-            if (userModule) {
-              permissions = {
-                canAdd: userModule.can_add || permissions.canAdd,
-                canEdit: userModule.can_edit || permissions.canEdit,
-                canDelete: userModule.can_delete || permissions.canDelete,
-              };
-            }
-          });
-          setUserPermissions(permissions);
-        } catch (error) {
-          console.error('Error fetching user permissions:', error);
-        }
-      };
-
-      fetchUserPermissions();
-    }
-  }, [clerkUser]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,16 +57,14 @@ export default function UserPage() {
   };
 
   const handleEdit = (user) => {
-    setSelectedUser(user); // Set the selected user for editing
+    setSelectedUser(user);
     setIsFormOpen(true);
   };
 
   const handleFormClose = async (updatedUser) => {
     setIsFormOpen(false);
-    setSelectedUser(null); // Clear the selected user after closing the form
-
+    setSelectedUser(null);
     if (updatedUser) {
-      // If a user was created or updated, refetch the data
       const userRes = await fetch('/api/user');
       setUsers(await userRes.json());
     }

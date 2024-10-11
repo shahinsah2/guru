@@ -1,11 +1,12 @@
-// app/api/user-by-username/route.ts
+// app/api/user-by-username/route.js
 
 import { connectToDatabase } from '@/lib/database';
 import User from '@/lib/database/models/User.model';
 
 // Fetch user by Clerk username (login_id) 
-export async function GET(req: Request) {
+export async function GET(req) {
   try {
+    await connectToDatabase();
     const { searchParams } = new URL(req.url);
     const username = searchParams.get('username'); // Get the username from the query params
 
@@ -13,7 +14,6 @@ export async function GET(req: Request) {
       return new Response(JSON.stringify({ message: 'Username is required' }), { status: 400 });
     }
 
-    await connectToDatabase();
 
     // Find user by login_id (same as clerk username)
     const user = await User.findOne({ login_id: username }).populate('roles departments branches');

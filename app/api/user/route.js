@@ -1,4 +1,4 @@
-// app/api/user/route.ts
+// app/api/user/route.js
 
 import { connectToDatabase } from '@/lib/database';
 import User from '@/lib/database/models/User.model';
@@ -10,6 +10,12 @@ import { clerkClient } from '@clerk/nextjs/server';
 export async function GET() {
   try {
     await connectToDatabase();
+
+    // Ensure Mongoose connection is ready before making a query
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('Database connection not ready');
+    }
+
     const users = await User.find().populate('roles departments branches'); // Updated to pluralize relationships
     return new Response(JSON.stringify(users), { status: 200 });
   } catch (error) {
@@ -18,7 +24,7 @@ export async function GET() {
 }
 
 // POST (create) a new user
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     await connectToDatabase();
     const userData = await req.json();
@@ -39,9 +45,9 @@ export async function POST(req: Request) {
     // Convert roles, departments, and branches to ObjectId arrays using 'new' keyword
     const newUser = new User({
       ...userData,
-      roles: userData.roles.map((roleId: string) => new mongoose.Types.ObjectId(roleId)), // Ensuring roles is being mapped
-      departments: userData.departments.map((deptId: string) => new mongoose.Types.ObjectId(deptId)),
-      branches: userData.branches.map((branchId: string) => new mongoose.Types.ObjectId(branchId)),
+      roles: userData.roles.map((roleId) => new mongoose.Types.ObjectId(roleId)), // Ensuring roles is being mapped
+      departments: userData.departments.map((deptId) => new mongoose.Types.ObjectId(deptId)),
+      branches: userData.branches.map((branchId) => new mongoose.Types.ObjectId(branchId)),
       clerkid: clerkUser.id,
     });
 
@@ -69,7 +75,7 @@ export async function POST(req: Request) {
 }
 
 // PUT (update) a user
-export async function PUT(req: Request) {
+export async function PUT(req) {
   try {
     await connectToDatabase();
     const { id, ...updateData } = await req.json();
@@ -86,13 +92,13 @@ export async function PUT(req: Request) {
 
     // Ensure roles, departments, and branches are converted to ObjectIds
     if (updateData.roles) {
-      updateData.roles = updateData.roles.map((roleId: string) => new mongoose.Types.ObjectId(roleId));
+      updateData.roles = updateData.roles.map((roleId) => new mongoose.Types.ObjectId(roleId));
     }
     if (updateData.departments) {
-      updateData.departments = updateData.departments.map((deptId: string) => new mongoose.Types.ObjectId(deptId));
+      updateData.departments = updateData.departments.map((deptId) => new mongoose.Types.ObjectId(deptId));
     }
     if (updateData.branches) {
-      updateData.branches = updateData.branches.map((branchId: string) => new mongoose.Types.ObjectId(branchId));
+      updateData.branches = updateData.branches.map((branchId) => new mongoose.Types.ObjectId(branchId));
     }
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).populate('roles departments branches');
@@ -114,7 +120,7 @@ export async function PUT(req: Request) {
 
 
 // DELETE a user
-export async function DELETE(req: Request) {
+export async function DELETE(req) {
   try {
     await connectToDatabase();
     const { id } = await req.json();

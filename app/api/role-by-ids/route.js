@@ -1,11 +1,11 @@
-// app/api/role-by-ids/route.ts
+// app/api/role-by-ids/route.js
 
 import { connectToDatabase } from '@/lib/database';
 import Role from '@/lib/database/models/Role.model';
 import mongoose from 'mongoose';
 
 // POST (Fetch roles by IDs)
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     await connectToDatabase();
     
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     }
 
     // Convert roleIds into ObjectId instances
-    const objectIds = roleIds.map((roleId: string) => new mongoose.Types.ObjectId(roleId));
+    const objectIds = roleIds.map((roleId) => new mongoose.Types.ObjectId(roleId));
 
     // Find roles matching the provided role IDs
     const roles = await Role.find({ _id: { $in: objectIds } }).populate('department');

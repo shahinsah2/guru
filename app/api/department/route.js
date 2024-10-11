@@ -1,4 +1,4 @@
-// app/api/department/route.ts
+// app/api/department/route.js
 import { connectToDatabase } from '@/lib/database';
 import Department from '@/lib/database/models/Department.model';
 
@@ -15,7 +15,7 @@ export async function GET() {
 }
 
 // POST (create) a new department
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     await connectToDatabase();
     const departmentData = await req.json();
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 }
 
 // PUT (update) a department
-export async function PUT(req: Request) {
+export async function PUT(req) {
   try {
     await connectToDatabase();
     const { id, ...updateData } = await req.json();
@@ -45,7 +45,7 @@ export async function PUT(req: Request) {
 }
 
 // DELETE a department
-export async function DELETE(req: Request) {
+export async function DELETE(req) {
   try {
     await connectToDatabase();
     const { id } = await req.json();

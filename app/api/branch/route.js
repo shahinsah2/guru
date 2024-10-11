@@ -1,4 +1,4 @@
-// app/api/branch/route.ts
+// app/api/branch/route.js
 import { connectToDatabase } from '@/lib/database';
 import Branch from '@/lib/database/models/Branch.model';
 
@@ -15,7 +15,7 @@ export async function GET() {
 }
 
 // POST (create) a new branch
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     await connectToDatabase();
     const branchData = await req.json();
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 }
 
 // PUT (update) a branch
-export async function PUT(req: Request) {
+export async function PUT(req) {
   try {
     await connectToDatabase();
     const { id, ...updateData } = await req.json();
@@ -49,7 +49,7 @@ export async function PUT(req: Request) {
 }
 
 // DELETE a branch
-export async function DELETE(req: Request) {
+export async function DELETE(req) {
   try {
     await connectToDatabase();
     const { id } = await req.json();
