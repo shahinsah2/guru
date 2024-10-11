@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useContext } from 'react';
-import { PermissionsContext } from '@/app/(admin)/settings/layout'; // Import context
+import { PermissionsContext } from '@/context/PermissionsContext'; // Import from the correct file
 import CreateUserForm from '@/components/CreateUserForm';
 import { DataTable } from '@/components/DataTable';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
@@ -15,7 +15,6 @@ export default function UserPage() {
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
   const [branches, setBranches] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,7 +45,7 @@ export default function UserPage() {
         });
         if (response.ok) {
           alert('User deleted successfully');
-          setUsers(prevUsers => prevUsers.filter(user => user._id !== id));
+          setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
         } else {
           alert('Failed to delete user');
         }
@@ -101,10 +100,11 @@ export default function UserPage() {
     },
   ];
 
+
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Users</h1>
+        <h1 className="text-2xl font-semibold">Users</h1>        
         {userPermissions.canAdd && (
           <button
             onClick={() => setIsFormOpen(true)}
