@@ -13,7 +13,7 @@ export default function SignInPage() {
   useEffect(() => {
 
     if (isSignedIn) {
-      router.push("/dashboard")
+      router.push("/settings")
     }
 
   },[user,isSignedIn])

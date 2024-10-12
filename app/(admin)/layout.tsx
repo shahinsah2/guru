@@ -9,7 +9,7 @@ export default function Layout({
   }>) {
   return (
     <>
-    <ClerkLoading>
+     <ClerkLoading>
       <h1>Loading...</h1>
     </ClerkLoading>
     <ClerkLoaded>

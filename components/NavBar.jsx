@@ -9,13 +9,13 @@ import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from '@clerk/n
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { isLoaded, isSignedIn, user } = useUser()
+  const { user } = useUser()
 
 
-  // In case the user signs out while on the page.
-  if (!isLoaded || !isSignedIn) {
-   return null
- }
+//   // In case the user signs out while on the page.
+//   if (!isLoaded || !isSignedIn) {
+//    return null
+//  }
 
   const handleNavToggle = () => {
     setIsOpen(!isOpen);
@@ -58,7 +58,7 @@ export default function NavBar() {
             <SignedIn>
               <UserButton />
             </SignedIn>
-              <span className="text-sm font-medium text-gray-800">{user.username}</span>
+              <span className="text-sm font-medium text-gray-800">{user?.username}</span>
             </div>
           </div>
 
