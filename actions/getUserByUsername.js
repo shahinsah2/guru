@@ -1,4 +1,4 @@
-// app/actions/getUserByUsername.js
+// @/actions/getUserByUsername.js
 "use server";
 
 import { connectToDatabase } from '@/lib/database';
@@ -9,7 +9,7 @@ export const getUserByUsername = async (username) => {
   await connectToDatabase();
   
   // Find user by login_id (same as Clerk username)
-  const user = await User.findOne({ login_id: username }).populate('roles departments branches');
+  const user = await User.findOne({ login_id: username }).populate('roles');
   
   if (!user) {
     throw new Error('User not found');

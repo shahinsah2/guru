@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useContext } from 'react';
-import { PermissionsContext } from '@/context/PermissionsContext'; // Import from the correct file
+import { PermissionsContext } from '@/context/PermissionsContext'; // Import PermissionsContext
 import CreateUserForm from '@/components/CreateUserForm';
 import { DataTable } from '@/components/DataTable';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
@@ -15,6 +15,11 @@ export default function UserPage() {
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
   const [branches, setBranches] = useState([]);
+
+  // Check if user has permission for a specific action
+  const canAdd = userPermissions?.some((perm) => perm.canAdd);
+  const canEdit = userPermissions?.some((perm) => perm.canEdit);
+  const canDelete = userPermissions?.some((perm) => perm.canDelete);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +37,12 @@ export default function UserPage() {
     };
     fetchData();
   }, []);
+
+  console.log('===userPermissions= user page===');
+  console.log(userPermissions);
+  console.log(canAdd);
+  console.log(canDelete);
+  console.log('==userPermissions===user page==');
 
   const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this user?')) {
@@ -79,7 +90,7 @@ export default function UserPage() {
       header: 'Actions',
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          {userPermissions.canEdit && (
+          {canEdit && (
             <button
               className="text-blue-500 hover:text-blue-700"
               onClick={() => handleEdit(row.original)}
@@ -87,7 +98,7 @@ export default function UserPage() {
               <PencilIcon className="h-5 w-5" />
             </button>
           )}
-          {userPermissions.canDelete && (
+          {canDelete && (
             <button
               className="text-red-500 hover:text-red-700"
               onClick={() => handleDelete(row.original._id)}
@@ -100,12 +111,11 @@ export default function UserPage() {
     },
   ];
 
-
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Users</h1>        
-        {userPermissions.canAdd && (
+        <h1 className="text-2xl font-semibold">Users</h1>
+        {canAdd && (
           <button
             onClick={() => setIsFormOpen(true)}
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
