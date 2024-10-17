@@ -2,48 +2,56 @@
 
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
-import { PermissionsContext } from '@/context/PermissionsContext'; // Import PermissionsContext
+import { useState, useEffect } from 'react';
 import CreateUserForm from '@/components/CreateUserForm';
 import { DataTable } from '@/components/DataTable';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 
-export default function UserPage() {
-  const userPermissions = useContext(PermissionsContext); // Get permissions from context
+export default function UserPage({ userPermissions }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
   const [branches, setBranches] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
-  // Check if user has permission for a specific action
-  const canAdd = userPermissions?.some((perm) => perm.canAdd);
-  const canEdit = userPermissions?.some((perm) => perm.canEdit);
-  const canDelete = userPermissions?.some((perm) => perm.canDelete);
+  // Utility function to check for permission
+  const checkPermission = (moduleName, permissionType) => {
+    return userPermissions?.[moduleName]?.[permissionType] || false;
+  };
 
+  // Check if user has permission for specific actions in the 'Users' module
+  const canAdd = checkPermission('Users', 'can_add');
+  const canEdit = checkPermission('Users', 'can_edit');
+  const canDelete = checkPermission('Users', 'can_delete');
+
+  // Fetch other data like users, departments, etc.
   useEffect(() => {
     const fetchData = async () => {
-      const userRes = await fetch('/api/user');
-      setUsers(await userRes.json());
+      setLoading(true); // Set loading to true before fetching data
 
-      const departmentRes = await fetch('/api/department');
-      setDepartments(await departmentRes.json());
+      try {
+        const userRes = await fetch('/api/user');
+        setUsers(await userRes.json());
 
-      const roleRes = await fetch('/api/role');
-      setRoles(await roleRes.json());
+        const departmentRes = await fetch('/api/department');
+        setDepartments(await departmentRes.json());
 
-      const branchRes = await fetch('/api/branch');
-      setBranches(await branchRes.json());
+        const roleRes = await fetch('/api/role');
+        setRoles(await roleRes.json());
+
+        const branchRes = await fetch('/api/branch');
+        setBranches(await branchRes.json());
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false); // Set loading to false once data is fetched
+      }
     };
     fetchData();
   }, []);
 
-  console.log('===userPermissions= user page===');
-  console.log(userPermissions);
-  console.log(canAdd);
-  console.log(canDelete);
-  console.log('==userPermissions===user page==');
-
+  // Handle delete user
   const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this user?')) {
       try {
@@ -110,6 +118,11 @@ export default function UserPage() {
       ),
     },
   ];
+
+  // If loading is true, display a loading message
+  if (loading) {
+    return <div>Loading, please wait...</div>;
+  }
 
   return (
     <div>
