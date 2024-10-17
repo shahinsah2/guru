@@ -28,9 +28,11 @@ export async function getUserPermissions() {
           const moduleName = module.module_name;
           if (!userPermissions[moduleName]) userPermissions[moduleName] = {};
 
+          // Consolidate permissions: if any role grants a permission as true, it remains true
           Object.entries(module.toObject()).forEach(([key, value]) => {
             if (validPermissionKeys.includes(key) && typeof value === 'boolean') {
-              userPermissions[moduleName][key] = value;
+              // Set permission to true if any role grants it as true
+              userPermissions[moduleName][key] = userPermissions[moduleName][key] || value;
             }
           });
         });
@@ -40,5 +42,5 @@ export async function getUserPermissions() {
     console.error('Error fetching permissions:', error);
   }
 
-  return userPermissions; // Return the permissions object
+  return userPermissions; // Return the consolidated permissions object
 }

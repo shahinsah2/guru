@@ -5,7 +5,7 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // Define the validation schema using Zod
 const userSchema = z.object({
@@ -38,6 +38,8 @@ export default function CreateUserForm({
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -46,13 +48,9 @@ export default function CreateUserForm({
       login_id: user?.login_id || '',
       emailid: user?.emailid || '',
       phone_number: user?.phone_number || '',
-      roles: Array.isArray(user?.roles) ? user?.roles.map(role => (typeof role === 'object' ? role._id : role)) : [],
-      departments: Array.isArray(user?.departments)
-        ? user?.departments.map(department => (typeof department === 'object' ? department._id : department))
-        : [],
-      branches: Array.isArray(user?.branches)
-        ? user?.branches.map(branch => (typeof branch === 'object' ? branch._id : branch))
-        : [],
+      roles: user?.roles || [],
+      departments: user?.departments || [],
+      branches: user?.branches || [],
       address: {
         pincode: user?.address?.pincode || '',
         country: user?.address?.country || '',
@@ -62,17 +60,15 @@ export default function CreateUserForm({
     },
   });
 
+  const [errorMessage, setErrorMessage] = useState('');
+
   useEffect(() => {
     if (user) {
       reset({
         ...user,
-        roles: Array.isArray(user.roles) ? user.roles.map(role => (typeof role === 'object' ? role._id : role)) : [],
-        departments: Array.isArray(user.departments)
-          ? user.departments.map(department => (typeof department === 'object' ? department._id : department))
-          : [],
-        branches: Array.isArray(user.branches)
-          ? user.branches.map(branch => (typeof branch === 'object' ? branch._id : branch))
-          : [],
+        roles: user?.roles || [],
+        departments: user?.departments || [],
+        branches: user?.branches || [],
         address: {
           pincode: user?.address?.pincode || '',
           country: user?.address?.country || '',
@@ -84,6 +80,7 @@ export default function CreateUserForm({
   }, [user, reset]);
 
   const onSubmit = async (data) => {
+    setErrorMessage('');
     try {
       const cleanData = {
         ...data,
@@ -107,19 +104,36 @@ export default function CreateUserForm({
       });
 
       if (response.ok) {
-        console.log(user ? 'User updated successfully' : 'User created successfully');
-        onClose();
+        const updatedUser = await response.json(); // Get the updated user from the response
+        onClose(updatedUser.user); // Pass the updated user to the onClose function
       } else {
-        console.log('Failed to submit user');
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || 'Failed to submit user');
       }
     } catch (error) {
       console.error('Error submitting user:', error);
+      setErrorMessage('An error occurred while submitting the form.');
     }
+  };
+
+  // Watch form data for dynamic updates
+  const selectedRoles = watch('roles');
+  const selectedDepartments = watch('departments');
+  const selectedBranches = watch('branches');
+
+  const handleSelectChange = (e, fieldName) => {
+    const { options } = e.target;
+    const selectedValues = Array.from(options)
+      .filter((option) => option.selected)
+      .map((option) => option.value);
+    setValue(fieldName, selectedValues);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6 p-6 bg-gray-100 rounded-lg shadow-lg">
       <h2 className="text-xl font-semibold mb-4">{user ? 'Edit User' : 'Create New User'}</h2>
+
+      {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
 
       {/* First Name */}
       <div className="mb-4">
@@ -142,7 +156,7 @@ export default function CreateUserForm({
         {errors.login_id && <p className="text-red-500">{errors.login_id.message}</p>}
       </div>
 
-      {/* Password (optional when editing) */}
+      {/* Password (only when creating a new user) */}
       {!user && (
         <div className="mb-4">
           <label className="block text-sm font-medium">Password</label>
@@ -165,13 +179,18 @@ export default function CreateUserForm({
         {errors.phone_number && <p className="text-red-500">{errors.phone_number.message}</p>}
       </div>
 
-      {/* Multiple Roles */}
+      {/* Roles */}
       <div className="mb-4">
         <label className="block text-sm font-medium">Roles</label>
-        <select {...register('roles')} multiple className="w-full border border-gray-300 px-4 py-2 rounded-md">
+        <select
+          {...register('roles')}
+          multiple
+          className="w-full border border-gray-300 px-4 py-2 rounded-md"
+          onChange={(e) => handleSelectChange(e, 'roles')}
+        >
           {roles.length > 0 ? (
             roles.map((role) => (
-              <option key={role._id} value={role._id}>
+              <option key={role._id} value={role.role_name} selected={selectedRoles.includes(role.role_name)}>
                 {role.role_name}
               </option>
             ))
@@ -182,13 +201,18 @@ export default function CreateUserForm({
         {errors.roles && <p className="text-red-500">{errors.roles.message}</p>}
       </div>
 
-      {/* Multiple Departments */}
+      {/* Departments */}
       <div className="mb-4">
         <label className="block text-sm font-medium">Departments</label>
-        <select {...register('departments')} multiple className="w-full border border-gray-300 px-4 py-2 rounded-md">
+        <select
+          {...register('departments')}
+          multiple
+          className="w-full border border-gray-300 px-4 py-2 rounded-md"
+          onChange={(e) => handleSelectChange(e, 'departments')}
+        >
           {departments.length > 0 ? (
             departments.map((dept) => (
-              <option key={dept._id} value={dept._id}>
+              <option key={dept._id} value={dept.department_name} selected={selectedDepartments.includes(dept.department_name)}>
                 {dept.department_name}
               </option>
             ))
@@ -199,13 +223,18 @@ export default function CreateUserForm({
         {errors.departments && <p className="text-red-500">{errors.departments.message}</p>}
       </div>
 
-      {/* Multiple Branches */}
+      {/* Branches */}
       <div className="mb-4">
         <label className="block text-sm font-medium">Branches</label>
-        <select {...register('branches')} multiple className="w-full border border-gray-300 px-4 py-2 rounded-md">
+        <select
+          {...register('branches')}
+          multiple
+          className="w-full border border-gray-300 px-4 py-2 rounded-md"
+          onChange={(e) => handleSelectChange(e, 'branches')}
+        >
           {branches.length > 0 ? (
             branches.map((branch) => (
-              <option key={branch._id} value={branch._id}>
+              <option key={branch._id} value={branch.branch_name} selected={selectedBranches.includes(branch.branch_name)}>
                 {branch.branch_name}
               </option>
             ))
@@ -216,7 +245,7 @@ export default function CreateUserForm({
         {errors.branches && <p className="text-red-500">{errors.branches.message}</p>}
       </div>
 
-      {/* Address (Pincode, Country, State, City) */}
+      {/* Address Fields */}
       <div className="mb-4">
         <label className="block text-sm font-medium">Pincode</label>
         <input {...register('address.pincode')} className="w-full border border-gray-300 px-4 py-2 rounded-md" />
