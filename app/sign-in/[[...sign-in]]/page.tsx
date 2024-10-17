@@ -16,7 +16,7 @@ export default function SignInPage() {
       router.push("/dashboard")
     }
 
-  },[user,isSignedIn])
+  },[user, isSignedIn, router])
 
   return (
     <div className="grid w-full flex-grow items-center bg-white px-4 sm:justify-center">
