@@ -7,6 +7,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import modulePermissions from '@/lib/config/modulePermissions';
+import { createRole } from '@/actions/roleActions';
 
 // Define validation schema for role and permissions
 const moduleAccessSchema = z.object({
@@ -44,7 +45,7 @@ export default function CreateRoleForm({ onClose, departments }) {
       }, {});
 
       append({
-        module_name: module, // Explicitly cast module to string
+        module_name: module,
         permissions: permissions,
       });
       setAddedModules([...addedModules, module]); // Track added module
@@ -58,20 +59,10 @@ export default function CreateRoleForm({ onClose, departments }) {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch('/api/role', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        console.log('Role created successfully');
-        onClose();
-      } else {
-        console.log('Failed to create role');
-      }
+      // Call the createRole server action directly
+      await createRole(data);
+      console.log('Role created successfully');
+      onClose(); // Close the form on success
     } catch (error) {
       console.error('Error creating role:', error);
     }
@@ -98,7 +89,7 @@ export default function CreateRoleForm({ onClose, departments }) {
         >
           <option value="">Select Department</option>
           {departments.map((dept) => (
-            <option key={dept._id} value={dept._id}>
+            <option key={dept._id} value={dept.department_name}>
               {dept.department_name}
             </option>
           ))}
