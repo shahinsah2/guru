@@ -1,5 +1,4 @@
 // @/components/DataTable.jsx
-
 'use client';
 
 import {
@@ -12,7 +11,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 
-export function DataTable({ columns, data }) {
+export function DataTable({ columns, data }) { // Named export
   const table = useReactTable({
     data,
     columns,

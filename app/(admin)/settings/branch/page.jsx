@@ -1,6 +1,6 @@
 // @/app/(admin)/settings/branch/page.jsx
 import { getAllBranches } from '@/actions/branchActions';
-import Table from '@/components/Table';
+import DataTable from '@/components/DataTable'; // Import the DataTable component
 import Image from 'next/image';
 import Link from 'next/link';
 import TableSearch from '@/components/TableSearch';
@@ -16,6 +16,7 @@ const columns = [
   { header: 'Actions', accessor: 'action' },
 ];
 
+// Marking the component as server
 export default async function BranchPage() {
   // Fetch the branches data
   const branches = await getAllBranches();
@@ -25,28 +26,25 @@ export default async function BranchPage() {
   console.log('Populated Branches:', JSON.stringify(branches, null, 2));
   console.log('====================================');
 
-  // Render each row of the table
-  const renderRow = (item) => (
-    <tr key={item._id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
-      <td>{item.branch_name}</td>
-      <td>{item.address?.pincode || 'No Pincode'}</td>
-      <td>{item.address?.country || 'No Country'}</td>
-      <td>{item.address?.state || 'No State'}</td>
-      <td>{item.address?.city || 'No City'}</td>
-      <td>
-        <div className='flex items-center gap-2'>
-          <Link href={`/branches/${item._id}`}>
-            <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky'>
-              <Image src={'/update.png'} alt='Update' width={16} height={16} className='bg-blue-500'/>
-            </button>
-          </Link>
-          <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple'>
-            <Image src={'/delete.png'} alt='Delete' width={16} height={16}/>
-          </button>
-        </div>
-      </td>
-    </tr>
+  // Render actions for the row
+  const renderActions = (item) => (
+    <div className='flex items-center gap-2'>
+      <Link href={`/branches/${item._id}`}>
+        <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky'>
+          <Image src={'/update.png'} alt='Update' width={16} height={16} />
+        </button>
+      </Link>
+      <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple'>
+        <Image src={'/delete.png'} alt='Delete' width={16} height={16} />
+      </button>
+    </div>
   );
+
+  // Prepare data for DataTable
+  const dataWithActions = branches.map(item => ({
+    ...item,
+    action: renderActions(item), // Add action buttons to data
+  }));
 
   return (
     <div className='bg-white p-4 rounded-md m-4 mt-0 flex-1'>
@@ -69,7 +67,7 @@ export default async function BranchPage() {
         </div>
       </div>
       {/* List */}
-      <Table columns={columns} renderRow={renderRow} data={branches} />
+      <DataTable columns={columns} data={dataWithActions} />
       {/* Pagination */}
       <Pagination />
     </div>
