@@ -16,7 +16,7 @@ export const createDepartment = async (departmentData) => {
 // Retrieve a department by ID
 export const getDepartmentById = async (id) => {
   await connectToDatabase();
-  const department = await Department.findById(id);
+  const department = await Department.findById(id).lean(); // Convert to plain JavaScript object
   if (!department) {
     throw new Error('Department not found');
   }
@@ -26,14 +26,14 @@ export const getDepartmentById = async (id) => {
 // Retrieve all departments
 export const getAllDepartments = async () => {
   await connectToDatabase();
-  return await Department.find({});
+  return await Department.find({}).lean(); // Convert to plain JavaScript objects
 };
 
 // Update an existing department
 export const updateDepartment = async (id, updateData) => {
   await connectToDatabase();
 
-  const updatedDepartment = await Department.findByIdAndUpdate(id, updateData, { new: true });
+  const updatedDepartment = await Department.findByIdAndUpdate(id, updateData, { new: true }).lean(); // Convert to plain JavaScript object
   if (!updatedDepartment) {
     throw new Error('Department not found');
   }
@@ -43,7 +43,7 @@ export const updateDepartment = async (id, updateData) => {
 // Delete a department
 export const deleteDepartment = async (id) => {
   await connectToDatabase();
-  const deletedDepartment = await Department.findByIdAndDelete(id);
+  const deletedDepartment = await Department.findByIdAndDelete(id).lean(); // Convert to plain JavaScript object
   if (!deletedDepartment) {
     throw new Error('Department not found');
   }

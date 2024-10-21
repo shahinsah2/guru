@@ -16,7 +16,7 @@ export const createBranch = async (branchData) => {
 // Retrieve a branch by ID
 export const getBranchById = async (id) => {
   await connectToDatabase();
-  const branch = await Branch.findById(id);
+  const branch = await Branch.findById(id).lean(); // Convert to plain JavaScript object
   if (!branch) {
     throw new Error('Branch not found');
   }
@@ -26,14 +26,14 @@ export const getBranchById = async (id) => {
 // Retrieve all branches
 export const getAllBranches = async () => {
   await connectToDatabase();
-  return await Branch.find({});
+  return await Branch.find({}).lean(); // Convert to plain JavaScript objects
 };
 
 // Update an existing branch
 export const updateBranch = async (id, updateData) => {
   await connectToDatabase();
 
-  const updatedBranch = await Branch.findByIdAndUpdate(id, updateData, { new: true });
+  const updatedBranch = await Branch.findByIdAndUpdate(id, updateData, { new: true }).lean(); // Convert to plain JavaScript object
   if (!updatedBranch) {
     throw new Error('Branch not found');
   }
@@ -43,7 +43,7 @@ export const updateBranch = async (id, updateData) => {
 // Delete a branch
 export const deleteBranch = async (id) => {
   await connectToDatabase();
-  const deletedBranch = await Branch.findByIdAndDelete(id);
+  const deletedBranch = await Branch.findByIdAndDelete(id).lean(); // Convert to plain JavaScript object
   if (!deletedBranch) {
     throw new Error('Branch not found');
   }

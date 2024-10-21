@@ -5,6 +5,7 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createDepartment } from '@/actions/departmentActions'; // Import the server action for creating a department
 
 // Define validation schema for department
 const departmentSchema = z.object({
@@ -19,20 +20,10 @@ export default function CreateDepartmentForm({ onClose }) {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch('/api/department', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        console.log('Department created successfully');
-        onClose();
-      } else {
-        console.log('Failed to create department');
-      }
+      // Call the createDepartment server action directly
+      await createDepartment(data);
+      console.log('Department created successfully');
+      onClose(); // Close the form on success
     } catch (error) {
       console.error('Error creating department:', error);
     }

@@ -6,9 +6,11 @@ import Role from '@/lib/database/models/Role.model';
 import Branch from '@/lib/database/models/Branch.model';
 
 export const getUsers = async () => {
-  "use server"; // Server action
   await connectToDatabase();
-  return await User.find().populate('roles departments branches');
+  return await User.find({})
+    .populate('roles') // Populate the roles
+    .populate('departments') // Populate the departments
+    .populate('branches'); // Populate the branches
 };
 
 export const getDepartments = async () => {

@@ -41,7 +41,8 @@ export const getRoleById = async (id) => {
 // Retrieve all roles
 export const getAllRoles = async () => {
   await connectToDatabase();
-  return await Role.find({}).populate('department');
+  // Populate the department to get the department name
+  return await Role.find({}).populate('department', 'department_name').lean();
 };
 
 // Update an existing role
