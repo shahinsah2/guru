@@ -50,7 +50,7 @@ const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOption
       "Form not found!"
     );
   };
-
+ 
   return (
     <>
       <button
