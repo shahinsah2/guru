@@ -1,23 +1,21 @@
-// @/app/(admin)/settings/taxlist/page.jsx
 import Image from 'next/image';
 import Link from 'next/link';
 import TableSearch from '@/components/TableSearch';
-import Pagination from '@/components/Pagination';
 import { getAllTaxes } from "@/actions/taxListActions";
 import { DataTable } from '@/components/DataTable';
 
 // Define the columns for the tax list table
 const columns = [
-  { header: 'Tax Name', accessor: 'tax_name' },
-  { header: 'CGST (%)', accessor: 'percentage_cgst' },
-  { header: 'SGST (%)', accessor: 'percentage_sgst' },
-  { header: 'Active Status', accessor: 'active_status' },
-  { header: 'Actions', accessor: 'action' },
+  { header: 'Tax Name', accessorKey: 'tax_name' },
+  { header: 'CGST (%)', accessorKey: 'percentage_cgst' },
+  { header: 'SGST (%)', accessorKey: 'percentage_sgst' },
+  { header: 'Active Status', accessorKey: 'active_status' },
+  { header: 'Actions', accessorKey: 'action' },
 ];
 
 export default async function TaxListPage() {
   // Fetch the tax list data
-  const taxLists = await getAllTaxes(); // Ensure this function is defined
+  const taxLists = await getAllTaxes();
 
   // Log the tax lists for debugging
   console.log('====================================');
@@ -67,7 +65,7 @@ export default async function TaxListPage() {
       {/* List */}
       <DataTable columns={columns} data={tableData} />
       {/* Pagination */}
-      <Pagination />
+      {/* <Pagination /> Uncomment this if you have a pagination component */}
     </div>
   );
 }

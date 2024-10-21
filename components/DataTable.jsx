@@ -11,7 +11,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 
-export function DataTable({ columns, data }) { // Named export
+export function DataTable({ columns, data }) {
   const table = useReactTable({
     data,
     columns,
