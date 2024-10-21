@@ -1,25 +1,28 @@
-// @/components/settingsForms/FOrmModal.tsx
+// @/components/settingsForms/FormModal.jsx
 
 'use client'
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 const UsersForm = dynamic(() => import("@/components/settingsForms/UsersForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
 const forms = {
-  Users: (type, data) => <UsersForm type={type} data={data} />,  
+  Users: (type, data, rolesOptions, departmentsOptions, branchesOptions) => (
+    <UsersForm 
+      type={type} 
+      data={data} 
+      rolesOptions={rolesOptions} 
+      departmentsOptions={departmentsOptions} 
+      branchesOptions={branchesOptions} 
+    />
+  ),
 };
 
-const FormModal = ({table, type, data, id}) => {
-
+const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOptions = [], branchesOptions = [] }) => {
   const parsedData = data ? JSON.parse(data) : null;
-
-  console.log('====parsedData====');
-  console.log(parsedData);
-  console.log('===parsedData=====');
 
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
@@ -42,7 +45,7 @@ const FormModal = ({table, type, data, id}) => {
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
-      forms[table](type, parsedData)
+      forms[table](type, parsedData, rolesOptions, departmentsOptions, branchesOptions)
     ) : (
       "Form not found!"
     );
@@ -73,4 +76,4 @@ const FormModal = ({table, type, data, id}) => {
   )
 }
 
-export default FormModal
+export default FormModal;

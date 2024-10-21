@@ -1,6 +1,9 @@
 // app/(admin)/settings/user/page.jsx (Server Component)
 import { getUserPermissions } from '@/actions/getUserPermissions';
-import { getUsers } from '@/actions/dataFetchActions'; 
+import { getUsers } from '@/actions/dataFetchActions';
+import { getAllRoles } from '@/actions/roleActions';
+import { getAllDepartments } from '@/actions/departmentActions';
+import { getAllBranches } from '@/actions/branchActions';
 import Table from '@/components/Table';
 import Image from 'next/image';
 import TableSearch from '@/components/TableSearch';
@@ -21,15 +24,20 @@ export default async function UserPage() {
   // Fetch user permissions on the server
   const userPermissions = await getUserPermissions();
 
-  // Fetch the data using server actions
+  // Fetch the users data using server actions
   const users = await getUsers();
 
-  
-  // Log users with populated fields more clearly
-console.log('====================================');
-console.log('Populated Users:', JSON.stringify(users, null, 2));
-console.log('====================================');
+  // Fetch roles, departments, and branches using server actions
+  const [rolesOptions, departmentsOptions, branchesOptions] = await Promise.all([
+    getAllRoles(),
+    getAllDepartments(),
+    getAllBranches(),
+  ]);
 
+  // Log users with populated fields more clearly
+  console.log('====================================');
+  console.log('Populated Users:', JSON.stringify(users, null, 2));
+  console.log('====================================');
 
   // Render each row of the table
   const renderRow = (item) => (
@@ -48,8 +56,15 @@ console.log('====================================');
       <td className='hidden lg:table-cell'>{item.active_status ? 'Active' : 'Inactive'}</td>
       <td>
         <div className='flex items-center gap-2'>
-          <FormModal table="Users" type="update" data={JSON.stringify(item)} />
-         {<FormModal table="Users" type="delete" id={item._id}/>}
+          <FormModal 
+            table="Users" 
+            type="update" 
+            data={JSON.stringify(item)} 
+            rolesOptions={rolesOptions} 
+            departmentsOptions={departmentsOptions} 
+            branchesOptions={branchesOptions} 
+          />
+          <FormModal table="Users" type="delete" id={item._id} />
         </div>
       </td>
     </tr>
@@ -69,7 +84,13 @@ console.log('====================================');
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
               <Image src={'/sort.png'} alt='Sort' width={14} height={14} />
             </button>            
-            <FormModal table="Users" type="create" />
+            <FormModal 
+              table="Users" 
+              type="create" 
+              rolesOptions={rolesOptions} 
+              departmentsOptions={departmentsOptions} 
+              branchesOptions={branchesOptions} 
+            />
           </div>
         </div>
       </div>

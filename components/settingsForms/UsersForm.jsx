@@ -116,6 +116,13 @@ const UsersForm = ({ type,
           error={errors.joining_date}
           type="date"
         />
+        <InputField
+          label="User Code"
+          name="user_code"
+          defaultValue={data?.user_code}
+          register={register}
+          error={errors.user_code}          
+        />
       </div>
 
       {/* Address Section */}
