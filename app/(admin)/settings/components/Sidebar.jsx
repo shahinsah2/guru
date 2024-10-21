@@ -51,6 +51,16 @@ export default function Sidebar() {
             Branch
           </span>
         </Link>
+        <Link href="/settings/tax_lists">
+          <span
+            className={`cursor-pointer px-4 py-2 text-lg font-medium ${
+              activeTab === 'TaxList' ? 'bg-indigo-100' : 'hover:bg-gray-200'
+            }`}
+            onClick={() => setActiveTab('TaxList')}
+          >
+            Tax Lists
+          </span>
+        </Link>
       </nav>
     </aside>
   );
