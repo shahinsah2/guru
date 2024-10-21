@@ -3,9 +3,9 @@ import { getUserPermissions } from '@/actions/getUserPermissions';
 import { getUsers } from '@/actions/dataFetchActions'; 
 import Table from '@/components/Table';
 import Image from 'next/image';
-import Link from 'next/link';
 import TableSearch from '@/components/TableSearch';
 import Pagination from '@/components/Pagination';
+import FormModal from '@/components/settingsForms/FormModal';
 
 const columns = [
   { header: 'Login ID', accessor: 'login_id', className: 'hidden md:table-cell' },
@@ -24,6 +24,7 @@ export default async function UserPage() {
   // Fetch the data using server actions
   const users = await getUsers();
 
+  
   // Log users with populated fields more clearly
 console.log('====================================');
 console.log('Populated Users:', JSON.stringify(users, null, 2));
@@ -47,14 +48,8 @@ console.log('====================================');
       <td className='hidden lg:table-cell'>{item.active_status ? 'Active' : 'Inactive'}</td>
       <td>
         <div className='flex items-center gap-2'>
-          <Link href={`/users/${item._id}`}>
-            <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky'>
-              <Image src={'/update.png'} alt='Update' width={16} height={16} className='bg-blue-500'/>
-            </button>
-          </Link>
-          <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple'>
-            <Image src={'/delete.png'} alt='Delete' width={16} height={16}/>
-          </button>
+          <FormModal table="Users" type="update" data={JSON.stringify(item)} />
+         {<FormModal table="Users" type="delete" id={item._id}/>}
         </div>
       </td>
     </tr>
@@ -73,10 +68,8 @@ console.log('====================================');
             </button>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
               <Image src={'/sort.png'} alt='Sort' width={14} height={14} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
-              <Image src={'/create.png'} alt='Create' width={14} height={14} />
-            </button>
+            </button>            
+            <FormModal table="Users" type="create" />
           </div>
         </div>
       </div>
