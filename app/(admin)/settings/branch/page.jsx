@@ -1,10 +1,9 @@
-// @/app/(admin)/settings/branch/page.jsx
 import { getAllBranches } from '@/actions/branchActions';
-import DataTable from '@/components/DataTable'; // Import the DataTable component
 import Image from 'next/image';
 import Link from 'next/link';
 import TableSearch from '@/components/TableSearch';
 import Pagination from '@/components/Pagination';
+import Table from '@/components/Table';
 
 // Define the columns for the branch table
 const columns = [
@@ -26,24 +25,35 @@ export default async function BranchPage() {
   console.log('Populated Branches:', JSON.stringify(branches, null, 2));
   console.log('====================================');
 
-  // Render actions for the row
-  const renderActions = (item) => (
-    <div className='flex items-center gap-2'>
-      <Link href={`/branches/${item._id}`}>
-        <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky'>
-          <Image src={'/update.png'} alt='Update' width={16} height={16} />
-        </button>
-      </Link>
-      <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple'>
-        <Image src={'/delete.png'} alt='Delete' width={16} height={16} />
-      </button>
-    </div>
+  // Render each row of the table
+  const renderRow = (item) => (
+    <tr key={item._id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
+      <td className='flex items-center p-1 gap-3'>
+        <h3 className='font-semibold'>{item.branch_name}</h3>
+      </td>
+      <td>{item.address.pincode}</td>
+      <td>{item.address.country}</td>
+      <td>{item.address.state}</td>
+      <td>{item.address.city}</td>
+      <td>
+        <div className='flex items-center gap-2'>
+          <Link href={`/branches/${item._id}`}>
+            <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky'>
+              <Image src={'/update.png'} alt='Update' width={16} height={16} />
+            </button>
+          </Link>
+          <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple'>
+            <Image src={'/delete.png'} alt='Delete' width={16} height={16} />
+          </button>
+        </div>
+      </td>
+    </tr>
   );
 
   // Prepare data for DataTable
   const dataWithActions = branches.map(item => ({
     ...item,
-    action: renderActions(item), // Add action buttons to data
+    action: renderRow(item), // Add action buttons to data
   }));
 
   return (
@@ -67,9 +77,9 @@ export default async function BranchPage() {
         </div>
       </div>
       {/* List */}
-      <DataTable columns={columns} data={dataWithActions} />
+      <Table columns={columns} renderRow={renderRow} data={dataWithActions} />
       {/* Pagination */}
-      <Pagination />
+      <Pagination page={1} count={branches.length} />
     </div>
   );
 }

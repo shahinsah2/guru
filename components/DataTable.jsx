@@ -9,7 +9,7 @@ import {
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-export function DataTable({ columns, data }) {
+function DataTable({ columns, data }) {
   const table = useReactTable({
     data,
     columns,
@@ -57,3 +57,5 @@ export function DataTable({ columns, data }) {
     </div>
   );
 }
+
+export default DataTable;
