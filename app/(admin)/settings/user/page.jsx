@@ -10,22 +10,21 @@ import TableSearch from '@/components/TableSearch';
 import Pagination from '@/components/Pagination';
 import FormModal from '@/components/settingsForms/FormModal';
 
-const columns = [
-  { header: 'Login ID', accessor: 'login_id', className: 'hidden md:table-cell' },
-  { header: 'First Name', accessor: 'first_name' },
-  { header: 'Email', accessor: 'emailid', className: 'hidden md:table-cell' },
-  { header: 'Roles', accessor: 'roles', className: 'hidden md:table-cell' },
-  { header: 'Departments', accessor: 'departments', className: 'hidden lg:table-cell' },
-  { header: 'Status', accessor: 'active_status', className: 'hidden lg:table-cell' },
-  { header: 'Actions', accessor: 'action' },
-];
+const ITEM_PER_PAGE = 5; // Number of items per page
 
-export default async function UserPage() {
+// Function to get the total user count
+const getUsersCount = async () => {
+  const allUsers = await getUsers(); // Fetch all users
+  return allUsers.length; // Return the total number of users
+};
+
+export default async function UserPage({ searchParams }) {
+  // Extract the 'page' query parameter
+  const { page } = searchParams;
+  const currentPage = page ? parseInt(page) : 1;
+
   // Fetch user permissions on the server
   const userPermissions = await getUserPermissions();
-
-  // Fetch the users data using server actions
-  const users = await getUsers();
 
   // Fetch roles, departments, and branches using server actions
   const [rolesOptions, departmentsOptions, branchesOptions] = await Promise.all([
@@ -34,10 +33,22 @@ export default async function UserPage() {
     getAllBranches(),
   ]);
 
-  // Log users with populated fields more clearly
-  console.log('====================================');
-  console.log('Populated Users:', JSON.stringify(users, null, 2));
-  console.log('====================================');
+  // Fetch the users data with pagination
+  const [users, totalUsers] = await Promise.all([
+    getUsers({ skip: (currentPage - 1) * ITEM_PER_PAGE, limit: ITEM_PER_PAGE }),
+    getUsersCount(),
+  ]);
+
+  // Define the columns for the table
+  const columns = [
+    { header: 'Login ID', accessor: 'login_id', className: 'hidden md:table-cell' },
+    { header: 'First Name', accessor: 'first_name' },
+    { header: 'Email', accessor: 'emailid', className: 'hidden md:table-cell' },
+    { header: 'Roles', accessor: 'roles', className: 'hidden md:table-cell' },
+    { header: 'Departments', accessor: 'departments', className: 'hidden lg:table-cell' },
+    { header: 'Status', accessor: 'active_status', className: 'hidden lg:table-cell' },
+    { header: 'Actions', accessor: 'action' },
+  ];
 
   // Render each row of the table
   const renderRow = (item) => (
@@ -97,7 +108,7 @@ export default async function UserPage() {
       {/* List */}
       <Table columns={columns} renderRow={renderRow} data={users} userPermissions={userPermissions} />
       {/* Pagination */}
-      <Pagination />
+      <Pagination page={currentPage} count={totalUsers} />
     </div>
   );
 }
