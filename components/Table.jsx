@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 
-const Table = ({columns, renderRow, data}) => {
+const TableS = ({columns, renderRow, data}) => {
     
     
   return (
@@ -18,4 +18,4 @@ const Table = ({columns, renderRow, data}) => {
   )
 }
 
-export default Table
+export default TableS
