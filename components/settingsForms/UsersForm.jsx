@@ -1,12 +1,18 @@
 // @/components/settingsForms/UsersForm.jsx
  
-"use client";
+
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "./InputField";
 import Image from "next/image";
+import { createUser } from "@/actions/userActions";
+import { useEffect, useState } from "react"; // Import useState
+import { useFormState } from "react-dom";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+
 
 // Define the schema for form validation
 const schema = z.object({
@@ -39,7 +45,10 @@ const UsersForm = ({ type,
     rolesOptions = [],
     departmentsOptions = [],
     branchesOptions = [],
-    teamHeadOptions = [], }) => {
+    teamHeadOptions = [],
+    setOpen, }) => {
+  const [error, setError] = useState(null);
+
   const {
     register,
     handleSubmit,
@@ -55,9 +64,27 @@ const UsersForm = ({ type,
     } : {},
   });
 
+  const [state, formAction] = useFormState(createUser,    
+    {
+      success: false,
+      error: false,
+    }
+  );
+
   const onSubmit = handleSubmit((formData) => {
-    console.log("Submitted Data: ", formData);
+     console.log(formData);
+      formAction(formData);      
   });
+
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   if (state.success) {
+  //     toast(`User has been ${type === "create" ? "created" : "updated"}!`);
+  //     setOpen(false);
+  //     router.refresh();
+  //   }
+  // }, [state, router, type, setOpen]);
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -224,7 +251,7 @@ const UsersForm = ({ type,
       </div>
 
       {/* Team Head Selection */}
-      <div className="flex flex-col gap-2 w-full md:w-1/4">
+      {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
         <label className="text-xs text-gray-500">Team Head</label>
         <select
           className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
@@ -238,8 +265,10 @@ const UsersForm = ({ type,
           ))}
         </select>
         {errors.team_head?.message && <p className="text-xs text-red-400">{errors.team_head.message}</p>}
-      </div>
-
+      </div> */}
+      {/* {state.error && (
+        <span className="text-red-500">Something went wrong!</span>
+      )} */}
       <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>

@@ -5,15 +5,17 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { useState } from 'react';
 
+
 const UsersForm = dynamic(() => import("@/components/settingsForms/UsersForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
 const forms = {
-  Users: (type, data, rolesOptions, departmentsOptions, branchesOptions) => (
+  Users: (type,data,rolesOptions, departmentsOptions, branchesOptions,setOpen) => (
     <UsersForm 
-      type={type} 
-      data={data} 
+      type={type}      
+      data={data}
+      setOpen={setOpen}
       rolesOptions={rolesOptions} 
       departmentsOptions={departmentsOptions} 
       branchesOptions={branchesOptions} 
