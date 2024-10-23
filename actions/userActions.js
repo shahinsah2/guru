@@ -17,58 +17,68 @@ export const createUser = async (userData) => {
   console.log(userData);
   console.log('==userData==server actions==');
 
-  // // Validate the email format before proceeding
-  // if (!emailRegex.test(userData.emailid)) {
-  //   return { success: false, error: true, message: 'Invalid email format. Please enter a valid email address.' };
-  // }
+  // Validate the email format before proceeding
+  if (!emailRegex.test(userData.emailid)) {
+    return { success: false, error: true, message: 'Invalid email format. Please enter a valid email address.' };
+  }
 
-  // try {
-  //   // Proceed with creating the user in Clerk if no existing user is found
-  //   const clerkUser = await clerkClient.users.createUser({
-  //     emailAddress: [userData.emailid],
-  //     password: userData.password,
-  //     username: userData.login_id,
-  //   });
+  try {
+    // Check if a user with the given email already exists in Clerk
+    const existingUsers = await clerkClient.users.getUserList({
+      emailAddress: [userData.emailid],
+    });
 
-  //   console.log('==clerkUser=====');
-  //   console.log(clerkUser);
-  //   console.log('==clerkUser====');
+    if (existingUsers.length > 0) {
+      return { success: false, error: true, message: 'A user with this email already exists.' };
+    }
 
-  //   // Add Clerk ID to userData
-  //   userData.clerkid = clerkUser.id;
+    // Proceed with creating the user in Clerk if no existing user is found
+    const clerkUser = await clerkClient.users.createUser({
+      emailAddress: [userData.emailid],
+      password: userData.password,
+      username: userData.login_id,
+    });
 
-  //   // Create a new user in MongoDB
-  //   const newUser = new User({
-  //     ...userData,
-  //     roles: userData.roles.map(roleId => new mongoose.Types.ObjectId(roleId)),
-  //     departments: userData.departments.map(deptId => new mongoose.Types.ObjectId(deptId)),
-  //     branches: userData.branches.map(branchId => new mongoose.Types.ObjectId(branchId)),
-  //   });
+    console.log('==clerkUser=====');
+    console.log(clerkUser);
+    console.log('==clerkUser====');
 
-  //   const savedUser = await newUser.save();
+    // Add Clerk ID to userData
+    userData.clerkid = clerkUser.id;
 
-  //   // Update Clerk's public metadata
-  //   await clerkClient.users.updateUserMetadata(clerkUser.id, {
-  //     publicMetadata: {
-  //       roles: userData.roles,
-  //       dbid: savedUser._id.toString(),
-  //     },
-  //   });
+    // Create a new user in MongoDB
+    const newUser = new User({
+      ...userData,
+      roles: userData.roles.map(roleId => new mongoose.Types.ObjectId(roleId)),
+      departments: userData.departments.map(deptId => new mongoose.Types.ObjectId(deptId)),
+      branches: userData.branches.map(branchId => new mongoose.Types.ObjectId(branchId)),
+    });
 
-  //   // Return only plain data
-  //   return {
-  //     _id: savedUser._id.toString(),
-  //     firstName: savedUser.first_name,
-  //     lastName: savedUser.last_name,
-  //     email: savedUser.emailid,
-  //     clerkId: savedUser.clerkid,
-  //     success: true,
-  //     error: false,
-  //   };
-  // } catch (error) {
-  //   // console.log(error);
-  //   // return { success: false, error: true, message: error.message || 'Failed to create user. Please try again.' };
-  // }
+    const savedUser = await newUser.save();
+
+    // Update Clerk's public metadata
+    await clerkClient.users.updateUserMetadata(clerkUser.id, {
+      publicMetadata: {
+        roles: userData.roles,
+        dbid: savedUser._id.toString(),
+      },
+    });
+
+    // Return only plain data
+    return {
+      _id: savedUser._id.toString(),
+      firstName: savedUser.first_name,
+      lastName: savedUser.last_name,
+      email: savedUser.emailid,
+      clerkId: savedUser.clerkid,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    console.log(error);
+    // Provide a user-friendly error message
+    return { success: false, error: true, message: error.message || 'Failed to create user. Please try again.' };
+  }
 };
 
 // Update an existing user

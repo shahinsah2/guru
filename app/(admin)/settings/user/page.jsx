@@ -39,6 +39,8 @@ export default async function UserPage({ searchParams }) {
     getUsersCount(),
   ]);
 
+  console.log(users)
+
   // Define the columns for the table
   const columns = [
     { header: 'Login ID', accessor: 'login_id', className: 'hidden md:table-cell' },

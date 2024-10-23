@@ -13,7 +13,7 @@ const UsersForm = dynamic(() => import("@/components/settingsForms/UsersForm"), 
 const forms = {
   Users: (type,data,rolesOptions, departmentsOptions, branchesOptions,setOpen) => (
     <UsersForm 
-      type={type}      
+      type={type}
       data={data}
       setOpen={setOpen}
       rolesOptions={rolesOptions} 
@@ -47,7 +47,7 @@ const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOption
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
-      forms[table](type, parsedData, rolesOptions, departmentsOptions, branchesOptions)
+      forms[table](type, parsedData, rolesOptions, departmentsOptions, branchesOptions,setOpen)
     ) : (
       "Form not found!"
     );
