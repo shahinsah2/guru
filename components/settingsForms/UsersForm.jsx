@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "./InputField";
-import { createUser } from "@/actions/userActions";
-import { useEffect, useState } from "react"; // Import useState
+import { createUser, updateUser } from "@/actions/userActions"; // Import updateUser
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -73,14 +73,18 @@ const UsersForm = ({
     try {
       console.log("Form Data:", formData); // Log the form data
 
-      const result = await createUser(formData); // Call the server action directly
+      // Determine whether to create or update
+      const result =
+        type === "create"
+          ? await createUser(formData) // Call createUser if type is "create"
+          : await updateUser(data._id, formData); // Call updateUser if type is "update"
 
       if (result.success) {
         toast(`User ${type === "create" ? "created" : "updated"} successfully!`);
         setOpen(false); // Close the modal
         router.refresh(); // Refresh the page or data
       } else {
-        setError(result.message || "Failed to create user. Please try again.");
+        setError(result.message || "Failed to process the request. Please try again.");
       }
     } catch (err) {
       setError(err.message || "An unexpected error occurred.");

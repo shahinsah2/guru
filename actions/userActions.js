@@ -85,20 +85,35 @@ export const createUser = async (userData) => {
 export const updateUser = async (id, updateData) => {
   await connectToDatabase();
 
-  const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true })
-    .populate('roles departments branches');
+  try {
+    // Find and update the user in the database
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('roles departments branches');
 
-  // Update Clerk metadata if Clerk ID is available
-  if (updatedUser.clerkid) {
-    await clerkClient.users.updateUserMetadata(updatedUser.clerkid, {
-      publicMetadata: {
-        roles: updateData.roles || [],
-        dbid: updatedUser._id.toString(),
-      },
-    });
+    // Update Clerk metadata if Clerk ID is available
+    if (updatedUser.clerkid) {
+      await clerkClient.users.updateUserMetadata(updatedUser.clerkid, {
+        publicMetadata: {
+          roles: updateData.roles || [],
+          dbid: updatedUser._id.toString(),
+        },
+      });
+    }
+
+    // Return a plain object instead of the Mongoose document
+    return {
+      _id: updatedUser._id.toString(),
+      firstName: updatedUser.first_name,
+      lastName: updatedUser.last_name,
+      email: updatedUser.emailid,
+      clerkId: updatedUser.clerkid,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    // Handle the error and return a plain object
+    return { success: false, error: true, message: error.message || 'Failed to update user. Please try again.' };
   }
-
-  return updatedUser;
 };
 
 // Delete a user
