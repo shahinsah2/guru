@@ -4,7 +4,7 @@
 
 import { useRouter } from "next/navigation";
 
-const ITEM_PER_PAGE = 5; // Number of items per page
+const ITEM_PER_PAGE = 10; // Number of items per page
 
 const Pagination = ({ page, count }) => {
   const router = useRouter();

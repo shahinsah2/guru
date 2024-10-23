@@ -120,15 +120,23 @@ export const updateUser = async (id, updateData) => {
 export const deleteUser = async (id) => {
   await connectToDatabase();
 
-  const deletedUser = await User.findByIdAndDelete(id);
-  if (!deletedUser) {
-    throw new Error('User not found');
-  }
+  try {
+    // Find and delete the user in the database
+    const deletedUser = await User.findByIdAndDelete(id);
+    if (!deletedUser) {
+      // Return a plain object indicating failure
+      return { success: false, error: true, message: 'User not found' };
+    }
 
-  // Remove user from Clerk as well
-  if (deletedUser.clerkid) {
-    await clerkClient.users.deleteUser(deletedUser.clerkid);
-  }
+    // Remove the user from Clerk if Clerk ID is available
+    if (deletedUser.clerkid) {
+      await clerkClient.users.deleteUser(deletedUser.clerkid);
+    }
 
-  return deletedUser;
+    // Return a plain object indicating success
+    return { success: true, error: false, message: 'User deleted successfully' };
+  } catch (error) {
+    // Handle the error and return a plain object
+    return { success: false, error: true, message: error.message || 'Failed to delete user. Please try again.' };
+  }
 };
