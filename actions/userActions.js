@@ -75,9 +75,9 @@ export const createUser = async (userData) => {
       error: false,
     };
   } catch (error) {
-    console.log(error);
+    console.log(error.errors);
     // Provide a user-friendly error message
-    return { success: false, error: true, message: error.message || 'Failed to create user. Please try again.' };
+    return { success: false, error: true, message: error?.errors[0]?.message || 'Failed to create user. Please try again.' };
   }
 };
 
@@ -117,12 +117,28 @@ export const updateUser = async (id, updateData) => {
 };
 
 // Delete a user
-export const deleteUser = async (id) => {
+export const deleteUser = async (currentState, formData) => {
   await connectToDatabase();
+
+  console.log('===server actions deleteUser=====');
+  console.log(currentState);
+  console.log("==========");
+  console.log(formData);
+  console.log('===server actions deleteUser=====');
+
+  const id = formData.get("id");
+  // const id = parseInt(sid);
+
+  console.log(id);
+  
 
   try {
     // Find and delete the user in the database
     const deletedUser = await User.findByIdAndDelete(id);
+
+    console.log(deletedUser);
+    
+
     if (!deletedUser) {
       // Return a plain object indicating failure
       return { success: false, error: true, message: 'User not found' };

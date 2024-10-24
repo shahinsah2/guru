@@ -1,6 +1,6 @@
 // app/(admin)/settings/user/page.jsx (Server Component)
 import { getUserPermissions } from '@/actions/getUserPermissions';
-import { getUsers } from '@/actions/dataFetchActions';
+import { getUsers,getUsersCount } from '@/actions/dataFetchActions';
 import { getAllRoles } from '@/actions/roleActions';
 import { getAllDepartments } from '@/actions/departmentActions';
 import { getAllBranches } from '@/actions/branchActions';
@@ -9,14 +9,8 @@ import Image from 'next/image';
 import TableSearch from '@/components/TableSearch';
 import Pagination from '@/components/Pagination';
 import FormModal from '@/components/settingsForms/FormModal';
+import { ITEM_PER_PAGE } from '@/lib/utils';
 
-const ITEM_PER_PAGE = 10; // Number of items per page
-
-// Function to get the total user count
-const getUsersCount = async () => {
-  const allUsers = await getUsers(); // Fetch all users
-  return allUsers.length; // Return the total number of users
-};
 
 export default async function UserPage({ searchParams }) {
   // Extract the 'page' query parameter
@@ -39,7 +33,7 @@ export default async function UserPage({ searchParams }) {
     getUsersCount(),
   ]);
 
-  console.log(users)
+  console.log(totalUsers)
 
   // Define the columns for the table
   const columns = [
@@ -77,7 +71,7 @@ export default async function UserPage({ searchParams }) {
             departmentsOptions={departmentsOptions} 
             branchesOptions={branchesOptions} 
           />
-          <FormModal table="Users" type="delete" id={item._id} />
+          <FormModal table="Users" type="delete" id={item._id.toString()} />
         </div>
       </td>
     </tr>

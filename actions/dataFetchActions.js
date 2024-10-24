@@ -1,4 +1,7 @@
 // @/actions/dataFetchActions.js
+
+"use server";
+
 import { connectToDatabase } from '@/lib/database';
 import User from '@/lib/database/models/User.model';
 import Department from '@/lib/database/models/Department.model';

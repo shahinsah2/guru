@@ -1,9 +1,17 @@
 // @/components/settingsForms/FormModal.jsx
 
 'use client'
+import { deleteUser } from '@/actions/userActions';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
+import { toast } from 'react-toastify';
+
+const deleteActionMap = {
+  Users: deleteUser,
+}
 
 
 const UsersForm = dynamic(() => import("@/components/settingsForms/UsersForm"), {
@@ -37,8 +45,30 @@ const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOption
   const [open, setOpen] = useState(false);
 
   const Form = () => {
+
+    const [state, formAction] = useFormState(deleteActionMap[table],{success: false, error:false});
+
+    const router = useRouter();
+
+    useEffect(() => {
+
+      console.log('==formmodal useeffect state====');
+      console.log(state);
+      console.log('==formmodal useeffect state=====');
+
+      if(state.success) {
+
+        toast('User has been deleted');
+        setOpen(false);
+        router.refresh();
+      }
+    },[state])
+
+
+
     return type === "delete" && id ? (
-      <form action="" className="p-4 flex flex-col gap-4">
+      <form action={formAction} className="p-4 flex flex-col gap-4">
+        <input type="text | number" name="id" value={id} hidden />
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table} data?
         </span>
