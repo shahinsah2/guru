@@ -10,7 +10,7 @@ import TableSearch from '@/components/TableSearch';
 import Pagination from '@/components/Pagination';
 import FormModal from '@/components/settingsForms/FormModal';
 
-const ITEM_PER_PAGE = 5; // Number of items per page
+const ITEM_PER_PAGE = 10; // Number of items per page
 
 // Function to get the total user count
 const getUsersCount = async () => {
