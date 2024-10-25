@@ -18,6 +18,10 @@ export default async function RolesPage({ searchParams }) {
     getAllDepartments(),
   ]);
 
+  console.log('====roles=====');
+  console.log(roles);
+  console.log('====roles=====');
+
   const columns = [
     { header: "Role Name", accessor: "role_name" },
     { header: "Department", accessor: "department.department_name" },
@@ -27,7 +31,7 @@ export default async function RolesPage({ searchParams }) {
   const renderRow = (item) => (  
     <tr key={item._id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight">
       <td>{item.role_name}</td>
-      <td>{item.department?.department_name || "No Department"}</td>
+      <td>{item.department || "No Department"}</td>
       <td>
         <div className="flex items-center gap-2">
           <FormModal table="Roles" type="update" data={JSON.stringify(item)} departmentsOptions={departmentsOptions} />

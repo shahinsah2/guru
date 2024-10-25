@@ -22,7 +22,9 @@ const RolesForm = ({ type, data, departmentsOptions = [],setOpen }) => {
     defaultValues: data ? {
       ...data,
       module_access: data.module_access || [],
-      module_name: data.module_access?.[0]?.module_name || "", // Set default module_name
+      module_name: data.module_access?.[0]?.module_name || "", 
+      department: departmentsOptions.find(dept => dept.department_name === data.department)?._id || "",
+
     } : {
       role_name: "",
       department: "",
