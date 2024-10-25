@@ -1,72 +1,77 @@
 // @/actions/roleActions.js
 
+"use server";
+
 import { connectToDatabase } from '@/lib/database';
 import Role from '@/lib/database/models/Role.model';
-import Department from '@/lib/database/models/Department.model';
-import mongoose from 'mongoose';
-
-// Helper function to convert department name to ObjectId
-const getDepartmentObjectId = async (departmentName) => {
-  const department = await Department.findOne({ department_name: departmentName });
-  if (department) {
-    return new mongoose.Types.ObjectId(department._id);
-  }
-  throw new Error(`Department not found: ${departmentName}`);
-};
 
 // Create a new role
 export const createRole = async (roleData) => {
   await connectToDatabase();
+  try {
+    const newRole = new Role(roleData);
+    const savedRole = await newRole.save();
 
-  // Convert department name to ObjectId
-  const departmentId = await getDepartmentObjectId(roleData.department);
-
-  const newRole = new Role({
-    ...roleData,
-    department: departmentId,
-  });
-  return await newRole.save();
-};
-
-// Retrieve a role by ID
-export const getRoleById = async (id) => {
-  await connectToDatabase();
-  const role = await Role.findById(id).populate('department');
-  if (!role) {
-    throw new Error('Role not found');
+    return {
+      _id: savedRole._id.toString(),
+      roleName: savedRole.role_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create role.' };
   }
-  return role;
-};
-
-// Retrieve all roles
-export const getAllRoles = async () => {
-  await connectToDatabase();
-  // Populate the department to get the department name
-  return await Role.find({}).populate('department', 'department_name').lean();
 };
 
 // Update an existing role
 export const updateRole = async (id, updateData) => {
   await connectToDatabase();
-
-  // Convert department name to ObjectId if updating department
-  if (updateData.department) {
-    updateData.department = await getDepartmentObjectId(updateData.department);
+  try {
+    const updatedRole = await Role.findByIdAndUpdate(id, updateData, { new: true });
+    return {
+      _id: updatedRole._id.toString(),
+      roleName: updatedRole.role_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update role.' };
   }
-
-  const updatedRole = await Role.findByIdAndUpdate(id, updateData, { new: true }).populate('department');
-  if (!updatedRole) {
-    throw new Error('Role not found');
-  }
-  return updatedRole;
 };
 
 // Delete a role
-export const deleteRole = async (id) => {
+export const deleteRole = async (currentState, formData) => {
+  const id = formData.get("id");
   await connectToDatabase();
-  const deletedRole = await Role.findByIdAndDelete(id);
-  if (!deletedRole) {
-    throw new Error('Role not found');
+  try {
+    const deletedRole = await Role.findByIdAndDelete(id);
+    if (!deletedRole) {
+      return { success: false, error: true, message: 'Role not found' };
+    }
+    return { success: true, error: false, message: 'Role deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete role.' };
   }
-  return deletedRole;
+};
+
+// Get roles with optional pagination
+export const getRoles = async ({ skip = 0, limit = 10 } = {}) => {
+  await connectToDatabase();
+  const roles = await Role.find({})
+    .skip(skip)
+    .limit(limit)
+    .populate('department')
+    .lean();
+  return roles.map(role => ({
+    ...role,
+    _id: role._id.toString(),
+    department: role.department ? role.department.department_name : 'No Department', // Handle null case
+  }));
+};
+
+
+// Get the total number of roles
+export const getRolesCount = async () => {
+  await connectToDatabase();
+  return await Role.countDocuments();
 };

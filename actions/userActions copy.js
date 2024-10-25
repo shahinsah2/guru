@@ -6,18 +6,32 @@ import User from '@/lib/database/models/User.model';
 import { clerkClient } from '@clerk/nextjs/server';
 import mongoose from 'mongoose';
 
+// Regular expression for validating email format
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Create a new user
-export const createUser = async (userData) => {
+export const createUser = async (currentState, userData) => {
   await connectToDatabase();
 
   console.log('==userData==server actions===');
   console.log(userData);
   console.log('==userData==server actions==');
 
-  
+  // Validate the email format before proceeding
+  if (!emailRegex.test(userData.emailid)) {
+    return { success: false, error: true, message: 'Invalid email format. Please enter a valid email address.' };
+  }
+
   try {
-   
+    // Check if a user with the given email already exists in Clerk
+    const existingUsers = await clerkClient.users.getUserList({
+      emailAddress: [userData.emailid],
+    });
+
+    if (existingUsers.length > 0) {
+      return { success: false, error: true, message: 'A user with this email already exists.' };
+    }
+
     // Proceed with creating the user in Clerk if no existing user is found
     const clerkUser = await clerkClient.users.createUser({
       emailAddress: [userData.emailid],

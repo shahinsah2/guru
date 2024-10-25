@@ -1,9 +1,9 @@
 // app/(admin)/settings/user/page.jsx (Server Component)
 import { getUserPermissions } from '@/actions/getUserPermissions';
-import { getUsers,getUsersCount, getUsersByLoginId } from '@/actions/dataFetchActions';
-import { getAllRoles } from '@/actions/roleActions';
-import { getAllDepartments } from '@/actions/departmentActions';
-import { getAllBranches } from '@/actions/branchActions';
+import { getUsers,getUsersCount, getUsersByLoginId,getAllRoles,getAllDepartments,getAllBranches } from '@/actions/dataFetchActions';
+// import { getAllRoles } from '@/actions/roleActions';
+// import { getAllDepartments } from '@/actions/departmentActions';
+// import { getAllBranches } from '@/actions/branchActions';
 import Table from '@/components/Table';
 import Image from 'next/image';
 import TableSearch from '@/components/TableSearch';
@@ -41,8 +41,12 @@ export default async function UserPage({ searchParams }) {
     getUsersCount(),
   ]);
 
-  console.log(logonId)
-  console.log(logonId.roles[1].module_access)
+    // Log the data to see the structure
+    console.log('Logon ID:', logonId);
+    console.log('Users:', users);
+    console.log('Roles:', rolesOptions);
+    console.log('Departments:', departmentsOptions);
+    console.log('Branches:', branchesOptions);
 
   // Define the columns for the table
   const columns = [

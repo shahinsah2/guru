@@ -1,6 +1,7 @@
 // @/components/settingsForms/FormModal.jsx
 
 'use client'
+import { deleteRole } from '@/actions/roleActions';
 import { deleteUser } from '@/actions/userActions';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
@@ -11,10 +12,14 @@ import { toast } from 'react-toastify';
 
 const deleteActionMap = {
   Users: deleteUser,
+  Roles: deleteRole
 }
 
 
 const UsersForm = dynamic(() => import("@/components/settingsForms/UsersForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const RolesForm = dynamic(() => import("@/components/settingsForms/RolesForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -29,6 +34,8 @@ const forms = {
       branchesOptions={branchesOptions} 
     />
   ),
+  Roles: (type, data, setOpen, departmentsOptions) => <RolesForm type={type} data={data} setOpen={setOpen} departmentsOptions={departmentsOptions} />
+
 };
 
 const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOptions = [], branchesOptions = [] }) => {
@@ -58,7 +65,7 @@ const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOption
 
       if(state.success) {
 
-        toast('User has been deleted');
+        toast('item has been deleted');
         setOpen(false);
         router.refresh();
       }

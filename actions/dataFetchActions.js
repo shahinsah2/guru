@@ -8,26 +8,63 @@ import Department from '@/lib/database/models/Department.model';
 import Role from '@/lib/database/models/Role.model';
 import Branch from '@/lib/database/models/Branch.model';
 
-// Fetch users by login_id with populated fields
-export const getUsersByLoginId = async (loginId) => {
-  await connectToDatabase();
-  return await User.findOne({ login_id: loginId })
-    .populate('roles')
-    .populate('departments')
-    .populate('branches')
-    .lean();
-};
-
-// Fetch users with optional pagination
 export const getUsers = async ({ skip = 0, limit = 10 } = {}) => {
   await connectToDatabase();
-  return await User.find({})
+  const users = await User.find({})
     .skip(skip)
     .limit(limit)
     .populate('roles')
     .populate('departments')
     .populate('branches')
-    .lean();
+    .lean(); // Convert to plain JavaScript objects
+
+  // Convert ObjectId fields to string
+  return users.map(user => ({
+    ...user,
+    _id: user._id.toString(),
+    roles: user.roles.map(role => ({
+      ...role,
+      _id: role._id.toString(),
+    })),
+    departments: user.departments.map(dept => ({
+      ...dept,
+      _id: dept._id.toString(),
+    })),
+    branches: user.branches.map(branch => ({
+      ...branch,
+      _id: branch._id.toString(),
+    })),
+  }));
+};
+
+export const getUsersByLoginId = async (loginId) => {
+  await connectToDatabase();
+  const user = await User.findOne({ login_id: loginId })
+    .populate('roles')
+    .populate('departments')
+    .populate('branches')
+    .lean(); // Convert to plain JavaScript object
+
+  // Convert ObjectId fields to string
+  if (user) {
+    return {
+      ...user,
+      _id: user._id.toString(),
+      roles: user.roles.map(role => ({
+        ...role,
+        _id: role._id.toString(),
+      })),
+      departments: user.departments.map(dept => ({
+        ...dept,
+        _id: dept._id.toString(),
+      })),
+      branches: user.branches.map(branch => ({
+        ...branch,
+        _id: branch._id.toString(),
+      })),
+    };
+  }
+  return null;
 };
 
 // Fetch the total number of users
@@ -36,20 +73,29 @@ export const getUsersCount = async () => {
   return await User.countDocuments();
 };
 
-export const getDepartments = async () => {
-  "use server"; // Server action
+export const getAllRoles = async () => {
   await connectToDatabase();
-  return await Department.find().lean();
+  const roles = await Role.find().lean();
+  return roles.map(role => ({
+    ...role,
+    _id: role._id.toString(),
+  }));
 };
 
-export const getRoles = async () => {
-  "use server"; // Server action
+export const getAllDepartments = async () => {
   await connectToDatabase();
-  return await Role.find().populate('department').lean();
+  const departments = await Department.find().lean();
+  return departments.map(dept => ({
+    ...dept,
+    _id: dept._id.toString(),
+  }));
 };
 
-export const getBranches = async () => {
-  "use server"; // Server action
+export const getAllBranches = async () => {
   await connectToDatabase();
-  return await Branch.find().lean();
+  const branches = await Branch.find().lean();
+  return branches.map(branch => ({
+    ...branch,
+    _id: branch._id.toString(),
+  }));
 };

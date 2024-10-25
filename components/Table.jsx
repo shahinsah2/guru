@@ -1,4 +1,4 @@
-
+// @/components/Table.jsx
 
 
 const TableS = ({columns, renderRow, data}) => {
