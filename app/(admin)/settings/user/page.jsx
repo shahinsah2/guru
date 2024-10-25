@@ -1,6 +1,6 @@
 // app/(admin)/settings/user/page.jsx (Server Component)
 import { getUserPermissions } from '@/actions/getUserPermissions';
-import { getUsers,getUsersCount } from '@/actions/dataFetchActions';
+import { getUsers,getUsersCount, getUsersByLoginId } from '@/actions/dataFetchActions';
 import { getAllRoles } from '@/actions/roleActions';
 import { getAllDepartments } from '@/actions/departmentActions';
 import { getAllBranches } from '@/actions/branchActions';
@@ -10,12 +10,19 @@ import TableSearch from '@/components/TableSearch';
 import Pagination from '@/components/Pagination';
 import FormModal from '@/components/settingsForms/FormModal';
 import { ITEM_PER_PAGE } from '@/lib/utils';
+import { currentUser } from '@clerk/nextjs/server';
 
+const moduleName = "Users";
 
 export default async function UserPage({ searchParams }) {
   // Extract the 'page' query parameter
   const { page } = searchParams;
   const currentPage = page ? parseInt(page) : 1;
+
+  const user = await currentUser(); // Get the logged-in user
+
+  if (!user) return {};
+ 
 
   // Fetch user permissions on the server
   const userPermissions = await getUserPermissions();
@@ -28,12 +35,14 @@ export default async function UserPage({ searchParams }) {
   ]);
 
   // Fetch the users data with pagination
-  const [users, totalUsers] = await Promise.all([
+  const [logonId,users, totalUsers] = await Promise.all([
+    getUsersByLoginId(user.username),
     getUsers({ skip: (currentPage - 1) * ITEM_PER_PAGE, limit: ITEM_PER_PAGE }),
     getUsersCount(),
   ]);
 
-  console.log(totalUsers)
+  console.log(logonId)
+  console.log(logonId.roles[1].module_access)
 
   // Define the columns for the table
   const columns = [
@@ -102,7 +111,7 @@ export default async function UserPage({ searchParams }) {
         </div>
       </div>
       {/* List */}
-      <Table columns={columns} renderRow={renderRow} data={users} userPermissions={userPermissions} />
+      <Table columns={columns} renderRow={renderRow} data={users} />
       {/* Pagination */}
       <Pagination page={currentPage} count={totalUsers} />
     </div>
