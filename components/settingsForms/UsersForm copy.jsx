@@ -65,37 +65,36 @@ const UsersForm = ({
       : {},
   });
 
-
-  const [state, formAction] = useFormState(
-    type === "create" ? createUser : updateUser,
-    {
-      success: false,
-      error: false,
-      message : "",
-    }
-  );
-
-  const onSubmit = handleSubmit((formData) => {
-    setLoading(true);
-    try {
-      formAction({...formData, id: data?._id});
-    } catch (err) {
-      setError(err.message || "An unexpected error occurred.");
-    }
-  });
+ 
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (state.success) {
-      toast(`User ${type === "create" ? "created" : "updated"} successfully!`);
-      setOpen(false);
-      router.refresh();
-    } else if (state.error) {
-      setError(state.message); // Display error message from Clerk or server
-      setLoading(false);
+  const onSubmit = handleSubmit(async (formData) => {
+    setLoading(true); // Start loading
+    setError(null); // Clear previous errors
+
+    try {
+      console.log("Form Data:", formData); // Log the form data
+
+      // Determine whether to create or update
+      const result =
+        type === "create"
+          ? await createUser(formData) // Call createUser if type is "create"
+          : await updateUser(data._id, formData); // Call updateUser if type is "update"
+
+      if (result.success) {
+        toast(`User ${type === "create" ? "created" : "updated"} successfully!`);
+        setOpen(false); // Close the modal
+        router.refresh(); // Refresh the page or data
+      } else {
+        setError(result.message || "Failed to process the request. Please try again.");
+      }
+    } catch (err) {
+      setError(err.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false); // Stop loading
     }
-  }, [state, router, type, setOpen]);
+  });
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>

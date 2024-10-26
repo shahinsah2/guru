@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 
 
 // Create a new user
-export const createUser = async (userData) => {
+export const createUser = async (currentState, userData) => {
   await connectToDatabase();
 
   console.log('==userData==server actions===');
@@ -68,8 +68,16 @@ export const createUser = async (userData) => {
 };
 
 // Update an existing user
-export const updateUser = async (id, updateData) => {
+export const updateUser = async (currentState, updateData) => {
   await connectToDatabase();
+
+  const id = updateData.id;
+
+  console.log('==updateData==server actions===');
+  console.log(id);
+  console.log(updateData);
+  console.log('==updateData==server actions==');
+
 
   try {
     // Find and update the user in the database
