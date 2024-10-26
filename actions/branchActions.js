@@ -1,51 +1,77 @@
-// @/actions/branchActions.js
+//@/actions/branchActions.js
+
+"use server";
 
 import { connectToDatabase } from '@/lib/database';
 import Branch from '@/lib/database/models/Branch.model';
 
 // Create a new branch
-export const createBranch = async (branchData) => {
+export const createBranch = async (currentState, branchData) => {
   await connectToDatabase();
+  try {
+    const newBranch = new Branch(branchData);
+    const savedBranch = await newBranch.save();
 
-  const newBranch = new Branch({
-    ...branchData,
-  });
-  return await newBranch.save();
-};
-
-// Retrieve a branch by ID
-export const getBranchById = async (id) => {
-  await connectToDatabase();
-  const branch = await Branch.findById(id).lean(); // Convert to plain JavaScript object
-  if (!branch) {
-    throw new Error('Branch not found');
+    return {
+      _id: savedBranch._id.toString(),
+      branchName: savedBranch.branch_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create branch.' };
   }
-  return branch;
-};
-
-// Retrieve all branches
-export const getAllBranches = async () => {
-  await connectToDatabase();
-  return await Branch.find({}).lean(); // Convert to plain JavaScript objects
 };
 
 // Update an existing branch
-export const updateBranch = async (id, updateData) => {
+export const updateBranch = async (currentState, updateData) => {
   await connectToDatabase();
 
-  const updatedBranch = await Branch.findByIdAndUpdate(id, updateData, { new: true }).lean(); // Convert to plain JavaScript object
-  if (!updatedBranch) {
-    throw new Error('Branch not found');
+  const id = updateData.id;
+
+  try {
+    const updatedBranch = await Branch.findByIdAndUpdate(id, updateData, { new: true });
+    return {
+      _id: updatedBranch._id.toString(),
+      branchName: updatedBranch.branch_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update branch.' };
   }
-  return updatedBranch;
 };
 
 // Delete a branch
-export const deleteBranch = async (id) => {
+export const deleteBranch = async (currentState, formData) => {
+  const id = formData.get("id");
   await connectToDatabase();
-  const deletedBranch = await Branch.findByIdAndDelete(id).lean(); // Convert to plain JavaScript object
-  if (!deletedBranch) {
-    throw new Error('Branch not found');
+  try {
+    const deletedBranch = await Branch.findByIdAndDelete(id);
+    if (!deletedBranch) {
+      return { success: false, error: true, message: 'Branch not found' };
+    }
+    return { success: true, error: false, message: 'Branch deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete branch.' };
   }
-  return deletedBranch;
+};
+
+// Get branches with optional pagination
+export const getBranches = async ({ skip = 0, limit = 10 } = {}) => {
+  await connectToDatabase();
+  const branches = await Branch.find({})
+    .skip(skip)
+    .limit(limit)
+    .lean();
+  return branches.map(branch => ({
+    ...branch,
+    _id: branch._id.toString(),
+  }));
+};
+
+// Get the total number of branches
+export const getBranchesCount = async () => {
+  await connectToDatabase();
+  return await Branch.countDocuments();
 };

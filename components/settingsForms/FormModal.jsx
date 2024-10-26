@@ -1,6 +1,8 @@
 // @/components/settingsForms/FormModal.jsx
 
 'use client'
+import { deleteBranch } from '@/actions/branchActions';
+import { deleteDepartment } from '@/actions/departmentActions';
 import { deleteRole } from '@/actions/roleActions';
 import { deleteUser } from '@/actions/userActions';
 import dynamic from 'next/dynamic';
@@ -12,7 +14,9 @@ import { toast } from 'react-toastify';
 
 const deleteActionMap = {
   Users: deleteUser,
-  Roles: deleteRole
+  Roles: deleteRole,
+  Departments: deleteDepartment,
+  Branches: deleteBranch
 };
 
 const UsersForm = dynamic(() => import("@/components/settingsForms/UsersForm"), {
@@ -21,10 +25,18 @@ const UsersForm = dynamic(() => import("@/components/settingsForms/UsersForm"), 
 const RolesForm = dynamic(() => import("@/components/settingsForms/RolesForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const DepartmentForm = dynamic(() => import("@/components/settingsForms/DepartmentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const BrancheForm = dynamic(() => import("@/components/settingsForms/BranchForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const forms = {
   Users: (props) => <UsersForm {...props} />,
-  Roles: (props) => <RolesForm {...props} />
+  Roles: (props) => <RolesForm {...props} />,
+  Departments: (props) => <DepartmentForm {...props} />,
+  Branches: (props) => <BrancheForm {...props} />
 };
 
 const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOptions = [], branchesOptions = [] }) => {

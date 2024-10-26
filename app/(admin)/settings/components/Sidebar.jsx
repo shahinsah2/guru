@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 export default function Sidebar() {
-  const [activeTab, setActiveTab] = useState('User');
+  const [activeTab, setActiveTab] = useState('');
 
   return (
     <aside className="w-64 bg-gray-100 border-r">

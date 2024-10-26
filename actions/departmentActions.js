@@ -1,51 +1,77 @@
 // @/actions/departmentActions.js
 
+"use server";
+
 import { connectToDatabase } from '@/lib/database';
 import Department from '@/lib/database/models/Department.model';
 
 // Create a new department
-export const createDepartment = async (departmentData) => {
+export const createDepartment = async (currentState, departmentData) => {
   await connectToDatabase();
+  try {
+    const newDepartment = new Department(departmentData);
+    const savedDepartment = await newDepartment.save();
 
-  const newDepartment = new Department({
-    ...departmentData,
-  });
-  return await newDepartment.save();
-};
-
-// Retrieve a department by ID
-export const getDepartmentById = async (id) => {
-  await connectToDatabase();
-  const department = await Department.findById(id).lean(); // Convert to plain JavaScript object
-  if (!department) {
-    throw new Error('Department not found');
+    return {
+      _id: savedDepartment._id.toString(),
+      departmentName: savedDepartment.department_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create department.' };
   }
-  return department;
-};
-
-// Retrieve all departments
-export const getAllDepartments = async () => {
-  await connectToDatabase();
-  return await Department.find({}).lean(); // Convert to plain JavaScript objects
 };
 
 // Update an existing department
-export const updateDepartment = async (id, updateData) => {
+export const updateDepartment = async (currentState, updateData) => {
   await connectToDatabase();
 
-  const updatedDepartment = await Department.findByIdAndUpdate(id, updateData, { new: true }).lean(); // Convert to plain JavaScript object
-  if (!updatedDepartment) {
-    throw new Error('Department not found');
+  const id = updateData.id;
+
+  try {
+    const updatedDepartment = await Department.findByIdAndUpdate(id, updateData, { new: true });
+    return {
+      _id: updatedDepartment._id.toString(),
+      departmentName: updatedDepartment.department_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update department.' };
   }
-  return updatedDepartment;
 };
 
 // Delete a department
-export const deleteDepartment = async (id) => {
+export const deleteDepartment = async (currentState, formData) => {
+  const id = formData.get("id");
   await connectToDatabase();
-  const deletedDepartment = await Department.findByIdAndDelete(id).lean(); // Convert to plain JavaScript object
-  if (!deletedDepartment) {
-    throw new Error('Department not found');
+  try {
+    const deletedDepartment = await Department.findByIdAndDelete(id);
+    if (!deletedDepartment) {
+      return { success: false, error: true, message: 'Department not found' };
+    }
+    return { success: true, error: false, message: 'Department deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete department.' };
   }
-  return deletedDepartment;
+};
+
+// Get departments with optional pagination
+export const getDepartments = async ({ skip = 0, limit = 10 } = {}) => {
+  await connectToDatabase();
+  const departments = await Department.find({})
+    .skip(skip)
+    .limit(limit)
+    .lean();
+  return departments.map(department => ({
+    ...department,
+    _id: department._id.toString(),
+  }));
+};
+
+// Get the total number of departments
+export const getDepartmentsCount = async () => {
+  await connectToDatabase();
+  return await Department.countDocuments();
 };

@@ -1,50 +1,34 @@
 // @/app/(admin)/settings/department/page.jsx
-import { getAllDepartments } from '@/actions/departmentActions';
-import Table from '@/components/Table';
-import Image from 'next/image';
-import Link from 'next/link';
-import TableSearch from '@/components/TableSearch';
-import Pagination from '@/components/Pagination';
+import { getDepartments, getDepartmentsCount } from "@/actions/departmentActions";
+import Table from "@/components/Table";
+import FormModal from "@/components/settingsForms/FormModal";
+import Pagination from "@/components/Pagination";
+import TableSearch from "@/components/TableSearch";
+import Image from "next/image";
 
-// Define the columns for the department table
-const columns = [
-  { header: 'Department Name', accessor: 'department_name' },
-  { header: 'Description', accessor: 'description' },
-  { header: 'Status', accessor: 'active_status' },
-  { header: 'Actions', accessor: 'action' },
-];
+export default async function DepartmentPage({ searchParams }) {
+  const { page } = searchParams;
+  const currentPage = page ? parseInt(page) : 1;
 
-export default async function DepartmentPage() {
-  // Fetch the departments data
-  const departments = await getAllDepartments();
+  const [departments, totalDepartments] = await Promise.all([
+    getDepartments({ skip: (currentPage - 1) * 10, limit: 10 }),
+    getDepartmentsCount(),
+  ]);
 
-  // Map departments to include active status as a readable value
-  const mappedDepartments = departments.map((department) => ({
-    ...department,
-    active_status: department.active_status ? 'Active' : 'Inactive',
-  }));
+  const columns = [
+    { header: "Department Name", accessor: "department_name" },
+    { header: "Description", accessor: "description" },
+    { header: "Actions", accessor: "action" }
+  ];
 
-  // Log the departments for debugging
-  console.log('====================================');
-  console.log('Populated Departments:', JSON.stringify(mappedDepartments, null, 2));
-  console.log('====================================');
-
-  // Render each row of the table
   const renderRow = (item) => (
-    <tr key={item._id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
+    <tr key={item._id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight">
       <td>{item.department_name}</td>
-      <td>{item.description || 'No Description'}</td>
-      <td>{item.active_status}</td>
+      <td>{item.description || "No Description"}</td>
       <td>
-        <div className='flex items-center gap-2'>
-          <Link href={`/departments/${item._id}`}>
-            <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky'>
-              <Image src={'/update.png'} alt='Update' width={16} height={16} className='bg-blue-500'/>
-            </button>
-          </Link>
-          <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple'>
-            <Image src={'/delete.png'} alt='Delete' width={16} height={16}/>
-          </button>
+        <div className="flex items-center gap-2">
+          <FormModal table="Departments" type="update" data={JSON.stringify(item)} />
+          <FormModal table="Departments" type="delete" id={item._id.toString()} />
         </div>
       </td>
     </tr>
@@ -64,16 +48,14 @@ export default async function DepartmentPage() {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
               <Image src={'/sort.png'} alt='Sort' width={14} height={14} />
             </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
-              <Image src={'/create.png'} alt='Create' width={14} height={14} />
-            </button>
+            <FormModal table="Departments" type="create" />
           </div>
         </div>
       </div>
       {/* List */}
-      <Table columns={columns} renderRow={renderRow} data={mappedDepartments} />
+      <Table columns={columns} renderRow={renderRow} data={departments} />
       {/* Pagination */}
-      <Pagination />
+      <Pagination page={currentPage} count={totalDepartments} />
     </div>
   );
 }
