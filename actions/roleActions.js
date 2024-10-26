@@ -6,7 +6,7 @@ import { connectToDatabase } from '@/lib/database';
 import Role from '@/lib/database/models/Role.model';
 
 // Create a new role
-export const createRole = async (roleData) => {
+export const createRole = async (currentState,roleData) => {
   await connectToDatabase();
   try {
     const newRole = new Role(roleData);
@@ -24,8 +24,15 @@ export const createRole = async (roleData) => {
 };
 
 // Update an existing role
-export const updateRole = async (id, updateData) => {
+export const updateRole = async (currentState, updateData) => {
   await connectToDatabase();
+
+  const id = updateData.id;
+
+  console.log('===updateData==SA==');
+  console.log(updateData);
+  console.log('===updateData==SA==');
+
   try {
     const updatedRole = await Role.findByIdAndUpdate(id, updateData, { new: true });
     return {

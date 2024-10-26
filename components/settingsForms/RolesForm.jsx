@@ -2,9 +2,10 @@
 
 import { useForm } from "react-hook-form";
 import { createRole, updateRole } from "@/actions/roleActions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useFormState } from "react-dom";
 
 const permissionsList = [
   'can_add', 'can_edit', 'can_delete', 'can_activate', 'can_deactivate',
@@ -12,19 +13,19 @@ const permissionsList = [
 ];
 
 const moduleNameList = [
-    'Users', 'TaxList', 'Department', 'Branches', 'Inventory'    
-  ];
+  'Users', 'TaxList', 'Department', 'Branches', 'Inventory'
+];
 
-const RolesForm = ({ type, data, departmentsOptions = [],setOpen }) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const RolesForm = ({ type, data, setOpen, departmentsOptions = [] }) => {
+
+  const [loading, setLoading] = useState(false); // State for tracking loading
+
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: data ? {
       ...data,
       module_access: data.module_access || [],
-      module_name: data.module_access?.[0]?.module_name || "", 
+      module_name: data.module_access?.[0]?.module_name || "",
       department: departmentsOptions.find(dept => dept.department_name === data.department)?._id || "",
-
     } : {
       role_name: "",
       department: "",
@@ -33,12 +34,15 @@ const RolesForm = ({ type, data, departmentsOptions = [],setOpen }) => {
     }
   });
 
+  const [state, formAction] = useFormState(
+    type === "create" ? createRole : updateRole,
+    { success: false, error: false, message: "" }
+  );
+
   const router = useRouter();
 
-  const onSubmit = async (formData) => {
-    setLoading(true);
-    setError(null);
-
+  const onSubmit = handleSubmit(async (formData) => {
+    setLoading(true); // Start loading
     try {
       const moduleAccessArray = [
         {
@@ -53,29 +57,29 @@ const RolesForm = ({ type, data, departmentsOptions = [],setOpen }) => {
       const roleData = {
         role_name: formData.role_name,
         department: formData.department,
-        module_access: moduleAccessArray
+        module_access: moduleAccessArray,
       };
 
-      const result = type === "create"
-        ? await createRole(roleData)
-        : await updateRole(data._id, roleData);
-
-      if (result.success) {
-        toast(`Role ${type === "create" ? "created" : "updated"} successfully!`);
-        setOpen(false);
-        router.refresh();
-      } else {
-        setError(result.message || "Failed to process the request.");
-      }
+      await formAction({ ...roleData, id: data?._id });
     } catch (err) {
-      setError(err.message || "An unexpected error occurred.");
-    } finally {
-      setLoading(false);
+      console.error(err);
+    }finally {
+      setLoading(false); // Stop loading after submission
     }
-  };
+  });
+
+  useEffect(() => {
+    if (state.success) {
+      toast(`Role ${type === "create" ? "created" : "updated"} successfully!`);
+      setOpen(false);
+      router.refresh();
+    } else if (state.error) {
+      toast.error(state.message || "Failed to process the request.");
+    }
+  }, [state, router, type, setOpen]);
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-6" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">{type === "create" ? "Create a new role" : "Update role"}</h1>
 
       {/* Role Name Field */}
@@ -142,15 +146,19 @@ const RolesForm = ({ type, data, departmentsOptions = [],setOpen }) => {
       </div>
 
       {/* Error Message */}
-      {error && <span className="text-red-500 text-sm">{error}</span>}
+      {state.error && <span className="text-red-500 text-sm">{state.error}</span>}
 
       {/* Submit Button */}
       <button
         type="submit"
-        className={`bg-blue-500 text-white p-2 rounded-md mt-4 ${loading ? "opacity-50" : ""}`}
-        disabled={loading}
+        className={`bg-blue-500 text-white p-2 rounded-md mt-4 ${state.success || state.error ? "opacity-50" : ""}`}
+        disabled={state.success || state.error}
       >
-        {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
+        {state.loading
+          ? "Submitting..."
+          : type === "create"
+          ? "Create"
+          : "Update"}
       </button>
     </form>
   );

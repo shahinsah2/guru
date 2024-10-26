@@ -39,14 +39,23 @@ const schema = z.object({
 const UsersForm = ({
   type,
   data,
+  setOpen,
   rolesOptions = [],
   departmentsOptions = [],
   branchesOptions = [],
   teamHeadOptions = [],
-  setOpen,
 }) => {
   const [loading, setLoading] = useState(false); // State for tracking loading
   const [error, setError] = useState(null); // State for tracking errors
+
+  console.log('===UsersForm=====');
+  console.log('type :', type);
+  console.log('data :',data);
+  console.log('setOpen :',setOpen);
+  console.log('rolesOptions :',rolesOptions);
+  console.log('departmentsOptions :',departmentsOptions);
+  console.log('branchesOptions :',branchesOptions);
+  console.log('===UsersForm====');
 
   const {
     register,

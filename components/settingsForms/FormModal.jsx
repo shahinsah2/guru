@@ -13,8 +13,7 @@ import { toast } from 'react-toastify';
 const deleteActionMap = {
   Users: deleteUser,
   Roles: deleteRole
-}
-
+};
 
 const UsersForm = dynamic(() => import("@/components/settingsForms/UsersForm"), {
   loading: () => <h1>Loading...</h1>,
@@ -24,18 +23,8 @@ const RolesForm = dynamic(() => import("@/components/settingsForms/RolesForm"), 
 });
 
 const forms = {
-  Users: (type,data,rolesOptions, departmentsOptions, branchesOptions,setOpen) => (
-    <UsersForm 
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      rolesOptions={rolesOptions} 
-      departmentsOptions={departmentsOptions} 
-      branchesOptions={branchesOptions} 
-    />
-  ),
-  Roles: (type, data, setOpen, departmentsOptions) => <RolesForm type={type} data={data} setOpen={setOpen} departmentsOptions={departmentsOptions} />
-
+  Users: (props) => <UsersForm {...props} />,
+  Roles: (props) => <RolesForm {...props} />
 };
 
 const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOptions = [], branchesOptions = [] }) => {
@@ -52,26 +41,28 @@ const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOption
   const [open, setOpen] = useState(false);
 
   const Form = () => {
-
-    const [state, formAction] = useFormState(deleteActionMap[table],{success: false, error:false});
+    const [state, formAction] = useFormState(deleteActionMap[table], { success: false, error: false });
 
     const router = useRouter();
 
     useEffect(() => {
-
-      console.log('==formmodal useeffect state====');
-      console.log(state);
-      console.log('==formmodal useeffect state=====');
-
-      if(state.success) {
-
-        toast('item has been deleted');
+      if (state.success) {
+        toast('Item has been deleted');
         setOpen(false);
         router.refresh();
       }
-    },[state])
+    }, [state, router]);
 
-
+    // Collect common props to pass to each form component
+    const formProps = {
+      type,
+      data: parsedData,
+      setOpen,
+      rolesOptions,
+      departmentsOptions,
+      branchesOptions,
+      id
+    };
 
     return type === "delete" && id ? (
       <form action={formAction} className="p-4 flex flex-col gap-4">
@@ -84,12 +75,12 @@ const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOption
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
-      forms[table](type, parsedData, rolesOptions, departmentsOptions, branchesOptions,setOpen)
+      forms[table](formProps)  // Pass formProps to the appropriate form component
     ) : (
       "Form not found!"
     );
   };
- 
+
   return (
     <>
       <button
@@ -112,7 +103,7 @@ const FormModal = ({ table, type, data, id, rolesOptions = [], departmentsOption
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
 export default FormModal;

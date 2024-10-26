@@ -18,9 +18,9 @@ export default async function RolesPage({ searchParams }) {
     getAllDepartments(),
   ]);
 
-  console.log('====roles=====');
-  console.log(roles);
-  console.log('====roles=====');
+  console.log('====departmentsOptions=====');
+  console.log(departmentsOptions);
+  console.log('====departmentsOptions=====');
 
   const columns = [
     { header: "Role Name", accessor: "role_name" },
