@@ -37,7 +37,7 @@ export default async function UserPage({ searchParams }) {
 
 
   return (
-    <div className='bg-white p-4 rounded-md m-4 mt-0 flex-1'>
+    <div className='bg-white p-1 rounded-md mt-0 flex-1'>
       {/* Top */}
       <CreateNewUserButton />
       <DataTable columns={columns} data={users} />      

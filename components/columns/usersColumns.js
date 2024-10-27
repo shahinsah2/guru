@@ -198,7 +198,7 @@ export const CreateNewUserButton = () => {
 
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-1">
         <Button className="bg-blue-500 text-white" onClick={openForm}>
           Create New User
         </Button>

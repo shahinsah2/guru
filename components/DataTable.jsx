@@ -57,7 +57,7 @@ export function DataTable ({
  
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-1">
         <Input
           placeholder="Filter emails..."
           value={(table.getColumn("emailid")?.getFilterValue()) ?? ""}
