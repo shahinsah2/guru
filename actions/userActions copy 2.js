@@ -38,33 +38,6 @@ export const getUserById = async (id) => {
   }
 }
 
-export const getUsers = async () => {
-  await connectToDatabase();
-  const users = await User.find({})
-    .populate('roles')
-    .populate('departments')
-    .populate('branches')
-    .lean(); // Convert to plain JavaScript objects
-
-  // Convert ObjectId fields to string
-  return users.map(user => ({
-    ...user,
-    _id: user._id.toString(),
-    roles: user.roles.map(role => ({
-      ...role,
-      _id: role._id.toString(),
-    })),
-    departments: user.departments.map(dept => ({
-      ...dept,
-      _id: dept._id.toString(),
-    })),
-    branches: user.branches.map(branch => ({
-      ...branch,
-      _id: branch._id.toString(),
-    })),
-  }));
-};
-
 // Create a new user
 export const createUser = async (currentState, userData) => {
   await connectToDatabase();
@@ -173,12 +146,10 @@ export const updateUser = async (currentState, updateData) => {
 };
 
 // Delete a user
-export const deleteUser = async (id) => {
+export const deleteUser = async (currentState, formData) => {
   await connectToDatabase();
-  
-  console.log('==id=SA==');
-  console.log(id);
-  console.log('==id=SA=');
+
+  const id = formData.get("id");
 
   try {
     // Find and delete the user in the database

@@ -1,11 +1,10 @@
+//@/layout.jsx
+
 import NavBar from "@/components/NavBar";
+import {TanstackProvider} from '@/components/providers/tanstack-provider';
 import { ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
 
-export default function Layout({
-    children,
-  }: Readonly<{
-    children: React.ReactNode;
-  }>) {
+export default function Layout({children}) {
   return (
     <>
      <ClerkLoading>
@@ -14,7 +13,7 @@ export default function Layout({
     <ClerkLoaded>
       <NavBar />       
       
-      <main>{children}</main>
+      <main><TanstackProvider>{children}</TanstackProvider></main>
     
       </ClerkLoaded>
     </>

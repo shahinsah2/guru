@@ -4,11 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "./InputField";
-import { createUser, updateUser } from "@/actions/userActions"; // Import updateUser
+import { createUser, updateUser } from "@/actions/userActions";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { getAllRoles, getAllDepartments, getAllBranches } from "@/actions/dataFetchActions";
 import { useFormState } from "react-dom";
+import { useRouter } from "next/navigation";
 
 // Define the schema for form validation
 const schema = z.object({
@@ -36,51 +38,65 @@ const schema = z.object({
   team_head: z.string().optional(),
 });
 
-const UsersForm = ({
-  type,
-  data,
-  setOpen,
-  rolesOptions = [],
-  departmentsOptions = [],
-  branchesOptions = [],
-  teamHeadOptions = [],
-}) => {
-  const [loading, setLoading] = useState(false); // State for tracking loading
-  const [error, setError] = useState(null); // State for tracking errors
-
-  console.log('===UsersForm=====');
-  console.log('type :', type);
-  console.log('data :',data);
-  console.log('setOpen :',setOpen);
-  console.log('rolesOptions :',rolesOptions);
-  console.log('departmentsOptions :',departmentsOptions);
-  console.log('branchesOptions :',branchesOptions);
-  console.log('===UsersForm====');
+const UsersForm = ({ type, data, setOpen }) => {
+  const [rolesOptions, setRolesOptions] = useState([]);
+  const [departmentsOptions, setDepartmentsOptions] = useState([]);
+  const [branchesOptions, setBranchesOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: data
-      ? {
-          ...data,
-          joining_date: data.joining_date ? new Date(data.joining_date).toISOString().split("T")[0] : "",
-          roles: data.roles?.map((role) => role._id) || [],
-          departments: data.departments?.map((dept) => dept._id) || [],
-          branches: data.branches?.map((branch) => branch._id) || [],
-        }
-      : {},
+    defaultValues: data || {},
   });
 
+  const router = useRouter();
+
+  // Fetch roles, departments, branches
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [roles, departments, branches] = await Promise.all([
+          getAllRoles(),
+          getAllDepartments(),
+          getAllBranches(),
+        ]);
+
+        setRolesOptions(roles);
+        setDepartmentsOptions(departments);
+        setBranchesOptions(branches);
+
+        // Set form default values after fetching data
+        if (data) {
+          reset({
+            ...data,
+            joining_date: data.joining_date ? new Date(data.joining_date).toISOString().split("T")[0] : "",
+            roles: data.roles?.map((role) => role._id) || [],
+            departments: data.departments?.map((dept) => dept._id) || [],
+            branches: data.branches?.map((branch) => branch._id) || [],
+          });
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch roles, departments, or branches:", err);
+        setError("Failed to load form data.");
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [data, reset]);
 
   const [state, formAction] = useFormState(
     type === "create" ? createUser : updateUser,
     {
       success: false,
       error: false,
-      message : "",
+      message: "",
     }
   );
 
@@ -93,8 +109,6 @@ const UsersForm = ({
     }
   });
 
-  const router = useRouter();
-
   useEffect(() => {
     if (state.success) {
       toast(`User ${type === "create" ? "created" : "updated"} successfully!`);
@@ -106,84 +120,39 @@ const UsersForm = ({
     }
   }, [state, router, type, setOpen]);
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  if (loading) {
+    return <div className="text-center p-6">Loading...</div>;
+  }
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">{type === "create" ? "Create a new user" : "Update user"}</h1>
+      <h1 className="text-xl font-semibold">{type === "create" ? "Create a new user" : "Edit User"}</h1>
 
-      {/* User Info Section */}
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="First Name"
-          name="first_name"
-          defaultValue={data?.first_name}
-          register={register}
-          error={errors.first_name}
-        />
-        <InputField
-          label="Last Name"
-          name="last_name"
-          defaultValue={data?.last_name}
-          register={register}
-          error={errors.last_name}
-        />
-        <InputField
-          label="Login ID"
-          name="login_id"
-          defaultValue={data?.login_id}
-          register={register}
-          error={errors.login_id}
-        />
-        <InputField
-          label="Password"
-          name="password"
-          type="password"
-          defaultValue={data?.password}
-          register={register}
-          error={errors.password}
-        />
-        <InputField
-          label="Email"
-          name="emailid"
-          defaultValue={data?.emailid}
-          register={register}
-          error={errors.emailid}
-        />
-        <InputField
-          label="Phone Number"
-          name="phone_number"
-          defaultValue={data?.phone_number}
-          register={register}
-          error={errors.phone_number}
-        />
-        <InputField
-          label="Joining Date"
-          name="joining_date"
-          defaultValue={data?.joining_date}
-          register={register}
-          error={errors.joining_date}
-          type="date"
-        />
-        <InputField
-          label="User Code"
-          name="user_code"
-          defaultValue={data?.user_code}
-          register={register}
-          error={errors.user_code}
-        />
+        <InputField label="First Name" name="first_name" register={register} error={errors.first_name} />
+        <InputField label="Last Name" name="last_name" register={register} error={errors.last_name} />
+        <InputField label="Login ID" name="login_id" register={register} error={errors.login_id} />
+        <InputField label="Password" name="password" type="password" register={register} error={errors.password} />
+        <InputField label="Email" name="emailid" register={register} error={errors.emailid} />
+        <InputField label="Phone Number" name="phone_number" register={register} error={errors.phone_number} />
+        <InputField label="Joining Date" name="joining_date" type="date" register={register} error={errors.joining_date} />
+        <InputField label="User Code" name="user_code" register={register} error={errors.user_code} />
       </div>
 
-      {/* Address Section */}
       <span className="text-xs text-gray-400 font-medium">Address</span>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField label="Pincode" name="address.pincode" defaultValue={data?.address?.pincode} register={register} error={errors?.address?.pincode} />
-        <InputField label="Country" name="address.country" defaultValue={data?.address?.country} register={register} error={errors?.address?.country} />
-        <InputField label="State" name="address.state" defaultValue={data?.address?.state} register={register} error={errors?.address?.state} />
-        <InputField label="City" name="address.city" defaultValue={data?.address?.city} register={register} error={errors?.address?.city} />
-        <InputField label="Landmark" name="address.landmark" defaultValue={data?.address?.landmark} register={register} error={errors?.address?.landmark} />
-        <InputField label="Street" name="address.street" defaultValue={data?.address?.street} register={register} error={errors?.address?.street} />
+        <InputField label="Pincode" name="address.pincode" register={register} error={errors?.address?.pincode} />
+        <InputField label="Country" name="address.country" register={register} error={errors?.address?.country} />
+        <InputField label="State" name="address.state" register={register} error={errors?.address?.state} />
+        <InputField label="City" name="address.city" register={register} error={errors?.address?.city} />
+        <InputField label="Landmark" name="address.landmark" register={register} error={errors?.address?.landmark} />
+        <InputField label="Street" name="address.street" register={register} error={errors?.address?.street} />
       </div>
 
-      {/* Roles, Departments, Branches */}
       <div className="flex justify-between flex-wrap gap-4">
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Roles</label>
@@ -220,12 +189,16 @@ const UsersForm = ({
         </div>
       </div>
 
-      {/* Error Message */}
       {error && <span className="text-red-500">{error}</span>}
 
-      <button className="bg-blue-400 text-white p-2 rounded-md" disabled={loading}>
-        {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
-      </button>
+      <div className="flex justify-end gap-4">
+        <Button variant="outline" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button className="bg-blue-400 text-white p-2 rounded-md" type="submit" disabled={loading}>
+          {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
+        </Button>
+      </div>
     </form>
   );
 };

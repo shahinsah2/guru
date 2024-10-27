@@ -1,41 +1,11 @@
 // @/actions/dataFetchActions.js
-
-"use server";
+"use server"
 
 import { connectToDatabase } from '@/lib/database';
-import User from '@/lib/database/models/User.model';
-import Department from '@/lib/database/models/Department.model';
 import Role from '@/lib/database/models/Role.model';
+import Department from '@/lib/database/models/Department.model';
 import Branch from '@/lib/database/models/Branch.model';
-
-export const getUsers = async ({ skip = 0, limit = 10 } = {}) => {
-  await connectToDatabase();
-  const users = await User.find({})
-    .skip(skip)
-    .limit(limit)
-    .populate('roles')
-    .populate('departments')
-    .populate('branches')
-    .lean(); // Convert to plain JavaScript objects
-
-  // Convert ObjectId fields to string
-  return users.map(user => ({
-    ...user,
-    _id: user._id.toString(),
-    roles: user.roles.map(role => ({
-      ...role,
-      _id: role._id.toString(),
-    })),
-    departments: user.departments.map(dept => ({
-      ...dept,
-      _id: dept._id.toString(),
-    })),
-    branches: user.branches.map(branch => ({
-      ...branch,
-      _id: branch._id.toString(),
-    })),
-  }));
-};
+import User from '@/lib/database/models/User.model';
 
 export const getUsersByLoginId = async (loginId) => {
   await connectToDatabase();
@@ -67,35 +37,26 @@ export const getUsersByLoginId = async (loginId) => {
   return null;
 };
 
-// Fetch the total number of users
-export const getUsersCount = async () => {
-  await connectToDatabase();
-  return await User.countDocuments();
-};
-
+// Fetch all roles
 export const getAllRoles = async () => {
   await connectToDatabase();
-  const roles = await Role.find().lean();
-  return roles.map(role => ({
-    ...role,
-    _id: role._id.toString(),
-  }));
+  return await Role.find().lean();
 };
 
+// Fetch all departments
 export const getAllDepartments = async () => {
   await connectToDatabase();
-  const departments = await Department.find().lean();
-  return departments.map(dept => ({
-    ...dept,
-    _id: dept._id.toString(),
-  }));
+  return await Department.find().lean();
 };
 
+// Fetch all branches
 export const getAllBranches = async () => {
   await connectToDatabase();
-  const branches = await Branch.find().lean();
-  return branches.map(branch => ({
-    ...branch,
-    _id: branch._id.toString(),
-  }));
+  return await Branch.find().lean();
+};
+
+// Fetch user by ID
+export const getUserById = async (id) => {
+  await connectToDatabase();
+  return await User.findById(id).populate('roles departments branches').lean();
 };
