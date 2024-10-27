@@ -57,11 +57,9 @@ export const deleteDepartment = async (id) => {
 };
 
 // Get departments with optional pagination
-export const getDepartments = async ({ skip = 0, limit = 10 } = {}) => {
+export const getDepartments = async () => {
   await connectToDatabase();
-  const departments = await Department.find({})
-    .skip(skip)
-    .limit(limit)
+  const departments = await Department.find({})  
     .lean();
   return departments.map(department => ({
     ...department,

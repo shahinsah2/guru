@@ -1,50 +1,76 @@
 // @/actions/leadChecklistActions.js
 
+"use server";
+
 import { connectToDatabase } from '@/lib/database';
 import LeadChecklist from '@/lib/database/models/LeadChecklist.model';
 
-// Create a new lead checklist item
-export const createLeadChecklist = async (checklistData) => {
+// Create a new lead checklist
+export const createLeadChecklist = async (currentStatus, checklistData) => {
   await connectToDatabase();
+  try {
+    const newChecklist = new LeadChecklist(checklistData);
+    const savedChecklist = await newChecklist.save();
 
-  const newChecklist = new LeadChecklist(checklistData);
-  return await newChecklist.save();
-};
-
-// Retrieve a lead checklist item by ID
-export const getLeadChecklistById = async (id) => {
-  await connectToDatabase();
-  const checklist = await LeadChecklist.findById(id);
-  if (!checklist) {
-    throw new Error('Checklist item not found');
+    return {
+      _id: savedChecklist._id.toString(),
+      checklistName: savedChecklist.checklist_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create lead checklist.' };
   }
-  return checklist;
 };
 
-// Retrieve all lead checklist items
-export const getAllLeadChecklists = async () => {
-  await connectToDatabase();
-  return await LeadChecklist.find({});
-};
-
-// Update a lead checklist item
-export const updateLeadChecklist = async (id, updateData) => {
+// Update an existing lead checklist
+export const updateLeadChecklist = async (currentStatus, updateData) => {
   await connectToDatabase();
 
-  const updatedChecklist = await LeadChecklist.findByIdAndUpdate(id, updateData, { new: true });
-  if (!updatedChecklist) {
-    throw new Error('Checklist item not found');
+  const id = updateData.id;
+
+  try {
+    const updatedChecklist = await LeadChecklist.findByIdAndUpdate(id, updateData, { new: true });
+    return {
+      _id: updatedChecklist._id.toString(),
+      checklistName: updatedChecklist.checklist_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update lead checklist.' };
   }
-  return updatedChecklist;
 };
 
-// Delete a lead checklist item
+// Delete a lead checklist
 export const deleteLeadChecklist = async (id) => {
   await connectToDatabase();
-
-  const deletedChecklist = await LeadChecklist.findByIdAndDelete(id);
-  if (!deletedChecklist) {
-    throw new Error('Checklist item not found');
+  try {
+    const deletedChecklist = await LeadChecklist.findByIdAndDelete(id);
+    if (!deletedChecklist) {
+      return { success: false, error: true, message: 'Lead checklist not found' };
+    }
+    return { success: true, error: false, message: 'Lead checklist deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete lead checklist.' };
   }
-  return deletedChecklist;
+};
+
+// Get lead checklists with optional pagination
+export const getLeadChecklists = async ({ skip = 0, limit = 10 } = {}) => {
+  await connectToDatabase();
+  const checklists = await LeadChecklist.find({})
+    .skip(skip)
+    .limit(limit)
+    .lean();
+  return checklists.map(checklist => ({
+    ...checklist,
+    _id: checklist._id.toString(),
+  }));
+};
+
+// Get the total number of lead checklists
+export const getLeadChecklistsCount = async () => {
+  await connectToDatabase();
+  return await LeadChecklist.countDocuments();
 };

@@ -4,54 +4,65 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import {
+  FaUser,
+  FaRegBuilding,
+  FaRegAddressCard,
+  FaMapMarkerAlt,
+  FaClipboardList,
+  FaListAlt,
+  FaTasks,
+  FaClipboardCheck,
+  FaFlag,
+  FaDollarSign,
+  FaGavel,
+  FaCogs,
+  FaMapSigns,
+  FaCity,
+  FaGlobe,
+} from 'react-icons/fa';
+
+const sidebarLinks = [
+  { name: 'User', href: '/settings/user', icon: <FaUser /> },
+  { name: 'Roles', href: '/settings/roles', icon: <FaRegAddressCard /> },
+  { name: 'Department', href: '/settings/department', icon: <FaRegBuilding /> },
+  { name: 'Branch', href: '/settings/branch', icon: <FaRegBuilding /> },
+  { name: 'Cities', href: '/settings/cities', icon: <FaCity /> },
+  { name: 'Countries', href: '/settings/countries', icon: <FaGlobe /> },
+  { name: 'Lead Checklists', href: '/settings/lead-checklists', icon: <FaClipboardCheck /> },
+  { name: 'Lead Statuses', href: '/settings/lead-statuses', icon: <FaListAlt /> },
+  { name: 'Locations', href: '/settings/locations', icon: <FaMapMarkerAlt /> },
+  { name: 'Order Checklists', href: '/settings/order-checklists', icon: <FaClipboardList /> },
+  { name: 'Service Priority Levels', href: '/settings/service-priority-levels', icon: <FaTasks /> },
+  { name: 'Service Status', href: '/settings/service-status', icon: <FaFlag /> },
+  { name: 'State', href: '/settings/state', icon: <FaMapSigns /> },
+  { name: 'Taxes', href: '/settings/taxes', icon: <FaDollarSign /> },
+  { name: 'Terms', href: '/settings/terms', icon: <FaGavel /> },
+];
 
 export default function Sidebar() {
   const [activeTab, setActiveTab] = useState('');
 
   return (
-    <aside className="w-64 bg-gray-100 border-r">
-      <nav className="flex flex-col py-4 space-y-4">
-        <Link href="/settings/user">
-          <span
-            className={`cursor-pointer px-4 py-2 text-lg font-medium ${
-              activeTab === 'User' ? 'bg-indigo-100' : 'hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('User')}
-          >
-            User
-          </span>
-        </Link>
-        <Link href="/settings/roles">
-          <span
-            className={`cursor-pointer px-4 py-2 text-lg font-medium ${
-              activeTab === 'Roles' ? 'bg-indigo-100' : 'hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('Roles')}
-          >
-            Roles
-          </span>
-        </Link>
-        <Link href="/settings/department">
-          <span
-            className={`cursor-pointer px-4 py-2 text-lg font-medium ${
-              activeTab === 'Department' ? 'bg-indigo-100' : 'hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('Department')}
-          >
-            Department
-          </span>
-        </Link>
-        <Link href="/settings/branch">
-          <span
-            className={`cursor-pointer px-4 py-2 text-lg font-medium ${
-              activeTab === 'Branch' ? 'bg-indigo-100' : 'hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab('Branch')}
-          >
-            Branch
-          </span>
-        </Link>
-        
+    <aside className="w-64 bg-gray-100 border-r h-full">
+      <div className="bg-orange-700 text-white text-center p-4">
+        <h1 className="text-lg font-bold">Admin Settings</h1>
+      </div>
+      <nav className="flex flex-col py-4 space-y-2">
+        {/* Loop through the sidebarLinks array to render each link */}
+        {sidebarLinks.map((link) => (
+          <Link key={link.name} href={link.href}>
+            <span
+              className={`flex items-center gap-2 cursor-pointer px-4 py-2 text-lg font-medium ${
+                activeTab === link.name ? 'bg-indigo-100' : 'hover:bg-gray-200'
+              }`}
+              onClick={() => setActiveTab(link.name)}
+            >
+              {link.icon}
+              {link.name}
+            </span>
+          </Link>
+        ))}
       </nav>
     </aside>
   );

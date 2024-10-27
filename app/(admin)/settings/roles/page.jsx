@@ -1,6 +1,6 @@
 // app/(admin)/settings/roles/page.jsx
 "use server"
-import { getAllDepartments } from '@/actions/dataFetchActions';
+import { getDepartments } from '@/actions/departmentActions';
 import { getRoles } from '@/actions/roleActions';
 import { currentUser } from '@clerk/nextjs/server';
 import { DataTable } from "@/components/DataTable";
@@ -12,7 +12,7 @@ export default async function RolesPage() {
   if (!user) return {};
 
   const [departmentsOptions, roles] = await Promise.all([
-    getAllDepartments(),
+    getDepartments(),
     getRoles(),
   ]);
 

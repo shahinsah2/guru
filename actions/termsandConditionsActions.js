@@ -1,50 +1,68 @@
-// @/actions/termsandConditionsActions.js
+// @/actions/termsAndConditionsActions.js
+
+"use server";
 
 import { connectToDatabase } from '@/lib/database';
 import TermsandConditions from '@/lib/database/models/TermsandConditions.model';
 
-// Create a new Terms and Conditions
-export const createTermsAndConditions = async (termsData) => {
+// Create a new terms and conditions
+export const createTermsAndConditions = async (currentStatus, termsData) => {
   await connectToDatabase();
-  
-  const newTerms = new TermsandConditions(termsData);
-  return await newTerms.save();
-};
+  try {
+    const newTerms = new TermsandConditions(termsData);
+    const savedTerms = await newTerms.save();
 
-// Retrieve Terms and Conditions by ID
-export const getTermsAndConditionsById = async (id) => {
-  await connectToDatabase();
-  const terms = await TermsandConditions.findById(id);
-  if (!terms) {
-    throw new Error('Terms and Conditions not found');
+    return {
+      _id: savedTerms._id.toString(),
+      termsType: savedTerms.type,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create terms and conditions.' };
   }
-  return terms;
 };
 
-// Retrieve all Terms and Conditions
-export const getAllTermsAndConditions = async () => {
-  await connectToDatabase();
-  return await TermsandConditions.find({});
-};
-
-// Update Terms and Conditions
-export const updateTermsAndConditions = async (id, updateData) => {
+// Update an existing terms and conditions
+export const updateTermsAndConditions = async (currentStatus, updateData) => {
   await connectToDatabase();
 
-  const updatedTerms = await TermsandConditions.findByIdAndUpdate(id, updateData, { new: true });
-  if (!updatedTerms) {
-    throw new Error('Terms and Conditions not found');
+  const id = updateData.id;
+
+  try {
+    const updatedTerms = await TermsandConditions.findByIdAndUpdate(id, updateData, { new: true });
+    return {
+      _id: updatedTerms._id.toString(),
+      termsType: updatedTerms.type,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update terms and conditions.' };
   }
-  return updatedTerms;
 };
 
-// Delete Terms and Conditions
+// Delete terms and conditions
 export const deleteTermsAndConditions = async (id) => {
   await connectToDatabase();
-  
-  const deletedTerms = await TermsandConditions.findByIdAndDelete(id);
-  if (!deletedTerms) {
-    throw new Error('Terms and Conditions not found');
+  try {
+    const deletedTerms = await TermsandConditions.findByIdAndDelete(id);
+    if (!deletedTerms) {
+      return { success: false, error: true, message: 'Terms and conditions not found' };
+    }
+    return { success: true, error: false, message: 'Terms and conditions deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete terms and conditions.' };
   }
-  return deletedTerms;
+};
+
+// Get all terms and conditions
+export const getAllTermsAndConditions = async () => {
+  await connectToDatabase();
+  const terms = await TermsandConditions.find({})
+    .lean();
+  return terms.map(term => ({
+    ...term,
+    _id: term._id.toString(),
+  }));
 };

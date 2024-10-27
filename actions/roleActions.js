@@ -58,11 +58,9 @@ export const deleteRole = async (id) => {
 };
 
 // Get roles with optional pagination
-export const getRoles = async ({ skip = 0, limit = 10 } = {}) => {
+export const getRoles = async () => {
   await connectToDatabase();
   const roles = await Role.find({})
-    .skip(skip)
-    .limit(limit)
     .populate('department')
     .lean();
   return roles.map(role => ({

@@ -57,11 +57,9 @@ export const deleteBranch = async (id) => {
 };
 
 // Get branches with optional pagination
-export const getBranches = async ({ skip = 0, limit = 10 } = {}) => {
+export const getBranches = async () => {
   await connectToDatabase();
-  const branches = await Branch.find({})
-    .skip(skip)
-    .limit(limit)
+  const branches = await Branch.find({}) 
     .lean();
   return branches.map(branch => ({
     ...branch,

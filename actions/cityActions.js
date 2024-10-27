@@ -4,6 +4,8 @@
 
 import { connectToDatabase } from '@/lib/database';
 import City from '@/lib/database/models/City.model';
+import State from '@/lib/database/models/State.model';
+import Country from '@/lib/database/models/Country.model';
 
 // Create a new city
 export const createCity = async (currentStatus, cityData) => {
@@ -57,12 +59,10 @@ export const deleteCity = async (id) => {
   }
 };
 
-// Get cities with optional pagination
-export const getCities = async ({ skip = 0, limit = 10 } = {}) => {
+// Get all cities without pagination
+export const getCities = async () => {
   await connectToDatabase();
-  const cities = await City.find({})
-    .skip(skip)
-    .limit(limit)
+  const cities = await City.find()
     .populate('state country')
     .lean();
   return cities.map(city => ({

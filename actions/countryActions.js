@@ -1,47 +1,73 @@
 // @/actions/countryActions.js
 
+"use server";
+
 import { connectToDatabase } from '@/lib/database';
 import Country from '@/lib/database/models/Country.model';
 
 // Create a new country
-export const createCountry = async (countryData) => {
+export const createCountry = async (currentStatus, countryData) => {
   await connectToDatabase();
-  const newCountry = new Country(countryData);
-  return await newCountry.save();
-};
+  try {
+    const newCountry = new Country(countryData);
+    const savedCountry = await newCountry.save();
 
-// Retrieve a country by ID
-export const getCountryById = async (id) => {
-  await connectToDatabase();
-  const country = await Country.findById(id);
-  if (!country) {
-    throw new Error('Country not found');
+    return {
+      _id: savedCountry._id.toString(),
+      countryName: savedCountry.name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create country.' };
   }
-  return country;
 };
 
-// Retrieve all countries
-export const getAllCountries = async () => {
+// Update an existing country
+export const updateCountry = async (currentStatus, updateData) => {
   await connectToDatabase();
-  return await Country.find({});
-};
 
-// Update a country
-export const updateCountry = async (id, updateData) => {
-  await connectToDatabase();
-  const updatedCountry = await Country.findByIdAndUpdate(id, updateData, { new: true });
-  if (!updatedCountry) {
-    throw new Error('Country not found');
+  const id = updateData.id;
+
+  try {
+    const updatedCountry = await Country.findByIdAndUpdate(id, updateData, { new: true });
+    return {
+      _id: updatedCountry._id.toString(),
+      countryName: updatedCountry.name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update country.' };
   }
-  return updatedCountry;
 };
 
 // Delete a country
 export const deleteCountry = async (id) => {
   await connectToDatabase();
-  const deletedCountry = await Country.findByIdAndDelete(id);
-  if (!deletedCountry) {
-    throw new Error('Country not found');
+  try {
+    const deletedCountry = await Country.findByIdAndDelete(id);
+    if (!deletedCountry) {
+      return { success: false, error: true, message: 'Country not found' };
+    }
+    return { success: true, error: false, message: 'Country deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete country.' };
   }
-  return deletedCountry;
+};
+
+// Get all countries without pagination
+export const getCountries = async () => {
+  await connectToDatabase();
+  const countries = await Country.find({}).lean();
+  return countries.map(country => ({
+    ...country,
+    _id: country._id.toString(),
+  }));
+};
+
+// Get the total number of countries
+export const getCountriesCount = async () => {
+  await connectToDatabase();
+  return await Country.countDocuments();
 };

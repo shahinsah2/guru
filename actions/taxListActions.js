@@ -1,50 +1,68 @@
 // @/actions/taxListActions.js
 
+"use server";
+
 import { connectToDatabase } from '@/lib/database';
 import TaxList from '@/lib/database/models/TaxList.model';
 
-// Create a new tax entry
-export const createTax = async (taxData) => {
+// Create a new tax
+export const createTaxList = async (currentStatus, taxData) => {
   await connectToDatabase();
-  
-  const newTax = new TaxList(taxData);
-  return await newTax.save();
-};
+  try {
+    const newTax = new TaxList(taxData);
+    const savedTax = await newTax.save();
 
-// Retrieve a tax entry by ID
-export const getTaxById = async (id) => {
-  await connectToDatabase();
-  const tax = await TaxList.findById(id);
-  if (!tax) {
-    throw new Error('Tax entry not found');
+    return {
+      _id: savedTax._id.toString(),
+      taxName: savedTax.tax_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create tax.' };
   }
-  return tax;
 };
 
-// Retrieve all tax entries
-export const getAllTaxes = async () => {
-  await connectToDatabase();
-  return await TaxList.find({});
-};
-
-// Update a tax entry
-export const updateTax = async (id, updateData) => {
+// Update an existing tax
+export const updateTaxList = async (currentStatus, updateData) => {
   await connectToDatabase();
 
-  const updatedTax = await TaxList.findByIdAndUpdate(id, updateData, { new: true });
-  if (!updatedTax) {
-    throw new Error('Tax entry not found');
+  const id = updateData.id;
+
+  try {
+    const updatedTax = await TaxList.findByIdAndUpdate(id, updateData, { new: true });
+    return {
+      _id: updatedTax._id.toString(),
+      taxName: updatedTax.tax_name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update tax.' };
   }
-  return updatedTax;
 };
 
-// Delete a tax entry
-export const deleteTax = async (id) => {
+// Delete a tax
+export const deleteTaxList = async (id) => {
   await connectToDatabase();
-  
-  const deletedTax = await TaxList.findByIdAndDelete(id);
-  if (!deletedTax) {
-    throw new Error('Tax entry not found');
+  try {
+    const deletedTax = await TaxList.findByIdAndDelete(id);
+    if (!deletedTax) {
+      return { success: false, error: true, message: 'Tax not found' };
+    }
+    return { success: true, error: false, message: 'Tax deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete tax.' };
   }
-  return deletedTax;
+};
+
+// Get all tax lists
+export const getTaxLists = async () => {
+  await connectToDatabase();
+  const taxes = await TaxList.find({})
+    .lean();
+  return taxes.map(tax => ({
+    ...tax,
+    _id: tax._id.toString(),
+  }));
 };

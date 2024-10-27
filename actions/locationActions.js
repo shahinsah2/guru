@@ -1,5 +1,7 @@
 // @/actions/locationActions.js
 
+"use server";
+
 import { connectToDatabase } from '@/lib/database';
 import Location from '@/lib/database/models/Location.model';
 import Country from '@/lib/database/models/Country.model';
@@ -7,88 +9,76 @@ import State from '@/lib/database/models/State.model';
 import City from '@/lib/database/models/City.model';
 
 // Create a new location
-export const createLocation = async (locationData) => {
+export const createLocation = async (currentStatus, locationData) => {
   await connectToDatabase();
+  try {
+    const newLocation = new Location(locationData);
+    const savedLocation = await newLocation.save();
 
-  // Verify the country, state, and city if they exist
-  const countryExists = await Country.findById(locationData.country);
-  if (!countryExists) {
-    throw new Error('Country not found');
+    return {
+      _id: savedLocation._id.toString(),
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create location.' };
   }
-
-  if (locationData.state) {
-    const stateExists = await State.findById(locationData.state);
-    if (!stateExists) {
-      throw new Error('State not found');
-    }
-  }
-
-  if (locationData.city) {
-    const cityExists = await City.findById(locationData.city);
-    if (!cityExists) {
-      throw new Error('City not found');
-    }
-  }
-
-  const newLocation = new Location(locationData);
-  return await newLocation.save();
 };
 
-// Retrieve a location by ID
-export const getLocationById = async (id) => {
-  await connectToDatabase();
-  const location = await Location.findById(id).populate('country').populate('state').populate('city');
-  if (!location) {
-    throw new Error('Location not found');
-  }
-  return location;
-};
-
-// Retrieve all locations
-export const getAllLocations = async () => {
-  await connectToDatabase();
-  return await Location.find({}).populate('country').populate('state').populate('city');
-};
-
-// Update a location
-export const updateLocation = async (id, updateData) => {
+// Update an existing location
+export const updateLocation = async (currentStatus, updateData) => {
   await connectToDatabase();
 
-  // Check for the existence of the referenced documents if updating
-  if (updateData.country) {
-    const countryExists = await Country.findById(updateData.country);
-    if (!countryExists) {
-      throw new Error('Country not found');
-    }
-  }
+  const id = updateData.id;
 
-  if (updateData.state) {
-    const stateExists = await State.findById(updateData.state);
-    if (!stateExists) {
-      throw new Error('State not found');
-    }
+  try {
+    const updatedLocation = await Location.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('country')
+      .populate('state')
+      .populate('city');
+    return {
+      _id: updatedLocation._id.toString(),
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update location.' };
   }
-
-  if (updateData.city) {
-    const cityExists = await City.findById(updateData.city);
-    if (!cityExists) {
-      throw new Error('City not found');
-    }
-  }
-
-  const updatedLocation = await Location.findByIdAndUpdate(id, updateData, { new: true }).populate('country').populate('state').populate('city');
-  if (!updatedLocation) {
-    throw new Error('Location not found');
-  }
-  return updatedLocation;
 };
 
 // Delete a location
 export const deleteLocation = async (id) => {
   await connectToDatabase();
-  const deletedLocation = await Location.findByIdAndDelete(id);
-  if (!deletedLocation) {
-    throw new Error('Location not found');
+  try {
+    const deletedLocation = await Location.findByIdAndDelete(id);
+    if (!deletedLocation) {
+      return { success: false, error: true, message: 'Location not found' };
+    }
+    return { success: true, error: false, message: 'Location deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete location.' };
   }
-  return deletedLocation;
+};
+
+// Get locations with optional pagination
+export const getLocations = async () => {
+  await connectToDatabase();
+  const locations = await Location.find({})    
+    .populate('country')
+    .populate('state')
+    .populate('city')
+    .lean();
+  return locations.map(location => ({
+    ...location,
+    _id: location._id.toString(),
+    country: location.country ? location.country.name : 'No Country',
+    state: location.state ? location.state.name : 'No State',
+    city: location.city ? location.city.name : 'No City',
+  }));
+};
+
+// Get the total number of locations
+export const getLocationsCount = async () => {
+  await connectToDatabase();
+  return await Location.countDocuments();
 };
