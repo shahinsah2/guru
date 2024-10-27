@@ -1,7 +1,7 @@
 // app/(admin)/settings/terms/page.jsx
 
 "use server"
-import { getAllTermsAndConditions } from '@/actions/termsAndConditionsActions';
+import { getAllTermsAndConditions } from '@/actions/termsandConditionsActions';
 import { DataTable } from "@/components/DataTable";
 import { columns, CreateNewTermsButton } from "@/components/columns/termsColumns";
 

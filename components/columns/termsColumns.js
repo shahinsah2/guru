@@ -14,7 +14,7 @@ import { ArrowUpDown } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import TermsAndConditionsForm from "@/components/settingsForms/TermsAndConditionsForm"
-import { deleteTermsAndConditions } from "@/actions/termsAndConditionsActions"
+import { deleteTermsAndConditions } from "@/actions/termsandConditionsActions"
 import { toast } from "react-toastify"
 
 export const columns = [
