@@ -65,7 +65,7 @@ export function DataTable ({
             table.getColumn("emailid")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
-        />
+        />        
       </div>
     <div className="rounded-md border">
       <Table>

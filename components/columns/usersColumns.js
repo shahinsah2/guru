@@ -12,11 +12,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ArrowUpDown } from "lucide-react"
 import { useState } from "react"
-import UsersForm from "@/components/settingsForms/UsersForm"
-import { deleteUser } from "@/actions/userActions";
-import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
-
+import UsersForm from "@/components/settingsForms/UsersForm"
+import { deleteUser } from "@/actions/userActions"
+import { toast } from "react-toastify"
 
 export const columns = [
   {
@@ -88,21 +87,13 @@ export const columns = [
       const [isFormOpen, setIsFormOpen] = useState(false)
       const [formType, setFormType] = useState("")
       const [formData, setFormData] = useState(null)
-      const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+      const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
       const router = useRouter()
-
 
       // Function to open the UsersForm for editing
       const onEdit = () => {
         setFormType("edit")
         setFormData(row.original)
-        setIsFormOpen(true)
-      }
-
-      // Function to open the UsersForm for creating a new user
-      const onCreate = () => {
-        setFormType("create")
-        setFormData(null)
         setIsFormOpen(true)
       }
 
@@ -112,27 +103,27 @@ export const columns = [
         setFormData(null)
       }
 
-       // Function to open delete confirmation popup
-       const onDelete = () => {
-        setIsDeleteConfirmOpen(true);
-      };
+      // Function to open delete confirmation popup
+      const onDelete = () => {
+        setIsDeleteConfirmOpen(true)
+      }
 
       // Function to delete the user
       const confirmDelete = async () => {
         try {
-          await deleteUser(row.original._id);
-          toast.success("User deleted successfully!");
-          setIsDeleteConfirmOpen(false);
-          router.refresh();
+          await deleteUser(row.original._id)
+          toast.success("User deleted successfully!")
+          setIsDeleteConfirmOpen(false)
+          router.refresh()
         } catch (error) {
-          toast.error("Failed to delete user. Please try again.");
+          toast.error("Failed to delete user. Please try again.")
         }
-      };
+      }
 
       // Function to close delete confirmation popup
       const closeDeleteConfirm = () => {
-        setIsDeleteConfirmOpen(false);
-      };
+        setIsDeleteConfirmOpen(false)
+      }
 
       return (
         <>
@@ -149,11 +140,6 @@ export const columns = [
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onDelete}>Delete</DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onCreate}>
-                Create New User
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -169,7 +155,7 @@ export const columns = [
               </div>
             </div>
           )}
-          
+
           {/* Render Delete Confirmation Popup */}
           {isDeleteConfirmOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -187,9 +173,49 @@ export const columns = [
               </div>
             </div>
           )}
-
         </>
       )
     },
   },
 ]
+
+// CreateNewUserButton component
+export const CreateNewUserButton = () => {
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [formType, setFormType] = useState("create")
+  const [formData, setFormData] = useState(null)
+
+  const openForm = () => {
+    setFormType("create")
+    setFormData(null)
+    setIsFormOpen(true)
+  }
+
+  const closeForm = () => {
+    setIsFormOpen(false)
+    setFormData(null)
+  }
+
+  return (
+    <>
+      <div className="flex justify-end mb-4">
+        <Button className="bg-blue-500 text-white" onClick={openForm}>
+          Create New User
+        </Button>
+      </div>
+
+      {/* Render UsersForm as a popup or modal */}
+      {isFormOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-md max-w-2xl mx-auto">
+            <UsersForm
+              type={formType}
+              data={formData}
+              setOpen={closeForm}
+            />
+          </div>
+        </div>
+      )}
+    </>
+  )
+}

@@ -5,7 +5,7 @@ import { getUsersCount, getUsersByLoginId,getAllRoles,getAllDepartments,getAllBr
 import { currentUser } from '@clerk/nextjs/server';
 
 import { DataTable } from "@/components/DataTable";
-import { columns } from "@/components/columns/usersColumns";
+import { columns, CreateNewUserButton  } from "@/components/columns/usersColumns";
 import { getUsers } from '@/actions/userActions';
 
 const moduleName = "Users";
@@ -39,6 +39,7 @@ export default async function UserPage({ searchParams }) {
   return (
     <div className='bg-white p-4 rounded-md m-4 mt-0 flex-1'>
       {/* Top */}
+      <CreateNewUserButton />
       <DataTable columns={columns} data={users} />      
     </div>
   );
