@@ -6,7 +6,7 @@ import { connectToDatabase } from '@/lib/database';
 import Role from '@/lib/database/models/Role.model';
 
 // Create a new role
-export const createRole = async (currentState,roleData) => {
+export const createRole = async (currentStatus, roleData) => {
   await connectToDatabase();
   try {
     const newRole = new Role(roleData);
@@ -24,17 +24,14 @@ export const createRole = async (currentState,roleData) => {
 };
 
 // Update an existing role
-export const updateRole = async (currentState, updateData) => {
+export const updateRole = async (currentStatus, updateData) => {
   await connectToDatabase();
 
   const id = updateData.id;
 
-  console.log('===updateData==SA==');
-  console.log(updateData);
-  console.log('===updateData==SA==');
-
   try {
-    const updatedRole = await Role.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedRole = await Role.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('department'); // Populate department if needed
     return {
       _id: updatedRole._id.toString(),
       roleName: updatedRole.role_name,
@@ -47,8 +44,7 @@ export const updateRole = async (currentState, updateData) => {
 };
 
 // Delete a role
-export const deleteRole = async (currentState, formData) => {
-  const id = formData.get("id");
+export const deleteRole = async (id) => {
   await connectToDatabase();
   try {
     const deletedRole = await Role.findByIdAndDelete(id);
@@ -75,7 +71,6 @@ export const getRoles = async ({ skip = 0, limit = 10 } = {}) => {
     department: role.department ? role.department.department_name : 'No Department', // Handle null case
   }));
 };
-
 
 // Get the total number of roles
 export const getRolesCount = async () => {

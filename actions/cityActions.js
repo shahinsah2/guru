@@ -1,75 +1,80 @@
 // @/actions/cityActions.js
 
+"use server";
+
 import { connectToDatabase } from '@/lib/database';
 import City from '@/lib/database/models/City.model';
-import State from '@/lib/database/models/State.model';
-import Country from '@/lib/database/models/Country.model';
 
 // Create a new city
-export const createCity = async (cityData) => {
+export const createCity = async (currentStatus, cityData) => {
   await connectToDatabase();
+  try {
+    const newCity = new City(cityData);
+    const savedCity = await newCity.save();
 
-  // Verify that the state and country exist
-  const stateExists = await State.findById(cityData.state);
-  if (!stateExists) {
-    throw new Error('State not found');
+    return {
+      _id: savedCity._id.toString(),
+      cityName: savedCity.name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to create city.' };
   }
-  const countryExists = await Country.findById(cityData.country);
-  if (!countryExists) {
-    throw new Error('Country not found');
-  }
-
-  const newCity = new City(cityData);
-  return await newCity.save();
 };
 
-// Retrieve a city by ID
-export const getCityById = async (id) => {
-  await connectToDatabase();
-  const city = await City.findById(id).populate('state').populate('country');
-  if (!city) {
-    throw new Error('City not found');
-  }
-  return city;
-};
-
-// Retrieve all cities
-export const getAllCities = async () => {
-  await connectToDatabase();
-  return await City.find({}).populate('state').populate('country');
-};
-
-// Update a city
-export const updateCity = async (id, updateData) => {
+// Update an existing city
+export const updateCity = async (currentStatus, updateData) => {
   await connectToDatabase();
 
-  // Check if the state and country exist if being updated
-  if (updateData.state) {
-    const stateExists = await State.findById(updateData.state);
-    if (!stateExists) {
-      throw new Error('State not found');
-    }
-  }
-  if (updateData.country) {
-    const countryExists = await Country.findById(updateData.country);
-    if (!countryExists) {
-      throw new Error('Country not found');
-    }
-  }
+  const id = updateData.id;
 
-  const updatedCity = await City.findByIdAndUpdate(id, updateData, { new: true }).populate('state').populate('country');
-  if (!updatedCity) {
-    throw new Error('City not found');
+  try {
+    const updatedCity = await City.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('state country');
+    return {
+      _id: updatedCity._id.toString(),
+      cityName: updatedCity.name,
+      success: true,
+      error: false,
+    };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to update city.' };
   }
-  return updatedCity;
 };
 
 // Delete a city
 export const deleteCity = async (id) => {
   await connectToDatabase();
-  const deletedCity = await City.findByIdAndDelete(id);
-  if (!deletedCity) {
-    throw new Error('City not found');
+  try {
+    const deletedCity = await City.findByIdAndDelete(id);
+    if (!deletedCity) {
+      return { success: false, error: true, message: 'City not found' };
+    }
+    return { success: true, error: false, message: 'City deleted successfully' };
+  } catch (error) {
+    return { success: false, error: true, message: error.message || 'Failed to delete city.' };
   }
-  return deletedCity;
+};
+
+// Get cities with optional pagination
+export const getCities = async ({ skip = 0, limit = 10 } = {}) => {
+  await connectToDatabase();
+  const cities = await City.find({})
+    .skip(skip)
+    .limit(limit)
+    .populate('state country')
+    .lean();
+  return cities.map(city => ({
+    ...city,
+    _id: city._id.toString(),
+    state: city.state ? city.state.name : 'No State',
+    country: city.country ? city.country.name : 'No Country',
+  }));
+};
+
+// Get the total number of cities
+export const getCitiesCount = async () => {
+  await connectToDatabase();
+  return await City.countDocuments();
 };

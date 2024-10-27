@@ -6,7 +6,7 @@ import { connectToDatabase } from '@/lib/database';
 import Department from '@/lib/database/models/Department.model';
 
 // Create a new department
-export const createDepartment = async (currentState, departmentData) => {
+export const createDepartment = async (currentStatus, departmentData) => {
   await connectToDatabase();
   try {
     const newDepartment = new Department(departmentData);
@@ -24,7 +24,7 @@ export const createDepartment = async (currentState, departmentData) => {
 };
 
 // Update an existing department
-export const updateDepartment = async (currentState, updateData) => {
+export const updateDepartment = async (currentStatus, updateData) => {
   await connectToDatabase();
 
   const id = updateData.id;
@@ -43,8 +43,7 @@ export const updateDepartment = async (currentState, updateData) => {
 };
 
 // Delete a department
-export const deleteDepartment = async (currentState, formData) => {
-  const id = formData.get("id");
+export const deleteDepartment = async (id) => {
   await connectToDatabase();
   try {
     const deletedDepartment = await Department.findByIdAndDelete(id);

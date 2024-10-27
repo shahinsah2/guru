@@ -1,82 +1,127 @@
-//@/components/settingsForms/DepartmentForm.jsx
+// @/components/settingsForms/DepartmentForm.jsx
 
-import { useForm } from "react-hook-form";
-import { createDepartment, updateDepartment } from "@/actions/departmentActions";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { useFormState } from "react-dom";
+"use client"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Input } from "@/components/ui/input"
+import { createDepartment, updateDepartment } from "@/actions/departmentActions"
+import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import { Button } from "@/components/ui/button"
+import { useFormState } from "react-dom"
+import { useRouter } from "next/navigation"
+
+// Define the schema for form validation
+const schema = z.object({
+  department_name: z.string().min(1, { message: "Department name is required!" }),
+  description: z.string().optional(),
+  active_status: z.boolean().default(true),
+})
 
 const DepartmentForm = ({ type, data, setOpen }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: data ? { ...data } : { department_name: "", description: "" }
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: data || {},
+  })
 
+  const router = useRouter()
+
+  useEffect(() => {
+    if (data) {
+      reset(data)
+    }
+    setLoading(false)
+  }, [data, reset])
+
+  // Using useFormState for form action handling
   const [state, formAction] = useFormState(
     type === "create" ? createDepartment : updateDepartment,
-    { success: false, error: false, message: "" }
-  );
-
-  const router = useRouter();
+    {
+      success: false,
+      error: false,
+      message: "",
+    }
+  )
 
   const onSubmit = handleSubmit(async (formData) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await formAction({ ...formData, id: data?._id });
+      formAction({ ...formData, id: data?._id })
     } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      setError(err.message || "An unexpected error occurred.")
     }
-  });
+  })
 
   useEffect(() => {
     if (state.success) {
-      toast(`Department ${type === "create" ? "created" : "updated"} successfully!`);
-      setOpen(false);
-      router.refresh();
+      toast(`Department ${type === "create" ? "created" : "updated"} successfully!`)
+      setOpen(false)
+      router.refresh()
     } else if (state.error) {
-      toast.error(state.message || "Failed to process the request.");
+      setError(state.message)
+      setLoading(false)
     }
-  }, [state, router, type, setOpen]);
+  }, [state, router, type, setOpen])
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  if (loading) {
+    return <div className="text-center p-6">Loading...</div>
+  }
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">{type === "create" ? "Create a new department" : "Update department"}</h1>
+    <form className="flex flex-col gap-8 p-4 w-96" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold">{type === "create" ? "Create a new department" : "Edit Department"}</h1>
 
-      {/* Department Name Field */}
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium">Department Name</label>
-        <input
-          className="border p-2 rounded-md text-sm"
-          {...register("department_name", { required: "Department name is required!" })}
-          placeholder="Enter department name"
-        />
-        {errors.department_name && <span className="text-red-500 text-xs">{errors.department_name.message}</span>}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2 w-full">
+          <label className="text-xs text-gray-500">Department Name</label>
+          <Input
+            type="text"
+            {...register("department_name")}
+            className="w-full"
+            placeholder="Enter department name"
+          />
+          {errors.department_name && (
+            <p className="text-xs text-red-400">{errors.department_name.message}</p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-xs text-gray-500">Description</label>
+          <Input
+            type="text"
+            {...register("description")}
+            className="w-full"
+            placeholder="Enter description"
+          />
+          {errors.description && <p className="text-xs text-red-400">{errors.description.message}</p>}
+        </div>
       </div>
 
-      {/* Description Field */}
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium">Description</label>
-        <textarea
-          className="border p-2 rounded-md text-sm"
-          {...register("description")}
-          placeholder="Enter description"
-        />
-      </div>
+      {error && <span className="text-red-500">{error}</span>}
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        className={`bg-blue-500 text-white p-2 rounded-md mt-4 ${loading ? "opacity-50" : ""}`}
-        disabled={loading}
-      >
-        {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
-      </button>
+      <div className="flex justify-end gap-4">
+        <Button variant="outline" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button className="bg-blue-400 text-white p-2 rounded-md" type="submit" disabled={loading}>
+          {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
+        </Button>
+      </div>
     </form>
-  );
-};
+  )
+}
 
-export default DepartmentForm;
+export default DepartmentForm

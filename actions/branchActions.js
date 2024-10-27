@@ -1,4 +1,4 @@
-//@/actions/branchActions.js
+// @/actions/branchActions.js
 
 "use server";
 
@@ -6,7 +6,7 @@ import { connectToDatabase } from '@/lib/database';
 import Branch from '@/lib/database/models/Branch.model';
 
 // Create a new branch
-export const createBranch = async (currentState, branchData) => {
+export const createBranch = async (currentStatus, branchData) => {
   await connectToDatabase();
   try {
     const newBranch = new Branch(branchData);
@@ -24,7 +24,7 @@ export const createBranch = async (currentState, branchData) => {
 };
 
 // Update an existing branch
-export const updateBranch = async (currentState, updateData) => {
+export const updateBranch = async (currentStatus, updateData) => {
   await connectToDatabase();
 
   const id = updateData.id;
@@ -43,8 +43,7 @@ export const updateBranch = async (currentState, updateData) => {
 };
 
 // Delete a branch
-export const deleteBranch = async (currentState, formData) => {
-  const id = formData.get("id");
+export const deleteBranch = async (id) => {
   await connectToDatabase();
   try {
     const deletedBranch = await Branch.findByIdAndDelete(id);
