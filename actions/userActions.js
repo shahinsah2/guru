@@ -3,6 +3,9 @@
 
 import { connectToDatabase } from '@/lib/database';
 import User from '@/lib/database/models/User.model';
+import Role from '@/lib/database/models/Role.model';
+import Department from '@/lib/database/models/Department.model';
+import Branch from '@/lib/database/models/Branch.model';
 import { clerkClient } from '@clerk/nextjs/server';
 import mongoose from 'mongoose';
 
@@ -37,6 +40,62 @@ export const getUserById = async (id) => {
     return null
   }
 }
+
+// New function to get user by username with populated fields
+export const getUserByUsername = async (username) => {
+  await connectToDatabase();
+
+  try {
+    const user = await User.findOne({ login_id: username })
+      .populate({
+        path: 'roles',
+        populate: {
+          path: 'department',
+          model: 'Department',
+        },
+      })
+      .populate('departments branches')
+      .lean(); // Convert to plain JavaScript object
+
+    if (!user) {
+      return null;
+    }
+
+    // Convert ObjectId fields to strings for consistent output and handle null values
+    return {
+      ...user,
+      _id: user._id?.toString(),
+      roles: user.roles?.map((role) => ({
+        _id: role._id?.toString(),
+        role_name: role.role_name,
+        department: role.department
+          ? {
+              _id: role.department._id?.toString(),
+              department_name: role.department.department_name,
+            }
+          : null,
+        module_access: role.module_access?.map((module) => ({
+          module_name: module.module_name,
+          permissions: module.permissions instanceof Map 
+            ? Object.fromEntries(module.permissions) // Convert permissions map to an object
+            : {}, // Default to an empty object if permissions is not a Map
+        })) || [],
+        active_status: role.active_status,
+      })) || [],
+      departments: user.departments?.map((dept) => ({
+        _id: dept._id?.toString(),
+        department_name: dept.department_name,
+      })) || [],
+      branches: user.branches?.map((branch) => ({
+        _id: branch._id?.toString(),
+        branch_name: branch.branch_name,
+      })) || [],
+    };
+  } catch (error) {
+    console.error("Failed to fetch user by username:", error);
+    return null;
+  }
+};
 
 export const getUsers = async () => {
   await connectToDatabase();

@@ -1,5 +1,5 @@
 // @/components/settingsForms/UsersForm.jsx
-"use client"
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -38,11 +38,11 @@ const schema = z.object({
   team_head: z.string().optional(),
 });
 
-const UsersForm = ({ type, data, setOpen }) => {
+const UsersForm = ({ type, data }) => {
   const [rolesOptions, setRolesOptions] = useState([]);
   const [departmentsOptions, setDepartmentsOptions] = useState([]);
   const [branchesOptions, setBranchesOptions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingOptions, setLoadingOptions] = useState(true); // Loading state for roles, departments, branches
   const [error, setError] = useState(null);
 
   const {
@@ -60,6 +60,7 @@ const UsersForm = ({ type, data, setOpen }) => {
   // Fetch roles, departments, branches
   useEffect(() => {
     const fetchData = async () => {
+      setLoadingOptions(true);
       try {
         const [roles, departments, branches] = await Promise.all([
           getAllRoles(),
@@ -71,7 +72,6 @@ const UsersForm = ({ type, data, setOpen }) => {
         setDepartmentsOptions(departments);
         setBranchesOptions(branches);
 
-        // Set form default values after fetching data
         if (data) {
           reset({
             ...data,
@@ -81,11 +81,11 @@ const UsersForm = ({ type, data, setOpen }) => {
             branches: data.branches?.map((branch) => branch._id) || [],
           });
         }
-        setLoading(false);
+        setLoadingOptions(false);
       } catch (err) {
         console.error("Failed to fetch roles, departments, or branches:", err);
         setError("Failed to load form data.");
-        setLoading(false);
+        setLoadingOptions(false);
       }
     };
     fetchData();
@@ -101,7 +101,6 @@ const UsersForm = ({ type, data, setOpen }) => {
   );
 
   const onSubmit = handleSubmit((formData) => {
-    setLoading(true);
     try {
       formAction({...formData, id: data?._id});
     } catch (err) {
@@ -112,21 +111,11 @@ const UsersForm = ({ type, data, setOpen }) => {
   useEffect(() => {
     if (state.success) {
       toast(`User ${type === "create" ? "created" : "updated"} successfully!`);
-      setOpen(false);
-      router.refresh();
+      router.push("/settings/user");
     } else if (state.error) {
       setError(state.message); // Display error message from Clerk or server
-      setLoading(false);
     }
-  }, [state, router, type, setOpen]);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  if (loading) {
-    return <div className="text-center p-6">Loading...</div>;
-  }
+  }, [state, router, type]);
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -153,50 +142,54 @@ const UsersForm = ({ type, data, setOpen }) => {
         <InputField label="Street" name="address.street" register={register} error={errors?.address?.street} />
       </div>
 
-      <div className="flex justify-between flex-wrap gap-4">
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Roles</label>
-          <select className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full" {...register("roles")} multiple>
-            {rolesOptions.map((role) => (
-              <option key={role._id} value={role._id}>
-                {role.role_name}
-              </option>
-            ))}
-          </select>
-          {errors.roles?.message && <p className="text-xs text-red-400">{errors.roles.message}</p>}
+      {loadingOptions ? (
+        <div className="text-center p-6">Loading options...</div>
+      ) : (
+        <div className="flex justify-between flex-wrap gap-4">
+          <div className="flex flex-col gap-2 w-full md:w-1/4">
+            <label className="text-xs text-gray-500">Roles</label>
+            <select className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full" {...register("roles")} multiple>
+              {rolesOptions.map((role) => (
+                <option key={role._id} value={role._id}>
+                  {role.role_name}
+                </option>
+              ))}
+            </select>
+            {errors.roles?.message && <p className="text-xs text-red-400">{errors.roles.message}</p>}
+          </div>
+          <div className="flex flex-col gap-2 w-full md:w-1/4">
+            <label className="text-xs text-gray-500">Departments</label>
+            <select className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full" {...register("departments")} multiple>
+              {departmentsOptions.map((dept) => (
+                <option key={dept._id} value={dept._id}>
+                  {dept.department_name}
+                </option>
+              ))}
+            </select>
+            {errors.departments?.message && <p className="text-xs text-red-400">{errors.departments.message}</p>}
+          </div>
+          <div className="flex flex-col gap-2 w-full md:w-1/4">
+            <label className="text-xs text-gray-500">Branches</label>
+            <select className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full" {...register("branches")} multiple>
+              {branchesOptions.map((branch) => (
+                <option key={branch._id} value={branch._id}>
+                  {branch.branch_name}
+                </option>
+              ))}
+            </select>
+            {errors.branches?.message && <p className="text-xs text-red-400">{errors.branches.message}</p>}
+          </div>
         </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Departments</label>
-          <select className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full" {...register("departments")} multiple>
-            {departmentsOptions.map((dept) => (
-              <option key={dept._id} value={dept._id}>
-                {dept.department_name}
-              </option>
-            ))}
-          </select>
-          {errors.departments?.message && <p className="text-xs text-red-400">{errors.departments.message}</p>}
-        </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Branches</label>
-          <select className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full" {...register("branches")} multiple>
-            {branchesOptions.map((branch) => (
-              <option key={branch._id} value={branch._id}>
-                {branch.branch_name}
-              </option>
-            ))}
-          </select>
-          {errors.branches?.message && <p className="text-xs text-red-400">{errors.branches.message}</p>}
-        </div>
-      </div>
+      )}
 
       {error && <span className="text-red-500">{error}</span>}
 
       <div className="flex justify-end gap-4">
-        <Button variant="outline" onClick={handleClose}>
+        <Button variant="outline" onClick={() => router.push("/settings/user")}>
           Cancel
         </Button>
-        <Button className="bg-blue-400 text-white p-2 rounded-md" type="submit" disabled={loading}>
-          {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
+        <Button className="bg-blue-400 text-white p-2 rounded-md" type="submit">
+          {type === "create" ? "Create" : "Update"}
         </Button>
       </div>
     </form>

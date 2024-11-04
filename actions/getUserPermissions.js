@@ -18,6 +18,8 @@ export async function getUserPermissions() {
 
   try {
     const fetchedUser = await getUserByUsername(user.username);
+    console.log('----------')
+    console.log(fetchedUser)
 
     if (fetchedUser?.roles?.length > 0) {
       const roleIds = fetchedUser.roles.map((role) => role._id);
