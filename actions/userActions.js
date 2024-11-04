@@ -74,11 +74,10 @@ export const getUserByUsername = async (username) => {
               department_name: role.department.department_name,
             }
           : null,
+        // Directly include module_access as-is
         module_access: role.module_access?.map((module) => ({
           module_name: module.module_name,
-          permissions: module.permissions instanceof Map 
-            ? Object.fromEntries(module.permissions) // Convert permissions map to an object
-            : {}, // Default to an empty object if permissions is not a Map
+          ...module, // Spread operator to include all fields in module_access as-is
         })) || [],
         active_status: role.active_status,
       })) || [],
@@ -96,6 +95,7 @@ export const getUserByUsername = async (username) => {
     return null;
   }
 };
+
 
 export const getUsers = async () => {
   await connectToDatabase();

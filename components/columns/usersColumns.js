@@ -13,6 +13,20 @@ import { useRouter } from "next/navigation";
 import { deleteUser } from "@/actions/userActions";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import { useUserPermissions } from "@/context/UserPermissionsContext";
+
+// Function to check module access permissions
+const checkPermissions = (roles, moduleName, permissionKey) => {
+  for (const role of roles) {
+    const module = role.module_access?.find(
+      (mod) => mod.module_name === moduleName
+    );
+    if (module && module.permissions[permissionKey]) {
+      return true; // Return true immediately if any role has the permission
+    }
+  }
+  return false; // Return false only if no role has the permission
+};
 
 export const columns = [
   {
@@ -83,6 +97,9 @@ export const columns = [
     cell: ({ row }) => {
       const router = useRouter();
       const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+      const userPermissions = useUserPermissions();
+      const canEdit = checkPermissions(userPermissions, "Users", "can_edit");
+      const canDelete = checkPermissions(userPermissions, "Users", "can_delete");
 
       // Navigate to the edit page for the selected user
       const onEdit = () => {
@@ -112,8 +129,16 @@ export const columns = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>Delete</DropdownMenuItem>
+              {canEdit && (
+                  <DropdownMenuItem onClick={onEdit}>
+                    Edit
+                  </DropdownMenuItem>
+                )}
+                {canDelete && (
+                  <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
+                    Delete
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -140,9 +165,22 @@ export const columns = [
   },
 ];
 
-// CreateNewUserButton component
+// CreateNewUserButton component with permission check
 export const CreateNewUserButton = () => {
+  const userPermissions = useUserPermissions();
+  const canAdd = checkPermissions(userPermissions, "Users", "can_add");
+
+  console.log('===userPermissions=====');
+  console.log(userPermissions);
+  console.log('=====canAdd==============');
+  console.log(canAdd);
+  console.log('====================================');
+
   const router = useRouter();
+
+  if (!canAdd) {
+    return null; // Hide button if user lacks canAdd permission
+  }
 
   return (
     <div className="flex justify-end mb-1">
