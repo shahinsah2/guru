@@ -28,7 +28,7 @@ const sidebarLinks = [
   { name: 'Product Categories', href: '/product-library/product-categories', icon: <FaRegBuilding /> },
   { name: 'Item Master', href: '/product-library/item-master', icon: <FaRegBuilding /> },
   { name: 'Item Variant', href: '/product-library/item-variant', icon: <FaCity /> },
-  { name: 'Asset', href: '/product-library/asset', icon: <FaGlobe /> },
+  { name: 'Asset', href: '/product-library/assets', icon: <FaGlobe /> },
   { name: 'Grade', href: '/product-library/grade', icon: <FaClipboardCheck /> },
   { name: 'Stock Locations', href: '/product-library/stock-location', icon: <FaListAlt /> },
 ];
