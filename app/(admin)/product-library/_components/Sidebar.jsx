@@ -24,8 +24,8 @@ import {
 
 const sidebarLinks = [
   { name: 'Product Template', href: '/product-library/product-template', icon: <FaUser /> },
-  { name: 'Brands', href: '/product-library/brands', icon: <FaRegAddressCard /> },
-  { name: 'Product Categories', href: '/product-library/product-catefories', icon: <FaRegBuilding /> },
+  { name: 'Brands', href: '/product-library/brand', icon: <FaRegAddressCard /> },
+  { name: 'Product Categories', href: '/product-library/product-categories', icon: <FaRegBuilding /> },
   { name: 'Item Master', href: '/product-library/item-master', icon: <FaRegBuilding /> },
   { name: 'Item Variant', href: '/product-library/item-variant', icon: <FaCity /> },
   { name: 'Asset', href: '/product-library/asset', icon: <FaGlobe /> },
