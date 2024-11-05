@@ -68,6 +68,7 @@ const AssetForm = ({ type, data }) => {
     }
   );
 
+  // Fetch options for dropdowns on load
   useEffect(() => {
     async function fetchData() {
       const [items, variants, brandsList] = await Promise.all([
@@ -78,16 +79,19 @@ const AssetForm = ({ type, data }) => {
       setItemMasters(items);
       setItemVariants(variants);
       setBrands(brandsList);
+
+      // Reset form with initial data after fetching dropdown options
+      if (data) {
+        reset({
+          ...data,
+          item_name: data.item_name?._id,  // Set initial item_name ID
+          item_type: data.item_type?._id,  // Set initial item_type ID
+          brand: data.brand?._id,          // Set initial brand ID
+        });
+      }
     }
     fetchData();
-    reset(data || {}); // Reset form with initial data if available
   }, [data, reset]);
-
-  useEffect(() => {
-    if (data?.item_name) setValue("item_name", data.item_name);
-    if (data?.item_type) setValue("item_type", data.item_type);
-    if (data?.brand) setValue("brand", data.brand);
-  }, [data, setValue]);
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
@@ -97,6 +101,7 @@ const AssetForm = ({ type, data }) => {
     }
   });
 
+  // Success/Error toast notifications
   useEffect(() => {
     if (state?.success) {
       toast.success(`Asset ${type === "create" ? "created" : "updated"} successfully!`);
@@ -116,7 +121,7 @@ const AssetForm = ({ type, data }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="text-sm font-medium">Item Name</label>
-          <Select onValueChange={(value) => setValue("item_name", value)} defaultValue={data?.item_name || ""}>
+          <Select onValueChange={(value) => setValue("item_name", value)} value={watch("item_name") || ""}>
             <SelectTrigger>
               <SelectValue placeholder="Select Item Name" />
             </SelectTrigger>
@@ -135,7 +140,7 @@ const AssetForm = ({ type, data }) => {
 
         <div>
           <label className="text-sm font-medium">Item Type</label>
-          <Select onValueChange={(value) => setValue("item_type", value)} defaultValue={data?.item_type || ""}>
+          <Select onValueChange={(value) => setValue("item_type", value)} value={watch("item_type") || ""}>
             <SelectTrigger>
               <SelectValue placeholder="Select Item Type" />
             </SelectTrigger>
@@ -154,7 +159,7 @@ const AssetForm = ({ type, data }) => {
 
         <div>
           <label className="text-sm font-medium">Brand</label>
-          <Select onValueChange={(value) => setValue("brand", value)} defaultValue={data?.brand || ""}>
+          <Select onValueChange={(value) => setValue("brand", value)} value={watch("brand") || ""}>
             <SelectTrigger>
               <SelectValue placeholder="Select Brand" />
             </SelectTrigger>
@@ -183,7 +188,7 @@ const AssetForm = ({ type, data }) => {
           {errors.date && <p className="text-red-500 text-xs">{errors.date.message}</p>}
         </div>
 
-        <div>
+         <div>
           <label className="text-sm font-medium">Warranty</label>
           <Input {...register("warranty")} placeholder="Enter Warranty Period" />
         </div>

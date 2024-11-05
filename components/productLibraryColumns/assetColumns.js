@@ -54,6 +54,7 @@ export const columns = [
         try {
           await deleteAsset(row.original._id);
           toast.success("Asset deleted successfully!");
+          setIsDeleteConfirmOpen(false);
           router.refresh();
         } catch {
           toast.error("Failed to delete asset.");

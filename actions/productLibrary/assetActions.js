@@ -61,31 +61,67 @@ export const getAssetById = async (id) => {
 
 // Create a new asset
 export const createAsset = async (currentState, assetData) => {
-  await connectToDatabase();
+  try {
+    await connectToDatabase();
 
-  const newAsset = new Asset(assetData);
-  await newAsset.save();
+    // Validate item_name, item_type, and brand exist before creating
+    const item = await ItemMaster.findById(assetData.item_name);
+    const variant = await ItemVariant.findById(assetData.item_type);
+    const brand = await Brand.findById(assetData.brand);
 
-  currentState.success = true;
-  currentState.message = "Asset created successfully";
-  return newAsset.toObject();
+    if (!item) {
+      return { success: false, error: true, message: "Item name not found in ItemMaster." };
+    }
+    if (!variant) {
+      return { success: false, error: true, message: "Item type not found in ItemVariant." };
+    }
+    if (!brand) {
+      return { success: false, error: true, message: "Brand not found in Brand model." };
+    }
+
+    // Save the new asset
+    const newAsset = new Asset(assetData);
+    const savedAsset = await newAsset.save();
+
+    return { success: true, error: false, message: "Asset created successfully", asset: savedAsset.toObject() };
+  } catch (error) {
+    console.error("Error creating asset:", error);
+    return { success: false, error: true, message: "Error creating asset." };
+  }
 };
 
 // Update an existing asset
 export const updateAsset = async (currentState, assetData) => {
-  await connectToDatabase();
-  const { id, ...updateData } = assetData;
+  try {
+    await connectToDatabase();
+    const { id, ...updateData } = assetData;
 
-  const updatedAsset = await Asset.findByIdAndUpdate(id, updateData, { new: true });
-  if (!updatedAsset) {
-    currentState.error = true;
-    currentState.message = "Asset not found";
-    return null;
+    // Validate item_name, item_type, and brand exist before updating
+    const item = await ItemMaster.findById(updateData.item_name);
+    const variant = await ItemVariant.findById(updateData.item_type);
+    const brand = await Brand.findById(updateData.brand);
+
+    if (!item) {
+      return { success: false, error: true, message: "Item name not found in ItemMaster." };
+    }
+    if (!variant) {
+      return { success: false, error: true, message: "Item type not found in ItemVariant." };
+    }
+    if (!brand) {
+      return { success: false, error: true, message: "Brand not found in Brand model." };
+    }
+
+    // Update the asset
+    const updatedAsset = await Asset.findByIdAndUpdate(id, updateData, { new: true });
+    if (!updatedAsset) {
+      return { success: false, error: true, message: "Asset not found" };
+    }
+
+    return { success: true, error: false, message: "Asset updated successfully", asset: updatedAsset.toObject() };
+  } catch (error) {
+    console.error("Error updating asset:", error);
+    return { success: false, error: true, message: "Error updating asset." };
   }
-
-  currentState.success = true;
-  currentState.message = "Asset updated successfully";
-  return updatedAsset.toObject();
 };
 
 // Delete an asset
@@ -93,13 +129,9 @@ export const deleteAsset = async (id) => {
   await connectToDatabase();
   
   const deletedAsset = await Asset.findByIdAndDelete(id);
-  if (!deletedAsset) {
-    currentState.error = true;
-    currentState.message = "Asset not found";
-    return null;
-  }
-
-  currentState.success = true;
-  currentState.message = "Asset deleted successfully";
-  return { success: true };
+  if (!deletedAsset) {   
+      return { success: false, message: 'Asset not found' };
+    }
+    return { success: true, message: 'Asset deleted successfully' };
+  
 };
