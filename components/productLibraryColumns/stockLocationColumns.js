@@ -1,10 +1,10 @@
-// @/components/columns/rolesColumns.js
+// @/components/productLibraryColumns/stockLocationColumns.js
 
 "use client";
 
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deleteRole } from "@/actions/roleActions";
+import { deleteStockLocation } from "@/actions/productLibrary/stockLocationActions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useUserPermissions } from "@/context/UserPermissionsContext";
@@ -32,17 +32,23 @@ const checkPermissions = (roles, moduleName, permissionKey) => {
 
 export const columns = [
   {
-    accessorKey: "role_name",
-    header: "Role Name",
+    accessorKey: "stock_location_id",
+    header: "Location ID",
   },
   {
-    accessorKey: "department",
-    header: "Department",
-    cell: ({ row }) => row.original.department ? row.original.department.department_name : "N/A",
+    accessorKey: "stock_name",
+    header: "Stock Name",
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "phone_number",
+    header: "Phone Number",
+  },
+  {
+    accessorKey: "address",
+    header: "Address",
+    cell: ({ row }) => (
+      `${row.original.address.street}, ${row.original.address.city}, ${row.original.address.state}`
+    ),
   },
   {
     accessorKey: "active_status",
@@ -57,20 +63,20 @@ export const columns = [
       const router = useRouter();
       const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
       const userPermissions = useUserPermissions();
-      const canEdit = checkPermissions(userPermissions, "Roles", "can_edit");
-      const canDelete = checkPermissions(userPermissions, "Roles", "can_delete");
+      const canEdit = checkPermissions(userPermissions, "Stock Location", "can_edit");
+      const canDelete = checkPermissions(userPermissions, "Stock Location", "can_delete");
 
       const onEdit = () => {
-        router.push(`/settings/roles/${row.original._id}`);
+        router.push(`/product-library/stock-location/${row.original._id}`);
       };
 
       const onDelete = async () => {
         try {
-          await deleteRole(row.original._id);
-          toast.success("Role deleted successfully!");
+          await deleteStockLocation(row.original._id);
+          toast.success("Stock Location deleted successfully!");
           router.refresh();
         } catch {
-          toast.error("Failed to delete role.");
+          toast.error("Failed to delete stock location.");
         }
       };
 
@@ -86,15 +92,15 @@ export const columns = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               {canEdit && (
-                <DropdownMenuItem onClick={onEdit}>
-                  Edit
-                </DropdownMenuItem>
-              )}
-              {canDelete && (
-                <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
-                  Delete
-                </DropdownMenuItem>
-              )}
+                  <DropdownMenuItem onClick={onEdit}>
+                    Edit
+                  </DropdownMenuItem>
+                )}
+                {canDelete && (
+                  <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
+                    Delete
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -103,7 +109,7 @@ export const columns = [
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white p-6 rounded-md max-w-sm mx-auto">
                 <h3 className="text-lg font-medium">Delete Confirmation</h3>
-                <p className="mt-2 text-sm">Are you sure you want to delete this role?</p>
+                <p className="mt-2 text-sm">Are you sure you want to delete this record?</p>
                 <div className="flex justify-end gap-4 mt-4">
                   <Button variant="outline" onClick={() => setIsDeleteConfirmOpen(false)}>
                     Cancel
@@ -121,10 +127,10 @@ export const columns = [
   },
 ];
 
-// CreateNewRoleButton component with permission check
-export const CreateNewRoleButton = () => {
+// CreateNewStockLocationButton component with permission check
+export const CreateNewStockLocationButton = () => {
   const userPermissions = useUserPermissions();
-  const canAdd = checkPermissions(userPermissions, "Roles", "can_add");
+  const canAdd = checkPermissions(userPermissions, "Stock Location", "can_add");
   const router = useRouter();
 
   if (!canAdd) {
@@ -133,8 +139,8 @@ export const CreateNewRoleButton = () => {
 
   return (
     <div className="flex justify-end mb-1">
-      <Button className="bg-blue-500 text-white" onClick={() => router.push("/settings/roles/new")}>
-        Create New Role
+      <Button className="bg-blue-500 text-white" onClick={() => router.push("/product-library/stock-location/new")}>
+        Create New Stock Location
       </Button>
     </div>
   );

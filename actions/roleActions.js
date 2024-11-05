@@ -1,77 +1,77 @@
-// @/actions/roleActions.js
+// @/actions/settings/roleActions.js
 
 "use server";
 
 import { connectToDatabase } from '@/lib/database';
 import Role from '@/lib/database/models/Role.model';
 
-// Create a new role
-export const createRole = async (currentStatus, roleData) => {
+// Get all roles
+export const getRoles = async () => {
   await connectToDatabase();
-  try {
-    const newRole = new Role(roleData);
-    const savedRole = await newRole.save();
+  const roles = await Role.find({}).populate('department').lean();
+  return roles.map(role => ({
+    ...role,
+    _id: role._id.toString(),
+    department: role.department ? role.department._id.toString() : null,
+  }));
+};
 
-    return {
-      _id: savedRole._id.toString(),
-      roleName: savedRole.role_name,
-      success: true,
-      error: false,
-    };
-  } catch (error) {
-    return { success: false, error: true, message: error.message || 'Failed to create role.' };
+// Get a single role by ID
+export const getRoleById = async (id) => {
+  await connectToDatabase();
+  const role = await Role.findById(id).populate('department').lean();
+  if (!role) {
+    return null;
   }
+  
+  // Ensure each permission in `module_access` has all permission keys with default values
+  const permissionKeys = [
+    "can_add", "can_edit", "can_delete", "can_activate", "can_deactivate",
+    "can_search", "can_import", "can_export", "can_print",
+    "can_generate_pdf", "can_logout"
+  ];
+  
+  const formattedModuleAccess = (role.module_access || []).map((module) => {
+    const permissions = permissionKeys.reduce((acc, key) => {
+      acc[key] = module.permissions?.[key] ?? false; // Default to false if not present
+      return acc;
+    }, {});
+    return { module_name: module.module_name, permissions };
+  });
+
+  return {
+    ...role,
+    _id: role._id.toString(),
+    department: role.department ? role.department._id.toString() : null,
+    module_access: formattedModuleAccess,
+  };
+};
+
+// Create a new role
+export const createRole = async (currentState, roleData) => {
+  await connectToDatabase();
+  const newRole = new Role(roleData);
+  const savedRole = await newRole.save();
+  return { success: true, role: savedRole.toObject() };
 };
 
 // Update an existing role
-export const updateRole = async (currentStatus, updateData) => {
-  await connectToDatabase();
-
+export const updateRole = async (currentState, updateData) => {
   const id = updateData.id;
-
-  try {
-    const updatedRole = await Role.findByIdAndUpdate(id, updateData, { new: true })
-      .populate('department'); // Populate department if needed
-    return {
-      _id: updatedRole._id.toString(),
-      roleName: updatedRole.role_name,
-      success: true,
-      error: false,
-    };
-  } catch (error) {
-    return { success: false, error: true, message: error.message || 'Failed to update role.' };
+  await connectToDatabase();
+  const updatedRole = await Role.findByIdAndUpdate(id, updateData, { new: true });
+  if (!updatedRole) {
+    return { success: false, message: 'Role not found' };
   }
+  return { success: true, role: updatedRole.toObject() };
 };
 
 // Delete a role
 export const deleteRole = async (id) => {
   await connectToDatabase();
-  try {
-    const deletedRole = await Role.findByIdAndDelete(id);
-    if (!deletedRole) {
-      return { success: false, error: true, message: 'Role not found' };
-    }
-    return { success: true, error: false, message: 'Role deleted successfully' };
-  } catch (error) {
-    return { success: false, error: true, message: error.message || 'Failed to delete role.' };
+  const deletedRole = await Role.findByIdAndDelete(id);
+  if (!deletedRole) {
+    return { success: false, message: 'Role not found' };
   }
-};
-
-// Get roles with optional pagination
-export const getRoles = async () => {
-  await connectToDatabase();
-  const roles = await Role.find({})
-    .populate('department')
-    .lean();
-  return roles.map(role => ({
-    ...role,
-    _id: role._id.toString(),
-    department: role.department ? role.department.department_name : 'No Department', // Handle null case
-  }));
-};
-
-// Get the total number of roles
-export const getRolesCount = async () => {
-  await connectToDatabase();
-  return await Role.countDocuments();
+  return { success: true, message: 'Role deleted successfully' };
 };

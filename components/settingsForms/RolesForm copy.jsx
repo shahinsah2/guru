@@ -1,82 +1,68 @@
-// @/components/settingsForms/RolesForm.jsx
+// @/components/RolesForm.jsx
 
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useFormState } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createRole, updateRole } from "@/actions/roleActions";
-import { getDepartments } from "@/actions/departmentActions";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { useFormState } from "react-dom";
-import { useRouter } from "next/navigation";
+import { getDepartments } from "@/actions/departmentActions";
 
-const permissionKeys = [
-  "can_add", "can_edit", "can_delete", "can_activate", "can_deactivate",
-  "can_search", "can_import", "can_export", "can_print",
-  "can_generate_pdf", "can_logout"
-];
-
+// Define schema for form validation
 const schema = z.object({
   role_name: z.string().min(1, { message: "Role Name is required!" }),
   department: z.string().min(1, { message: "Department is required!" }),
+  active_status: z.boolean().default(true),
   module_access: z.array(z.object({
-    module_name: z.string().min(1, { message: "Module name is required!" }),
-    permissions: z.object(
-      permissionKeys.reduce((acc, key) => {
-        acc[key] = z.boolean().default(false);
-        return acc;
-      }, {})
-    ),
-  })),
+    module_name: z.string(),
+    permissions: z.object({
+      can_add: z.boolean().optional(),
+      can_edit: z.boolean().optional(),
+      can_delete: z.boolean().optional(),
+      can_activate: z.boolean().optional(),
+      can_deactivate: z.boolean().optional(),
+      can_search: z.boolean().optional(),
+      can_import: z.boolean().optional(),
+      can_export: z.boolean().optional(),
+      can_print: z.boolean().optional(),
+      can_generate_pdf: z.boolean().optional(),
+      can_logout: z.boolean().optional(),
+    })
+  }))
 });
 
 const RolesForm = ({ type, data }) => {
-  const { register, handleSubmit, setValue, watch, formState: { errors }, reset } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: data || {
-      role_name: "",
-      department: "",
-      module_access: [
-        { module_name: "Users", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
-        { module_name: "Roles", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
-        { module_name: "Inventory", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
-        { module_name: "Stock Location", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
-      ],
-    },
+    defaultValues: data || {},
   });
-
   const router = useRouter();
+
   const [departments, setDepartments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [modules, setModules] = useState([
+    { module_name: "Users", permissions: { can_add: false, can_edit: false, can_delete: false } },
+    { module_name: "Inventory", permissions: { can_add: false, can_edit: false, can_delete: false } },
+    { module_name: "StockLocation", permissions: { can_add: false, can_edit: false, can_delete: false } },
+  ]);
 
   // Fetch departments
   useEffect(() => {
     async function fetchDepartments() {
-      try {
-        const fetchedDepartments = await getDepartments();
-        setDepartments(fetchedDepartments);
-      } catch (err) {
-        console.error("Failed to load departments:", err);
-        setError("Failed to load departments.");
-      }
+      const fetchedDepartments = await getDepartments();
+      setDepartments(fetchedDepartments);
     }
     fetchDepartments();
   }, []);
 
-  // Set initial form values for editing
-  useEffect(() => {
-    if (type === "edit" && data) {
-      reset(data);
-    }
-  }, [type, data, reset]);
-
+  // Using useFormState for form actions
   const [state, formAction] = useFormState(
     type === "create" ? createRole : updateRole,
     {
@@ -86,24 +72,23 @@ const RolesForm = ({ type, data }) => {
     }
   );
 
-  const onSubmit = handleSubmit(async (formData) => {
-    setLoading(true);
+  const onSubmit = handleSubmit((formData) => {
+    console.log("Submitted Form Data:", formData); // Debugging
     try {
       formAction({ ...formData, id: data?._id });
     } catch (err) {
-      setError(err.message || "An unexpected error occurred.");
-      setLoading(false);
+      toast.error(err.message || "An unexpected error occurred.");
+      console.error("Error in form submission:", err);
     }
   });
 
+  // Check form submission status to display success or error messages
   useEffect(() => {
-    if (state?.success) {
+    if (state.success) {
       toast.success(`Role ${type === "create" ? "created" : "updated"} successfully!`);
       router.push("/settings/roles");
-      router.refresh();
-    } else if (state?.error) {
-      setError(state.message);
-      setLoading(false);
+    } else if (state.error) {
+      toast.error(state.message || "Failed to submit the form. Please try again.");
     }
   }, [state, router, type]);
 
@@ -120,12 +105,12 @@ const RolesForm = ({ type, data }) => {
 
         <div>
           <label className="text-sm font-medium">Department</label>
-          <Select onValueChange={(value) => setValue("department", value)} defaultValue={data?.department || ""}>
+          <Select onValueChange={(value) => setValue("department", value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select Department" />
             </SelectTrigger>
             <SelectContent>
-              {departments.map((department) => (
+              {departments.map(department => (
                 <SelectItem key={department._id} value={department._id}>
                   {department.department_name}
                 </SelectItem>
@@ -138,17 +123,17 @@ const RolesForm = ({ type, data }) => {
 
       <div className="mt-4">
         <label className="text-sm font-medium">Module Access Permissions</label>
-        <div className="border p-4 rounded-md space-y-4">
-          {watch("module_access").map((module, index) => (
-            <div key={module.module_name} className="flex flex-col border-b pb-4">
+        <div className="border p-4 rounded-md space-y-2">
+          {modules.map((module, index) => (
+            <div key={index} className="flex flex-col">
               <label className="font-medium">{module.module_name}</label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
-                {Object.keys(module.permissions).map((permission) => (
+                {Object.keys(module.permissions).map(permission => (
                   <div key={permission} className="flex items-center gap-2">
                     <Checkbox
                       {...register(`module_access.${index}.permissions.${permission}`)}
-                      checked={watch(`module_access.${index}.permissions.${permission}`)}
-                      onCheckedChange={(checked) => setValue(`module_access.${index}.permissions.${permission}`, checked)}
+                      onChange={(e) => setValue(`module_access.${index}.permissions.${permission}`, e.target.checked)}
+                      defaultChecked={module.permissions[permission]}
                     />
                     <label className="text-sm">{permission.replace(/_/g, ' ')}</label>
                   </div>
@@ -159,14 +144,17 @@ const RolesForm = ({ type, data }) => {
         </div>
       </div>
 
-      {error && <p className="text-red-500">{error}</p>}
+      <div className="flex items-center gap-2 mt-4">
+        <Checkbox {...register("active_status")} />
+        <label className="text-sm font-medium">Active Status</label>
+      </div>
 
       <div className="flex justify-end gap-4 mt-6">
         <Button variant="outline" onClick={() => router.push("/settings/roles")}>
           Cancel
         </Button>
-        <Button type="submit" className="bg-blue-500 text-white" disabled={loading}>
-          {loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
+        <Button type="submit" className="bg-blue-500 text-white">
+          {type === "create" ? "Create" : "Update"}
         </Button>
       </div>
     </form>

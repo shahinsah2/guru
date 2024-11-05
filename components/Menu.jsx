@@ -11,6 +11,10 @@ const menuItems = [
     href: '/dashboard',
   },
   {
+    label: 'Product Library',
+    href: '/product-library',
+  },
+  {
     label: 'Inventory',
     href: '/inventory',
   },
