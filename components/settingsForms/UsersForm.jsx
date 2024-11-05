@@ -112,7 +112,7 @@ const UsersForm = ({ type, data }) => {
     if (state.success) {
       toast(`User ${type === "create" ? "created" : "updated"} successfully!`);
       router.push("/settings/user");
-      
+      router.refresh();
     } else if (state.error) {
       setError(state.message); // Display error message from Clerk or server
     }
