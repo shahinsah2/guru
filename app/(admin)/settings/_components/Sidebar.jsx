@@ -31,12 +31,11 @@ const sidebarLinks = [
   { name: 'Countries', href: '/settings/countries', icon: <FaGlobe /> },
   { name: 'Lead Checklists', href: '/settings/lead-checklist', icon: <FaClipboardCheck /> },
   { name: 'Lead Statuses', href: '/settings/lead-status', icon: <FaListAlt /> },
-  { name: 'Locations', href: '/settings/locations', icon: <FaMapMarkerAlt /> },
   { name: 'Order Checklists', href: '/settings/order-checklist', icon: <FaClipboardList /> },
   { name: 'Service Priority Levels', href: '/settings/service-priority-level', icon: <FaTasks /> },
   { name: 'Service Status', href: '/settings/service-status', icon: <FaFlag /> },
   { name: 'State', href: '/settings/states', icon: <FaMapSigns /> },
-  { name: 'Taxes', href: '/settings/taxes', icon: <FaDollarSign /> },
+  { name: 'Taxes', href: '/settings/tax-list', icon: <FaDollarSign /> },
   { name: 'Terms', href: '/settings/terms', icon: <FaGavel /> },
 ];
 
