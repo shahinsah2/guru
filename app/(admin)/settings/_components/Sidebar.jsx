@@ -35,7 +35,7 @@ const sidebarLinks = [
   { name: 'Order Checklists', href: '/settings/order-checklists', icon: <FaClipboardList /> },
   { name: 'Service Priority Levels', href: '/settings/service-priority-levels', icon: <FaTasks /> },
   { name: 'Service Status', href: '/settings/service-status', icon: <FaFlag /> },
-  { name: 'State', href: '/settings/state', icon: <FaMapSigns /> },
+  { name: 'State', href: '/settings/states', icon: <FaMapSigns /> },
   { name: 'Taxes', href: '/settings/taxes', icon: <FaDollarSign /> },
   { name: 'Terms', href: '/settings/terms', icon: <FaGavel /> },
 ];
