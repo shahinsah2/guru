@@ -72,8 +72,8 @@ export const createProductTemplate = async (currentState, templateData) => {
 export const updateProductTemplate = async (currentState, templateData) => {
   try {
     await connectToDatabase();
-    const { id, ...updateData } = templateData;
-    const updatedTemplate = await ProductTemplate.findByIdAndUpdate(id, updateData, { new: true });
+    const id = templateData.id;
+    const updatedTemplate = await ProductTemplate.findByIdAndUpdate(id, templateData, { new: true });
     if (!updatedTemplate) {
       return { success: false, error: true, message: "Product Template not found" };
     }

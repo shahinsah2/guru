@@ -8,12 +8,12 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useFormState } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { createProductTemplate, updateProductTemplate, getActiveProductCategories, getActiveBrands, getActiveItemVariants } from "@/actions/productLibrary/productTemplateActions";
+import { useFormState } from "react-dom";
 
 const schema = z.object({
   product_name: z.string().nonempty("Product Name is required!"),
@@ -22,7 +22,7 @@ const schema = z.object({
   model: z.string().nonempty("Model is required!"),
   active_status: z.boolean().default(true),
   description: z.string().optional(),
-  image: z.any().optional(),
+  // image: z.any().optional(), // Comment out image schema validation
   specifications: z.object({
     ram: z.object({ brand: z.string(), type: z.string() }).optional(),
     processor: z.object({ brand: z.string(), type: z.string() }).optional(),
@@ -37,7 +37,7 @@ const ProductTemplateForm = ({ type, data }) => {
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [variants, setVariants] = useState([]);
-  
+
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
     defaultValues: data || {},
@@ -73,22 +73,22 @@ const ProductTemplateForm = ({ type, data }) => {
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
-      let imagePath = data?.image || "";
+      // let imagePath = data?.image || ""; // Comment out image path variable
 
-      if (formData.image && formData.image[0]) {
-        const file = formData.image[0];
-        const uploadResponse = await fetch('/api/upload-image', {
-          method: 'POST',
-          body: new FormData().append("image", file),
-        });
-        
-        if (!uploadResponse.ok) throw new Error("Image upload failed");
+      // if (formData.image && formData.image[0]) {
+      //   const file = formData.image[0];
+      //   const uploadResponse = await fetch('/api/upload-image', {
+      //     method: 'POST',
+      //     body: new FormData().append("image", file),
+      //   });
 
-        const { filePath } = await uploadResponse.json();
-        imagePath = filePath;
-      }
+      //   if (!uploadResponse.ok) throw new Error("Image upload failed");
 
-      await formAction({ ...formData, image: imagePath, id: data?._id });
+      //   const { filePath } = await uploadResponse.json();
+      //   imagePath = filePath;
+      // }
+
+      await formAction({ ...formData, /* image: imagePath, */ id: data?._id });
     } catch (error) {
       console.error(error.message || "An unexpected error occurred.");
     }
@@ -123,11 +123,11 @@ const ProductTemplateForm = ({ type, data }) => {
         {errors.category && <p className="text-red-500 text-xs">{errors.category.message}</p>}
       </div>
 
-      <div>
+      {/* <div>
         <label className="text-sm font-medium">Add Images</label>
         <Input type="file" {...register("image")} accept="image/*" />
         {errors.image && <p className="text-red-500 text-xs">{errors.image.message}</p>}
-      </div>
+      </div> */}
 
       <div>
         <label className="text-sm font-medium">Product Name</label>
@@ -187,7 +187,13 @@ const ProductTemplateForm = ({ type, data }) => {
       </div>
 
       <div className="col-span-2 flex justify-end">
-        <Button type="submit" className="bg-blue-500 text-white">{type === "create" ? "Save" : "Update"}</Button>
+      <Button
+          variant="outline"
+          onClick={() => router.push("/product-library/product-template")}
+        >
+          Cancel
+        </Button>
+        <Button type="submit" className="bg-blue-500 text-white mx-2">{type === "create" ? "Create" : "Update"}</Button>
       </div>
     </form>
   );
