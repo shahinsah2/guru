@@ -16,7 +16,6 @@ import {
   FaFlag,
   FaDollarSign,
   FaGavel,
-  FaCogs,
   FaMapSigns,
   FaCity,
   FaGlobe,
@@ -25,8 +24,8 @@ import {
 const sidebarLinks = [
   { name: 'User', href: '/settings/user', icon: <FaUser /> },
   { name: 'Roles', href: '/settings/roles', icon: <FaRegAddressCard /> },
-  { name: 'Department', href: '/settings/departments', icon: <FaRegBuilding /> },
-  { name: 'Branch', href: '/settings/branches', icon: <FaRegBuilding /> },
+  { name: 'Department', href: '/settings/departments', icon: <FaRegBuilding /> }, // Updated route
+  { name: 'Branch', href: '/settings/branches', icon: <FaRegBuilding /> },       // Updated route
   { name: 'Cities', href: '/settings/cities', icon: <FaCity /> },
   { name: 'Countries', href: '/settings/countries', icon: <FaGlobe /> },
   { name: 'Lead Checklists', href: '/settings/lead-checklist', icon: <FaClipboardCheck /> },
@@ -34,8 +33,8 @@ const sidebarLinks = [
   { name: 'Order Checklists', href: '/settings/order-checklist', icon: <FaClipboardList /> },
   { name: 'Service Priority Levels', href: '/settings/service-priority-level', icon: <FaTasks /> },
   { name: 'Service Status', href: '/settings/service-status', icon: <FaFlag /> },
-  { name: 'State', href: '/settings/states', icon: <FaMapSigns /> },
-  { name: 'Taxes', href: '/settings/tax-list', icon: <FaDollarSign /> },
+  { name: 'State', href: '/settings/states', icon: <FaMapSigns /> },              // Updated route
+  { name: 'Taxes', href: '/settings/tax-list', icon: <FaDollarSign /> },          // Updated route
   { name: 'Terms', href: '/settings/terms', icon: <FaGavel /> },
 ];
 
@@ -43,23 +42,25 @@ export default function Sidebar() {
   const [activeTab, setActiveTab] = useState('');
 
   return (
-    <aside className="w-64 bg-gray-100 border-r h-full">
-      <div className="bg-orange-700 text-white text-center p-4">
-        <h1 className="text-lg font-bold">Admin Settings</h1>
-      </div>
-      <nav className="flex flex-col py-4 space-y-2">
-        {/* Loop through the sidebarLinks array to render each link */}
+    <aside className="w-34 bg-gray-100 border-r ml-2 h-full flex flex-col justify-start">
+      <nav className="flex flex-col items-center py-1 space-y-2">
         {sidebarLinks.map((link) => (
           <Link key={link.name} href={link.href}>
-            <span
-              className={`flex items-center gap-2 cursor-pointer px-4 py-2 text-lg font-medium ${
-                activeTab === link.name ? 'bg-indigo-100' : 'hover:bg-gray-200'
-              }`}
+            <div
+              className={`flex flex-col h-15 w-8 items-center cursor-pointer transition-all duration-400 ${
+                activeTab === link.name ? 'bg-black text-white' : 'hover:bg-gray-200'
+              } rounded-md p-1 min-w-[90px]`}
               onClick={() => setActiveTab(link.name)}
             >
-              {link.icon}
-              {link.name}
-            </span>
+              <div className="text-lg" style={{ fontSize: '1.1rem', marginTop: '0.2rem' }}>
+                {link.icon}
+              </div>
+              <span className={`text-xs text-center ${activeTab === link.name ? 'font-bold' : ''}`} style={{ marginTop: '0.2rem' }}>
+                {link.name.split(' ').map((word, index) => (
+                  <span key={index} className={`${index > 0 ? 'block' : ''}`}>{word}</span>
+                ))}
+              </span>
+            </div>
           </Link>
         ))}
       </nav>
