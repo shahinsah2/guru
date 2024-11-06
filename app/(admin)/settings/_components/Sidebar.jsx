@@ -24,17 +24,18 @@ import {
 const sidebarLinks = [
   { name: 'User', href: '/settings/user', icon: <FaUser /> },
   { name: 'Roles', href: '/settings/roles', icon: <FaRegAddressCard /> },
-  { name: 'Department', href: '/settings/departments', icon: <FaRegBuilding /> }, // Updated route
-  { name: 'Branch', href: '/settings/branches', icon: <FaRegBuilding /> },       // Updated route
+  { name: 'Department', href: '/settings/department', icon: <FaRegBuilding /> },
+  { name: 'Branch', href: '/settings/branch', icon: <FaRegBuilding /> },
   { name: 'Cities', href: '/settings/cities', icon: <FaCity /> },
   { name: 'Countries', href: '/settings/countries', icon: <FaGlobe /> },
-  { name: 'Lead Checklists', href: '/settings/lead-checklist', icon: <FaClipboardCheck /> },
-  { name: 'Lead Statuses', href: '/settings/lead-status', icon: <FaListAlt /> },
-  { name: 'Order Checklists', href: '/settings/order-checklist', icon: <FaClipboardList /> },
-  { name: 'Service Priority Levels', href: '/settings/service-priority-level', icon: <FaTasks /> },
+  { name: 'Lead Checklists', href: '/settings/lead-checklists', icon: <FaClipboardCheck /> },
+  { name: 'Lead Statuses', href: '/settings/lead-statuses', icon: <FaListAlt /> },
+  { name: 'Locations', href: '/settings/locations', icon: <FaMapMarkerAlt /> },
+  { name: 'Order Checklists', href: '/settings/order-checklists', icon: <FaClipboardList /> },
+  { name: 'Service Priority', href: '/settings/service-priority-levels', icon: <FaTasks /> },
   { name: 'Service Status', href: '/settings/service-status', icon: <FaFlag /> },
-  { name: 'State', href: '/settings/states', icon: <FaMapSigns /> },              // Updated route
-  { name: 'Taxes', href: '/settings/tax-list', icon: <FaDollarSign /> },          // Updated route
+  { name: 'State', href: '/settings/state', icon: <FaMapSigns /> },
+  { name: 'Taxes', href: '/settings/taxes', icon: <FaDollarSign /> },
   { name: 'Terms', href: '/settings/terms', icon: <FaGavel /> },
 ];
 
@@ -42,8 +43,8 @@ export default function Sidebar() {
   const [activeTab, setActiveTab] = useState('');
 
   return (
-    <aside className="w-34 bg-gray-100 border-r ml-2 h-full flex flex-col justify-start">
-      <nav className="flex flex-col items-center py-1 space-y-2">
+    <aside className="w-20 bg-gray-100 border-r ml-2 h-full flex flex-col justify-start"> {/* Reduced width */}
+      <nav className="flex flex-col items-center py-1 space-y-2"> {/* Adjusted spacing */}
         {sidebarLinks.map((link) => (
           <Link key={link.name} href={link.href}>
             <div
@@ -52,10 +53,10 @@ export default function Sidebar() {
               } rounded-md p-1 min-w-[90px]`}
               onClick={() => setActiveTab(link.name)}
             >
-              <div className="text-lg" style={{ fontSize: '1.1rem', marginTop: '0.2rem' }}>
+              <div className="text-lg" style={{ fontSize: '1.0 rem', marginTop: '0.2rem' }}> {/* Added margin-top */}
                 {link.icon}
               </div>
-              <span className={`text-xs text-center ${activeTab === link.name ? 'font-bold' : ''}`} style={{ marginTop: '0.2rem' }}>
+              <span className={`text-xs text-center ${activeTab === link.name ? 'font-bold' : ''}`} style={{ marginTop: '0.2rem' }}> {/* Added margin-top */}
                 {link.name.split(' ').map((word, index) => (
                   <span key={index} className={`${index > 0 ? 'block' : ''}`}>{word}</span>
                 ))}
@@ -66,4 +67,4 @@ export default function Sidebar() {
       </nav>
     </aside>
   );
-}
+}    
