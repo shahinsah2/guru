@@ -1,12 +1,16 @@
-// @/components/NavBar.jsx
+"use client";
 
-"use client"
-
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import Menu from './Menu';
-import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import Menu from "./Menu";
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,31 +21,40 @@ export default function NavBar() {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200">
-      <div className="max-w-9xl mx-auto px-6 sm:px-8 lg:px-10">
+    <nav className="bg-white border-b border-gray-200 w-full">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Left Side: Logo + Company Name */}
           <div className="flex items-center space-x-4">
             <Link href="/dashboard">
-              <Image src="/logo.png" alt="Guru Goutam Logo" width={200} height={60} />
+              <Image
+                src="/logo.png"
+                alt="Guru Goutam Logo"
+                width={200}
+                height={60}
+              />
             </Link>
+          </div>
 
-            <div className="hidden md:flex space-x-6">
-              <Menu isOpen={isOpen} />
-            </div>
+          {/* Center: Menu Items (Visible on larger screens) */}
+          <div className="hidden lg:flex items-center space-x-6">
+            <Menu isOpen={isOpen} />
           </div>
 
           {/* Right Side: Settings and Profile */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
+            {/* Settings Icon (Always Visible) */}
             <Link href="/settings">
               <Image
-                className="h-8 w-8 cursor-pointer"
+                className="h-8 w-8 cursor-pointer mr-6" // Added margin for spacing
                 src="/setting.png"
                 alt="Settings"
                 width={36}
                 height={36}
               />
             </Link>
+
+            {/* User Profile Section */}
             <div className="flex items-center space-x-2">
               <SignedOut>
                 <SignInButton />
@@ -49,12 +62,22 @@ export default function NavBar() {
               <SignedIn>
                 <UserButton />
               </SignedIn>
-              <span className="text-sm font-medium text-gray-800">{user?.username}</span>
+              <div className="text-sm font-medium text-gray-800">
+                <span>
+                  {user?.firstName} {user?.lastName}
+                </span>
+                <span className="ml-2">
+                  {user?.username
+                    ? user.username.charAt(0).toUpperCase() +
+                      user.username.slice(1)
+                    : ""}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Mobile Menu Toggle */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <button
               onClick={handleNavToggle}
               type="button"
@@ -100,7 +123,7 @@ export default function NavBar() {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <div className="pt-2 pb-3 space-y-1">
               <Menu isOpen={isOpen} />
             </div>

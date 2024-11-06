@@ -16,7 +16,6 @@ import {
   FaFlag,
   FaDollarSign,
   FaGavel,
-  FaCogs,
   FaMapSigns,
   FaCity,
   FaGlobe,
@@ -37,12 +36,8 @@ export default function Sidebar() {
   const [activeTab, setActiveTab] = useState('');
 
   return (
-    <aside className="w-34 bg-gray-100 border-r ml-2 h-full flex flex-col justify-start">
-      {/* <div className="bg-orange-700 text-white text-center p-4">
-        <h1 className="text-lg font-bold">Product Library</h1>
-      </div> */}
-      <nav className="flex flex-col items-center py-1 space-y-2">
-        {/* Loop through the sidebarLinks array to render each link */}
+    <aside className="w-20 bg-gray-100 border-r ml-2 h-full flex flex-col justify-start"> {/* Reduced width */}  
+      <nav className="flex flex-col items-center py-1 space-y-2"> {/* Adjusted spacing */}  
         {sidebarLinks.map((link) => (
           <Link key={link.name} href={link.href}>
             <div
