@@ -24,18 +24,19 @@ import {
 const sidebarLinks = [
   { name: 'User', href: '/settings/user', icon: <FaUser /> },
   { name: 'Roles', href: '/settings/roles', icon: <FaRegAddressCard /> },
-  { name: 'Department', href: '/settings/department', icon: <FaRegBuilding /> },
-  { name: 'Branch', href: '/settings/branch', icon: <FaRegBuilding /> },
+  { name: 'Department', href: '/settings/departments', icon: <FaRegBuilding /> },
+  { name: 'Branch', href: '/settings/branches', icon: <FaRegBuilding /> },
   { name: 'Cities', href: '/settings/cities', icon: <FaCity /> },
   { name: 'Countries', href: '/settings/countries', icon: <FaGlobe /> },
-  { name: 'Lead Checklists', href: '/settings/lead-checklists', icon: <FaClipboardCheck /> },
-  { name: 'Lead Statuses', href: '/settings/lead-statuses', icon: <FaListAlt /> },
-  { name: 'Locations', href: '/settings/locations', icon: <FaMapMarkerAlt /> },
-  { name: 'Order Checklists', href: '/settings/order-checklists', icon: <FaClipboardList /> },
-  { name: 'Service Priority', href: '/settings/service-priority-levels', icon: <FaTasks /> },
+  { name: 'Lead Checklists', href: '/settings/lead-checklist', icon: <FaClipboardCheck /> },
+  { name: 'Lead Statuses', href: '/settings/lead-status', icon: <FaListAlt /> },
+  { name: 'Locations', href: '/settings/cities', icon: <FaMapMarkerAlt /> },
+  //change cities to locations
+  { name: 'Order Checklists', href: '/settings/order-checklist', icon: <FaClipboardList /> },
+  { name: 'Service Priority', href: '/settings/service-priority-level', icon: <FaTasks /> },
   { name: 'Service Status', href: '/settings/service-status', icon: <FaFlag /> },
-  { name: 'State', href: '/settings/state', icon: <FaMapSigns /> },
-  { name: 'Taxes', href: '/settings/taxes', icon: <FaDollarSign /> },
+  { name: 'State', href: '/settings/states', icon: <FaMapSigns /> },
+  { name: 'Taxes', href: '/settings/tax-list', icon: <FaDollarSign /> },
   { name: 'Terms', href: '/settings/terms', icon: <FaGavel /> },
 ];
 
