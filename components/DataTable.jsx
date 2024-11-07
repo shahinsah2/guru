@@ -44,7 +44,7 @@ export function DataTable({ columns, data }) {
   });
 
   return (
-    <div style={{ backgroundColor: "#F2F4F0" }}>
+    <div className="bg-[#F2F4F0]">
       {" "}
       {/* Overall background color */}
       <div className="flex items-center py-2 px-4">
@@ -65,8 +65,7 @@ export function DataTable({ columns, data }) {
       <div className="rounded-md border border-gray-300 overflow-hidden">
         <Table className="min-w-full bg-white">
           <TableHeader
-            style={{ backgroundColor: "#EAEAEA" }}
-            className="border-b border-gray-300"
+            className="border-b border-gray-300 bg-[#EAEAEA]"
           >
             {" "}
             {/* Header background color with border */}
