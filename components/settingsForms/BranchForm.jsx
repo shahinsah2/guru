@@ -6,7 +6,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { createBranch, updateBranch } from "@/actions/settings/branchActions";
@@ -65,7 +71,6 @@ export default function BranchForm({ type, data }) {
     }
   );
 
-  // Fetch dropdown data for countries, states, and cities
   useEffect(() => {
     async function fetchData() {
       const fetchedCountries = await getCountries();
@@ -98,10 +103,11 @@ export default function BranchForm({ type, data }) {
     }
   });
 
-  // Toast notifications for success or error
   useEffect(() => {
     if (state.success) {
-      toast.success(`Branch ${type === "create" ? "created" : "updated"} successfully!`);
+      toast.success(
+        `Branch ${type === "create" ? "created" : "updated"} successfully!`
+      );
       router.push("/settings/branches");
       router.refresh();
     } else if (state.error) {
@@ -110,102 +116,154 @@ export default function BranchForm({ type, data }) {
   }, [state, router, type]);
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <h1 className="text-xl font-semibold">
+    <form onSubmit={onSubmit} className="space-y-6">
+      <h1 className="text-2xl font-bold mb-8">
         {type === "create" ? "Add Branch" : "Edit Branch"}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium">Branch ID</label>
-          <Input {...register("branch_id")} placeholder="Enter branch ID" />
-          {errors.branch_id && <p className="text-red-500 text-xs">{errors.branch_id.message}</p>}
+      <div className="flex flex-wrap gap-8 justify-between mb-3">
+        {/* Branch Details Section */}
+        <div className="bg-white p-6 rounded-lg shadow border w-full max-w-md flex-1">
+          <h2 className="text-lg font-semibold mb-4">Branch Details</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Branch ID</label>
+              <Input {...register("branch_id")} placeholder="Enter branch ID" />
+              {errors.branch_id && (
+                <p className="text-red-500 text-xs">
+                  {errors.branch_id.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="text-sm font-medium">Branch Name</label>
+              <Input
+                {...register("branch_name")}
+                placeholder="Enter branch name"
+              />
+              {errors.branch_name && (
+                <p className="text-red-500 text-xs">
+                  {errors.branch_name.message}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="text-sm font-medium">Branch Name</label>
-          <Input {...register("branch_name")} placeholder="Enter branch name" />
-          {errors.branch_name && <p className="text-red-500 text-xs">{errors.branch_name.message}</p>}
+        {/* Address Section */}
+        <div className="bg-white p-6 rounded-lg shadow border w-full max-w-md flex-1">
+          <h2 className="text-lg font-semibold mb-4">Address</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Pincode</label>
+              <Input {...register("pincode")} placeholder="Enter pincode" />
+              {errors.pincode && (
+                <p className="text-red-500 text-xs">{errors.pincode.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="text-sm font-medium">Country</label>
+              <Select
+                onValueChange={(value) => setValue("country", value)}
+                value={watch("country") || ""}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map((country) => (
+                    <SelectItem key={country._id} value={country._id}>
+                      {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.country && (
+                <p className="text-red-500 text-xs">{errors.country.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="text-sm font-medium">State</label>
+              <Select
+                onValueChange={(value) => setValue("state", value)}
+                value={watch("state") || ""}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select State" />
+                </SelectTrigger>
+                <SelectContent>
+                  {states.map((state) => (
+                    <SelectItem key={state._id} value={state._id}>
+                      {state.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.state && (
+                <p className="text-red-500 text-xs">{errors.state.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="text-sm font-medium">City</label>
+              <Select
+                onValueChange={(value) => setValue("city", value)}
+                value={watch("city") || ""}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select City" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities.map((city) => (
+                    <SelectItem key={city._id} value={city._id}>
+                      {city.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.city && (
+                <p className="text-red-500 text-xs">{errors.city.message}</p>
+              )}
+            </div>
+            <div className="col-span-2">
+              <label className="text-sm font-medium">Address</label>
+              <Input {...register("address")} placeholder="Enter address" />
+              {errors.address && (
+                <p className="text-red-500 text-xs">{errors.address.message}</p>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="text-sm font-medium">Address</label>
-          <Input {...register("address")} placeholder="Enter address" />
-          {errors.address && <p className="text-red-500 text-xs">{errors.address.message}</p>}
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">Pincode</label>
-          <Input {...register("pincode")} placeholder="Enter pincode" />
-          {errors.pincode && <p className="text-red-500 text-xs">{errors.pincode.message}</p>}
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">Country</label>
-          <Select onValueChange={(value) => setValue("country", value)} value={watch("country") || ""}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Country" />
-            </SelectTrigger>
-            <SelectContent>
-              {countries.map((country) => (
-                <SelectItem key={country._id} value={country._id}>
-                  {country.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.country && <p className="text-red-500 text-xs">{errors.country.message}</p>}
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">State</label>
-          <Select onValueChange={(value) => setValue("state", value)} value={watch("state") || ""}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select State" />
-            </SelectTrigger>
-            <SelectContent>
-              {states.map((state) => (
-                <SelectItem key={state._id} value={state._id}>
-                  {state.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.state && <p className="text-red-500 text-xs">{errors.state.message}</p>}
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">City</label>
-          <Select onValueChange={(value) => setValue("city", value)} value={watch("city") || ""}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select City" />
-            </SelectTrigger>
-            <SelectContent>
-              {cities.map((city) => (
-                <SelectItem key={city._id} value={city._id}>
-                  {city.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.city && <p className="text-red-500 text-xs">{errors.city.message}</p>}
+        {/* Control Section */}
+        <div className="bg-white p-6 rounded-lg shadow border w-1/4 max-w-md flex-1">
+          <h2 className="text-lg font-semibold mb-4">Control</h2>
+          <div className="flex items-center gap-2 mt-4">
+            <Checkbox
+              checked={watch("active_status")}
+              onCheckedChange={(checked) => setValue("active_status", checked)}
+            />
+            <label className="text-sm font-medium">Active Status</label>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mt-4">
-        <Checkbox
-          checked={watch("active_status")}
-          onCheckedChange={(checked) => setValue("active_status", checked)}
-        />
-        <label className="text-sm font-medium">Active Status</label>
-      </div>
-
-      <div className="flex justify-end gap-4 mt-6">
-        <Button variant="outline" onClick={() => router.push("/settings/branches")}>
+      <div className="flex justify-center mt-5 gap-4">
+        <Button
+          variant="outline"
+          onClick={() => router.push("/settings/branches")}
+          className="w-[500px] h-[42px] px-4 py-2 border rounded-tl-lg rounded-br-lg border-opacity-0"
+        >
           Cancel
         </Button>
-        <Button type="submit" className="bg-blue-500 text-white">
-          {state.loading ? "Submitting..." : type === "create" ? "Create" : "Update"}
+        <Button
+          type="submit"
+          className="w-[500px] h-[42px] px-4 py-2 bg-blue-500 text-white rounded-tl-lg rounded-br-lg border-opacity-0"
+        >
+          {state.loading
+            ? "Submitting..."
+            : type === "create"
+            ? "Create"
+            : "Update"}
         </Button>
       </div>
     </form>

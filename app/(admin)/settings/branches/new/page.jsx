@@ -6,7 +6,7 @@ import BranchForm from "@/components/settingsForms/BranchForm";
 
 export default function NewBranchPage() {
   return (
-    <div className="bg-white p-6 rounded-md max-w-2xl mx-auto mt-8">
+    <div>
       <BranchForm type="create" />
     </div>
   );
