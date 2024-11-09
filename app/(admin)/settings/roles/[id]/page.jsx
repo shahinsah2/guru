@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import RolesForm from "@/components/settingsForms/RolesForm";
 import { getRoleById } from "@/actions/roleActions";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 export default function EditRolePage({ params }) {
   const { id } = params;
