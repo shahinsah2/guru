@@ -30,7 +30,7 @@ export default function SignInPage() {
         <div className="col">
           {/* <img src={loginImg.src} alt="SideImage" className="w-full" /> */}
         </div>
-        <div className="col middleAll">
+        <div className="col mt-5">
           <SignIn.Root>
             <SignIn.Step
               name="start"
@@ -49,9 +49,9 @@ export default function SignInPage() {
 
               <div className="mb-3 position-relative">
                 <Clerk.Field name="password">
-                  <Clerk.Label>Password* </Clerk.Label>
+                  <Clerk.Label>Password* {' '}</Clerk.Label>
                   <Clerk.Input type={showPassword ? 'text' : 'password'} className='form-control text-black' placeholder="Enter Password" required />
-                  <button type="button" className="btn-eye mt-3" onClick={handlePasswordToggle}>
+                  <button type="button" className="btn-eye m-3" onClick={handlePasswordToggle}>
                     {showPassword ? <IoEyeOffOutline /> : <FaEye />}
                   </button>
                   <Clerk.FieldError />
