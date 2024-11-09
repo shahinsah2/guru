@@ -42,7 +42,7 @@ export default function SignInPage() {
               <div className="mb-3">
                 <Clerk.Field name="identifier">
                   <Clerk.Label>Username* {' '}</Clerk.Label>
-                  <Clerk.Input type='text' className='form-control text-black' placeholder="Enter Username" required />
+                  <Clerk.Input type='text' className='form-control text-black p-1 rounded' placeholder="Enter Username" required />
                   <Clerk.FieldError />
                 </Clerk.Field>
               </div>
@@ -50,8 +50,8 @@ export default function SignInPage() {
               <div className="mb-3 position-relative">
                 <Clerk.Field name="password">
                   <Clerk.Label>Password* {' '}</Clerk.Label>
-                  <Clerk.Input type={showPassword ? 'text' : 'password'} className='form-control text-black' placeholder="Enter Password" required />
-                  <button type="button" className="btn-eye m-3" onClick={handlePasswordToggle}>
+                  <Clerk.Input type={showPassword ? 'text' : 'password'} className='form-control text-black p-1 rounded' placeholder="Enter Password" required />
+                  <button type="button" className="btn-eye m-1" onClick={handlePasswordToggle}>
                     {showPassword ? <IoEyeOffOutline /> : <FaEye />}
                   </button>
                   <Clerk.FieldError />
