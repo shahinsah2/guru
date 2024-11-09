@@ -30,12 +30,12 @@ export default function SignInPage() {
           <Clerk.GlobalError className="block text-sm text-red-400" />
           <div className="space-y-2">
           <Clerk.Field name="identifier">
-            <Clerk.Label>Username</Clerk.Label>
+            <Clerk.Label>Username {' '}</Clerk.Label>
             <Clerk.Input type='text' className='text-black' required />
             <Clerk.FieldError />
           </Clerk.Field>
           <Clerk.Field name="password">
-            <Clerk.Label>Password</Clerk.Label>
+            <Clerk.Label>Password {' '}</Clerk.Label>
             <Clerk.Input type='password' className='text-black' required />
             <Clerk.FieldError />
           </Clerk.Field>
