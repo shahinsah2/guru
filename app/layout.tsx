@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import {
-  ClerkProvider 
+  ClerkProvider
 } from '@clerk/nextjs'
-import {ToastContainer} from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -31,13 +31,16 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children} <ToastContainer position="bottom-right"/>
-      </body>
-    </html>
+      <html lang="en">
+        <head>
+          <link rel="icon" href="/logo.png" type="image/png" sizes="any" />
+        </head>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          {children} <ToastContainer position="bottom-right" />
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
