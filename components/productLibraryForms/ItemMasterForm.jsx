@@ -63,7 +63,7 @@ const ItemMasterForm = ({ type, data }) => {
 
   return (
     <form className="w-full max-w-1xl mx-auto p-8 bg-white shadow-md rounded-lg" onSubmit={onSubmit}>
-      <div className="bg-gray-200 p-6 border rounded-lg shadow-lg mb-6 ">  
+      <div className="bg-gray-50 p-6 border rounded-lg shadow-lg mb-6 ">  
           <h1 className="text-xl font-semibold">
         {type === "create" ? "Add item " : "Edit item "}
       </h1>
