@@ -65,13 +65,18 @@ export default function SignInPage() {
                 </label>
               </div>
 
-              <SignIn.Action submit className="btn btn-primary">Sign in</SignIn.Action>
+              <SignIn.Action
+                submit
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full shadow-md hover:from-blue-600 hover:to-indigo-700 transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Sign in
+              </SignIn.Action>
 
-              <div className="formFooter mt-4">
+              {/* <div className="formFooter mt-4">
                 <p>Forgot Your Password?{" "}
                   <span><a href="/forgot-password" className="text-blue-500">Click Here</a></span>
                 </p>
-              </div>
+              </div> */}
             </SignIn.Step>
           </SignIn.Root>
         </div>
