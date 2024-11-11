@@ -1,9 +1,5 @@
-import React from 'react'
+import ComingSoonPage from '@/components/ComingSoonPage';
 
-const CRM = () => {
-  return (
-    <div>CRM</div>
-  )
+export default function ProductLibrary() {
+  return <ComingSoonPage currentPage="CRM" />;
 }
-
-export default CRM
