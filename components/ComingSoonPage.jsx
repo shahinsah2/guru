@@ -19,19 +19,23 @@ const ComingSoonPage = ({ currentPage }) => {
         </h1>
 
         <p className="text-lg text-gray-600 mb-6">
-          Hello, {user?.username}! We&apos;re working hard to bring {currentPage} to
-          you. Stay tuned for updates!
+          Hello, {user?.username}! We&apos;re working hard to bring{" "}
+          {currentPage} to you. Stay tuned for updates!
         </p>
 
         <div className="flex justify-center space-x-4 mb-6">
           <a
-            href="#"
+            href="https://example.com/notify-me"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300"
           >
             Notify Me
           </a>
           <a
-            href="#"
+            href="https://example.com/learn-more"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-gray-500 text-white px-6 py-2 rounded-full hover:bg-gray-600 transition duration-300"
           >
             Learn More
