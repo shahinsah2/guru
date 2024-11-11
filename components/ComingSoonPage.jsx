@@ -19,7 +19,7 @@ const ComingSoonPage = ({ currentPage }) => {
         </h1>
 
         <p className="text-lg text-gray-600 mb-6">
-          Hello, {user?.username}! We're working hard to bring {currentPage} to
+          Hello, {user?.username}! We&apos;re working hard to bring {currentPage} to
           you. Stay tuned for updates!
         </p>
 
