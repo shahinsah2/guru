@@ -113,114 +113,107 @@ const AssetForm = ({ type, data }) => {
   }, [state, router, type]);
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create" ? "Add Asset" : "Edit Asset"}
-      </h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
+    <form className="w-full max-w-screen-2xl mx-auto p-8 bg-white shadow-md rounded-lg" onSubmit={onSubmit}>
+    <div className="bg-gray-200 flex justify-between gap-8 p-5">
+  
+      {/* Asset Information Section */}
+      <div className="bg-gray-50 p-6 border rounded-lg shadow-lg w-full md:w-1/3">
+        <h3 className="text-lg font-semibold mb-4">Asset Information</h3>
+        <div className="mb-4">
           <label className="text-sm font-medium">Item Name</label>
           <Select onValueChange={(value) => setValue("item_name", value)} value={watch("item_name") || ""}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Item Name" />
-            </SelectTrigger>
+            <SelectTrigger className="w-full max-w-xs border border-gray-300 rounded-md p-2"><SelectValue placeholder="Select Item Name"  /></SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 {itemMasters.map((item) => (
-                  <SelectItem key={item._id} value={item._id.toString()}>
-                    {item.item_name}
-                  </SelectItem>
+                  <SelectItem key={item._id} value={item._id.toString()}>{item.item_name}</SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
           {errors.item_name && <p className="text-red-500 text-xs">{errors.item_name.message}</p>}
         </div>
-
-        <div>
+  
+        <div className="mb-4">
           <label className="text-sm font-medium">Item Type</label>
           <Select onValueChange={(value) => setValue("item_type", value)} value={watch("item_type") || ""}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Item Type" />
-            </SelectTrigger>
+            <SelectTrigger className="w-full max-w-xs border border-gray-300 rounded-md p-2"><SelectValue placeholder="Select Item Type" /></SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 {itemVariants.map((variant) => (
-                  <SelectItem key={variant._id} value={variant._id.toString()}>
-                    {variant.type}
-                  </SelectItem>
+                  <SelectItem key={variant._id} value={variant._id.toString()}>{variant.type}</SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
           {errors.item_type && <p className="text-red-500 text-xs">{errors.item_type.message}</p>}
         </div>
-
-        <div>
+  
+        <div className="mb-4">
           <label className="text-sm font-medium">Brand</label>
           <Select onValueChange={(value) => setValue("brand", value)} value={watch("brand") || ""}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Brand" />
-            </SelectTrigger>
+            <SelectTrigger className="w-full max-w-xs border border-gray-300 rounded-md p-2"><SelectValue placeholder="Select Brand" /></SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 {brands.map((brand) => (
-                  <SelectItem key={brand._id} value={brand._id.toString()}>
-                    {brand.brand_name}
-                  </SelectItem>
+                  <SelectItem key={brand._id} value={brand._id.toString()}>{brand.brand_name}</SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
           {errors.brand && <p className="text-red-500 text-xs">{errors.brand.message}</p>}
         </div>
-
-        <div>
+      </div>
+  
+      {/* Additional Details Section */}
+      <div className="bg-gray-50 p-6 border rounded-lg shadow-lg w-full md:w-1/3">
+        <h3 className="text-lg font-semibold mb-4">Additional Details</h3>
+        <div className="mb-4">
           <label className="text-sm font-medium">Price</label>
-          <Input {...register("price", { valueAsNumber: true })} placeholder="Enter Price" />
+          <Input {...register("price", { valueAsNumber: true })} placeholder="Enter Price" 
+          className="w-full max-w-xs border border-gray-300 rounded-md p-2" />
           {errors.price && <p className="text-red-500 text-xs">{errors.price.message}</p>}
         </div>
-
-        <div>
+        <div className="mb-4">
           <label className="text-sm font-medium">Date</label>
-          <Input type="date" {...register("date")} placeholder="Select Date" />
+          <Input type="date" {...register("date")} placeholder="Select Date" className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
           {errors.date && <p className="text-red-500 text-xs">{errors.date.message}</p>}
         </div>
-
-         <div>
+        <div className="mb-4">
           <label className="text-sm font-medium">Warranty</label>
-          <Input {...register("warranty")} placeholder="Enter Warranty Period" />
+          <Input {...register("warranty")} placeholder="Enter Warranty Period"  className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
         </div>
-
-        <div>
+        <div className="mb-4">
           <label className="text-sm font-medium">Warranty Time</label>
-          <Input {...register("warranty_time", { valueAsNumber: true })} placeholder="Enter Warranty Time" />
+          <Input {...register("warranty_time", { valueAsNumber: true })} placeholder="Enter Warranty Time" className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
         </div>
-
-        <div>
+        <div className="mb-4">
           <label className="text-sm font-medium">Remarks</label>
-          <Input {...register("remarks")} placeholder="Enter Remarks" />
+          <Input {...register("remarks")} placeholder="Enter Remarks" className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
         </div>
       </div>
-
-      <div className="flex items-center gap-2 mt-4">
-        <Checkbox
-          checked={watch("active_status")}
-          onCheckedChange={(checked) => setValue("active_status", checked)}
-        />
-        <label className="text-sm font-medium">Active Status</label>
+  
+      {/* Status Section */}
+      <div className="bg-white p-6 rounded-lg shadow-sm mt-5 mr-5 border border-gray-200 w-72 h-28">
+      <h3 className="text-lg font-semibold mb-4">Control</h3>
+        <div className="flex items-center gap-2">
+          <Checkbox checked={watch("active_status")} onCheckedChange={(checked) => setValue("active_status", checked)} />
+          <label className="text-sm font-medium">Active Status</label>
+        </div>
       </div>
-
-      <div className="flex justify-end gap-4 mt-6">
-        <Button variant="outline" onClick={() => router.push("/product-library/assets")}>
-          Cancel
-        </Button>
-        <Button type="submit" className="bg-blue-500 text-white">
-          {type === "create" ? "Create" : "Update"}
-        </Button>
-      </div>
-    </form>
+    </div>
+  
+    {/* Actions */}
+    <div className="flex justify-end gap-4 mt-6">
+      <Button variant="outline" onClick={() => router.push("/product-library/assets")}>
+        Cancel
+      </Button>
+      <Button type="submit" className="bg-blue-500 text-white">
+        {type === "create" ? "Create" : "Update"}
+      </Button>
+    </div>
+  </form>
+  
   );
 };
 

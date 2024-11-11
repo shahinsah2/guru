@@ -121,14 +121,16 @@ export default function BranchForm({ type, data }) {
         {type === "create" ? "Add Branch" : "Edit Branch"}
       </h1>
 
-      <div className="flex flex-wrap gap-8 justify-between mb-3">
-        {/* Branch Details Section */}
+      {/* <div className="flex flex-wrap gap-8 justify-between mb-3"> */}
+      <div className=" bg-gray-200 p-6 border rounded-1g shadow-1g mb-6 flex  gap-8">
+
+       
         <div className="bg-white p-6 rounded-lg shadow border w-full max-w-md flex-1">
           <h2 className="text-lg font-semibold mb-4">Branch Details</h2>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Branch ID</label>
-              <Input {...register("branch_id")} placeholder="Enter branch ID" />
+              <Input {...register("branch_id")} placeholder="Enter branch ID"    className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
               {errors.branch_id && (
                 <p className="text-red-500 text-xs">
                   {errors.branch_id.message}
@@ -140,6 +142,7 @@ export default function BranchForm({ type, data }) {
               <Input
                 {...register("branch_name")}
                 placeholder="Enter branch name"
+                   className="w-full max-w-xs border border-gray-300 rounded-md p-2"
               />
               {errors.branch_name && (
                 <p className="text-red-500 text-xs">
@@ -150,13 +153,13 @@ export default function BranchForm({ type, data }) {
           </div>
         </div>
 
-        {/* Address Section */}
+        
         <div className="bg-white p-6 rounded-lg shadow border w-full max-w-md flex-1">
           <h2 className="text-lg font-semibold mb-4">Address</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">Pincode</label>
-              <Input {...register("pincode")} placeholder="Enter pincode" />
+              <Input {...register("pincode")} placeholder="Enter pincode"    className="w-full max-w-xs border border-gray-300 rounded-md p-2" />
               {errors.pincode && (
                 <p className="text-red-500 text-xs">{errors.pincode.message}</p>
               )}
@@ -164,10 +167,11 @@ export default function BranchForm({ type, data }) {
             <div>
               <label className="text-sm font-medium">Country</label>
               <Select
+                 className="w-full max-w-xs border border-gray-300 rounded-md p-2"
                 onValueChange={(value) => setValue("country", value)}
                 value={watch("country") || ""}
               >
-                <SelectTrigger>
+                <SelectTrigger    className="w-full max-w-xs border border-gray-300 rounded-md p-2">
                   <SelectValue placeholder="Select Country" />
                 </SelectTrigger>
                 <SelectContent>
@@ -188,7 +192,7 @@ export default function BranchForm({ type, data }) {
                 onValueChange={(value) => setValue("state", value)}
                 value={watch("state") || ""}
               >
-                <SelectTrigger>
+                <SelectTrigger    className="w-full max-w-xs border border-gray-300 rounded-md p-2">
                   <SelectValue placeholder="Select State" />
                 </SelectTrigger>
                 <SelectContent>
@@ -209,9 +213,9 @@ export default function BranchForm({ type, data }) {
                 onValueChange={(value) => setValue("city", value)}
                 value={watch("city") || ""}
               >
-                <SelectTrigger>
+                <SelectTrigger    className="w-full max-w-xs border border-gray-300 rounded-md p-2">
                   <SelectValue placeholder="Select City" />
-                </SelectTrigger>
+                </SelectTrigger >
                 <SelectContent>
                   {cities.map((city) => (
                     <SelectItem key={city._id} value={city._id}>
@@ -226,7 +230,7 @@ export default function BranchForm({ type, data }) {
             </div>
             <div className="col-span-2">
               <label className="text-sm font-medium">Address</label>
-              <Input {...register("address")} placeholder="Enter address" />
+              <Input {...register("address")} placeholder="Enter address"    className="w-full max-w-xs border border-gray-300 rounded-md p-2" />
               {errors.address && (
                 <p className="text-red-500 text-xs">{errors.address.message}</p>
               )}
@@ -234,17 +238,14 @@ export default function BranchForm({ type, data }) {
           </div>
         </div>
 
-        {/* Control Section */}
-        <div className="bg-white p-6 rounded-lg shadow border w-1/4 max-w-md flex-1">
-          <h2 className="text-lg font-semibold mb-4">Control</h2>
-          <div className="flex items-center gap-2 mt-4">
-            <Checkbox
-              checked={watch("active_status")}
-              onCheckedChange={(checked) => setValue("active_status", checked)}
-            />
-            <label className="text-sm font-medium">Active Status</label>
+        
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 w-80 h-28">
+            <h3 className="text-lg font-semibold mb-4">Control</h3>
+            <div className="flex items-center gap-2">
+              <Checkbox checked={watch("active_status")} onCheckedChange={(checked) => setValue("active_status", checked)} />
+              <label className="text-sm font-medium">Active Status</label>
+            </div>
           </div>
-        </div>
       </div>
 
       <div className="flex justify-center mt-5 gap-4">

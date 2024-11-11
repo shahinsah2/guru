@@ -6,7 +6,7 @@ import DepartmentForm from "@/components/settingsForms/DepartmentForm";
 
 export default function NewDepartmentPage() {
   return (
-    <div className="p-6">
+    <div >
       <DepartmentForm type="create" />
     </div>
   );

@@ -24,7 +24,7 @@ export default function EditStatePage({ params }) {
   if (loading) return <div className="text-center p-6">Loading...</div>;
 
   return (
-    <div className="bg-white p-6 rounded-md max-w-2xl mx-auto mt-8">
+    <div>
       <StateForm type="edit" data={stateData} />
     </div>
   );

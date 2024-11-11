@@ -92,16 +92,22 @@ const ItemVariantForm = ({ type, data }) => {
   }, [state, router, type]);
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create" ? "Add Item Type" : "Edit Item Type"}
-      </h1>
+    <form className="w-full max-w-1xl mx-auto p-8 bg-white shadow-md rounded-lg" onSubmit={onSubmit}>
+    <div className="bg-gray-50 p-8 px-6 border rounded-lg shadow-lg mb-6">  
+        <h1 className="text-xl font-semibold">
+      {type === "create" ? "Add  item varient" : "Edit Product Category"}
+    </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Category Information and Active Status Side by Side */}
+      <div className="flex flex-col md:flex-row gap-6">
+
+        {/* Category Information Fields */}
+        <div className="bg-gray-50 flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+      
         <div>
           <label className="text-sm font-medium">Item/Specification Name</label>
           <Select onValueChange={(value) => setValue("item_name", value)} defaultValue={data?.item_name || ""}>
-            <SelectTrigger>
+            <SelectTrigger  className="w-full max-w-xs border border-gray-300 rounded-md p-2">
               <SelectValue placeholder="Select Item Name" />
             </SelectTrigger>
             <SelectContent>
@@ -117,24 +123,25 @@ const ItemVariantForm = ({ type, data }) => {
           {errors.item_name && (
             <p className="text-red-500 text-xs">{errors.item_name.message}</p>
           )}
-        </div>
-
-        <div>
+      
           <label className="text-sm font-medium">Type</label>
-          <Input {...register("type")} placeholder="Enter Item Type" />
+          <Input {...register("type")} placeholder="Enter Item Type"  className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
           {errors.type && (
             <p className="text-red-500 text-xs">{errors.type.message}</p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mt-4">
-        <Checkbox
-          checked={watch("active_status")}
-          onCheckedChange={(checked) => setValue("active_status", checked)}
-        />
+      {/* Active Status Section */}
+      <div className="bg-gray-50 p-6 border rounded-lg shadow-lg w-full md:w-1/3">
+      <h3 className="text-lg font-semibold mb-4">Control</h3>
+      <div className="flex items-center gap-2">
+        <Checkbox checked={watch("active_status")} onCheckedChange={(checked) => setValue("active_status", checked)} />
         <label className="text-sm font-medium">Active Status</label>
       </div>
+    </div>
+    </div>
+    </div>
 
       <div className="flex justify-end gap-4 mt-6">
         <Button

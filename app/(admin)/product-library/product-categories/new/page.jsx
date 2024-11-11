@@ -6,7 +6,7 @@ import ProductCategoryForm from "@/components/productLibraryForms/ProductCategor
 
 export default function NewProductCategoryPage() {
   return (
-    <div className="bg-white p-6 rounded-md max-w-2xl mx-auto mt-8">
+    <div>
       <ProductCategoryForm type="create" />
     </div>
   );

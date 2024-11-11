@@ -1,5 +1,3 @@
-// @/components/productLibraryForms/StockLocationForm.jsx
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,11 +55,10 @@ const StockLocationForm = ({ type, data }) => {
   const onSubmit = handleSubmit(async (formData) => {
     console.log("Submitted Form Data:", formData); // Log data for debugging
     try {
-      formAction({...formData, id: data?._id});
+      await formAction({ ...formData, id: data?._id });
     } catch (err) {
       setError(err.message || "An unexpected error occurred.");
     }
-      
   });
 
   // Success/Error handling
@@ -76,73 +73,66 @@ const StockLocationForm = ({ type, data }) => {
   }, [state, router, type]);
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">{type === "create" ? "Create New Stock Location" : "Edit Stock Location"}</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium">Stock Location ID</label>
-          <Input {...register("stock_location_id")} placeholder="Enter Stock Location ID" />
-          {errors.stock_location_id && <p className="text-red-500 text-xs">{errors.stock_location_id.message}</p>}
+    <form className="w-full max-w-screen-2xl mx-auto p-8 bg-white shadow-md rounded-lg" onSubmit={onSubmit}>
+      <div className="flex justify-between gap-8">
+        
+        {/* Stock Location Information Section */}
+        <div className="bg-gray-50 p-6 border rounded-lg shadow-lg w-full md:w-1/3">
+          <h3 className="text-lg font-semibold mb-4">Stock Location Information</h3>
+          <div className="mb-4">
+            <label className="text-sm font-medium">Stock Location ID</label>
+            <Input {...register("stock_location_id")} placeholder="Enter Stock Location ID"  className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
+            {errors.stock_location_id && <p className="text-red-500 text-xs">{errors.stock_location_id.message}</p>}
+          </div>
+          <div className="mb-4">
+            <label className="text-sm font-medium">Stock Name</label>
+            <Input {...register("stock_name")} placeholder="Enter Stock Name"  className="w-full max-w-xs border border-gray-300 rounded-md p-2" />
+            {errors.stock_name && <p className="text-red-500 text-xs">{errors.stock_name.message}</p>}
+          </div>
         </div>
 
-        <div>
-          <label className="text-sm font-medium">Stock Name</label>
-          <Input {...register("stock_name")} placeholder="Enter Stock Name" />
-          {errors.stock_name && <p className="text-red-500 text-xs">{errors.stock_name.message}</p>}
+        {/* Address Details Section */}
+        <div className="bg-gray-50 p-6 border rounded-lg shadow-lg w-full md:w-1/3">
+          <h3 className="text-lg font-semibold mb-4">Address Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Pincode</label>
+              <Input {...register("address.pincode")} placeholder="Enter Pincode"   className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Country</label>
+              <Input {...register("address.country")} placeholder="Enter Country"   className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
+            </div>
+            <div>
+              <label className="text-sm font-medium">State</label>
+              <Input {...register("address.state")} placeholder="Enter State"   className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
+            </div>
+            <div>
+              <label className="text-sm font-medium">City</label>
+              <Input {...register("address.city")} placeholder="Enter City"   className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Landmark</label>
+              <Input {...register("address.landmark")} placeholder="Enter Landmark"  className="w-full max-w-xs border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Street</label>
+              <Input {...register("address.street")} placeholder="Enter Street"  className="w-full max-w-xs border border-gray-300 rounded-md p-2" />
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="text-sm font-medium">Mail ID</label>
-          <Input {...register("mail_id")} placeholder="Enter Mail ID" />
-          {errors.mail_id && <p className="text-red-500 text-xs">{errors.mail_id.message}</p>}
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">Phone Number</label>
-          <Input {...register("phone_number")} placeholder="Enter Phone Number" />
-          {errors.phone_number && <p className="text-red-500 text-xs">{errors.phone_number.message}</p>}
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">Pincode</label>
-          <Input {...register("address.pincode")} placeholder="Enter Pincode" />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">Country</label>
-          <Input {...register("address.country")} placeholder="Enter Country" />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">State</label>
-          <Input {...register("address.state")} placeholder="Enter State" />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">City</label>
-          <Input {...register("address.city")} placeholder="Enter City" />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">Landmark</label>
-          <Input {...register("address.landmark")} placeholder="Enter Landmark" />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">Street</label>
-          <Input {...register("address.street")} placeholder="Enter Street" />
+        {/* Active Status Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 w-80 h-28">
+          <h3 className="text-lg font-semibold mb-4">Control</h3>
+          <div className="flex items-center gap-2">
+            <Checkbox checked={watch("active_status")} onCheckedChange={(checked) => setValue("active_status", checked)} />
+            <label className="text-sm font-medium">Active Status</label>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mt-4">
-        <Checkbox
-          checked={watch("active_status")}
-          onCheckedChange={(checked) => setValue("active_status", checked)}
-        />
-        <label className="text-sm font-medium">Active Status</label>
-      </div>
-
+      {/* Actions */}
       <div className="flex justify-end gap-4 mt-6">
         <Button variant="outline" onClick={() => router.push("/product-library/stock-location")}>
           Cancel

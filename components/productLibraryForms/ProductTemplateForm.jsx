@@ -105,13 +105,16 @@ const ProductTemplateForm = ({ type, data }) => {
   }, [state, router, type]);
 
   return (
-    <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <h1 className="text-xl font-semibold col-span-2">{type === "create" ? "Add Product Template" : "Edit Product Template"}</h1>
+<form onSubmit={onSubmit} className="w-full max-w-screen-2xl mx-auto p-8 bg-white shadow-md rounded-lg">
+<div className=" bg-gray-200 p-6 border rounded-1g shadow-1g mb-6 flex  gap-9">
 
-      <div>
+    {/* Product Category Section */}
+    <div className="bg-gray-50 p-6 border rounded-lg shadow-lg w-full md:w-1/3">
+      <h3 className="text-lg font-semibold mb-4">Choose Product Category</h3>
+      <div className="mb-4">
         <label className="text-sm font-medium">Product Category</label>
         <Select onValueChange={(value) => setValue("category", value)} value={watch("category") || ""}>
-          <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
+          <SelectTrigger  className="w-full max-w-xs border border-gray-300 rounded-md p-2"><SelectValue placeholder="Select Category" /></SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {categories.map((category) => (
@@ -122,23 +125,15 @@ const ProductTemplateForm = ({ type, data }) => {
         </Select>
         {errors.category && <p className="text-red-500 text-xs">{errors.category.message}</p>}
       </div>
-
-      {/* <div>
-        <label className="text-sm font-medium">Add Images</label>
-        <Input type="file" {...register("image")} accept="image/*" />
-        {errors.image && <p className="text-red-500 text-xs">{errors.image.message}</p>}
-      </div> */}
-
-      <div>
+      <div className="mb-4">
         <label className="text-sm font-medium">Product Name</label>
-        <Input {...register("product_name")} placeholder="Enter Product Name" />
+        <Input {...register("product_name")} placeholder="Enter Product Name"   className="w-full max-w-xs border border-gray-300 rounded-md p-2"/>
         {errors.product_name && <p className="text-red-500 text-xs">{errors.product_name.message}</p>}
       </div>
-
-      <div>
+      <div className="mb-4">
         <label className="text-sm font-medium">Brand</label>
         <Select onValueChange={(value) => setValue("brand", value)} value={watch("brand") || ""}>
-          <SelectTrigger><SelectValue placeholder="Select Brand" /></SelectTrigger>
+          <SelectTrigger  className="w-full max-w-xs border border-gray-300 rounded-md p-2"><SelectValue placeholder="Select Brand" /></SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {brands.map((brand) => (
@@ -149,53 +144,69 @@ const ProductTemplateForm = ({ type, data }) => {
         </Select>
         {errors.brand && <p className="text-red-500 text-xs">{errors.brand.message}</p>}
       </div>
-
-      <div>
+      <div className="mb-4">
         <label className="text-sm font-medium">Model</label>
-        <Input {...register("model")} placeholder="Enter Model" />
+        <Input {...register("model")} placeholder="Enter Model"  className="w-full max-w-xs border border-gray-300 rounded-md p-2" />
         {errors.model && <p className="text-red-500 text-xs">{errors.model.message}</p>}
       </div>
-
-      <div className="col-span-2">
+      <div className="mb-4">
         <label className="text-sm font-medium">Description</label>
-        <Input {...register("description")} placeholder="Enter Description" />
+        <Input {...register("description")} placeholder="Enter Description"  className="w-full max-w-xs border border-gray-300 rounded-md p-2" />
         {errors.description && <p className="text-red-500 text-xs">{errors.description.message}</p>}
       </div>
+    </div>
 
-      <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {["ram", "processor", "storage", "graphics", "os"].map((spec) => (
-          <div key={spec}>
-            <label className="text-sm font-medium capitalize">{spec}</label>
-            <div className="flex space-x-2">
-              <Select onValueChange={(value) => setValue(`specifications.${spec}.brand`, value)} value={watch(`specifications.${spec}.brand`) || ""}>
-                <SelectTrigger><SelectValue placeholder="Select Brand" /></SelectTrigger>
-                <SelectContent><SelectGroup>{brands.map(brand => <SelectItem key={brand._id} value={brand._id.toString()}>{brand.brand_name}</SelectItem>)}</SelectGroup></SelectContent>
-              </Select>
-              <Select onValueChange={(value) => setValue(`specifications.${spec}.type`, value)} value={watch(`specifications.${spec}.type`) || ""}>
-                <SelectTrigger><SelectValue placeholder="Select Type" /></SelectTrigger>
-                <SelectContent><SelectGroup>{variants.map(variant => <SelectItem key={variant._id} value={variant._id.toString()}>{variant.type}</SelectItem>)}</SelectGroup></SelectContent>
-              </Select>
-            </div>
-            {errors.specifications?.[spec] && <p className="text-red-500 text-xs">{errors.specifications[spec].message}</p>}
+    {/* Specifications Section */}
+    <div className="bg-gray-50 p-6 border rounded-lg shadow-lg w-full md:w-1/3">
+      <h3 className="text-lg font-semibold mb-4">Specifications</h3>
+      {["ram", "processor", "storage", "graphics", "os"].map((spec) => (
+        <div key={spec} className="mb-4">
+          <label className="text-sm font-medium capitalize">{spec}</label>
+          <div className="flex space-x-4 mt-1">
+            <Select onValueChange={(value) => setValue(`specifications.${spec}.brand`, value)} value={watch(`specifications.${spec}.brand`) || ""}>
+              <SelectTrigger  className="w-full max-w-xs border border-gray-300 rounded-md p-2"><SelectValue placeholder="Select Brand" /></SelectTrigger>
+              <SelectContent>
+                <SelectGroup>{brands.map(brand => <SelectItem key={brand._id} value={brand._id.toString()}>{brand.brand_name}</SelectItem>)}</SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select onValueChange={(value) => setValue(`specifications.${spec}.type`, value)} value={watch(`specifications.${spec}.type`) || ""}>
+              <SelectTrigger  className="w-full max-w-xs border border-gray-300 rounded-md p-2"><SelectValue placeholder="Select Type" /></SelectTrigger>
+              <SelectContent>
+                <SelectGroup>{variants.map(variant => <SelectItem key={variant._id} value={variant._id.toString()}>{variant.type}</SelectItem>)}</SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
-        ))}
+          {errors.specifications?.[spec] && <p className="text-red-500 text-xs">{errors.specifications[spec].message}</p>}
+        </div>
+      ))}
+      <div className="mt-4">
+        <button type="button" className="text-blue-500 text-sm">Add Custom field</button>
       </div>
+    </div>
 
-      <div className="flex items-center gap-2 col-span-2">
+    {/* Active Status Section */}
+    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 w-80 h-28">
+    <h3 className="text-lg font-semibold mb-4">Control</h3>
+      <div className="flex items-center gap-2">
         <Checkbox checked={watch("active_status")} onCheckedChange={(checked) => setValue("active_status", checked)} />
         <label className="text-sm font-medium">Active Status</label>
       </div>
+    </div>
 
-      <div className="col-span-2 flex justify-end">
-      <Button
-          variant="outline"
-          onClick={() => router.push("/product-library/product-template")}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" className="bg-blue-500 text-white mx-2">{type === "create" ? "Create" : "Update"}</Button>
-      </div>
-    </form>
+  </div>
+
+  {/* Actions */}
+  <div className="flex justify-end gap-4 mt-6">
+    <Button variant="outline" onClick={() => router.push("/product-library/product-template")}>
+      Cancel
+    </Button>
+    <Button type="submit" className="bg-blue-500 text-white">
+      {type === "create" ? "Create" : "Update"}
+    </Button>
+  </div>
+</form>
+
+
   );
 };
 

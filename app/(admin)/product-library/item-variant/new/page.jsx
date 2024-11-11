@@ -6,7 +6,7 @@ import ItemVariantForm from "@/components/productLibraryForms/ItemVariantForm";
 
 export default function NewItemVariantPage() {
   return (
-    <div className="bg-white p-6 rounded-md max-w-2xl mx-auto mt-8">
+    <div >
       <ItemVariantForm type="create" />
     </div>
   );
