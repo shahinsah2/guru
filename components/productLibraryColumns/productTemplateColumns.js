@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteProductTemplate } from "@/actions/productLibrary/productTemplateActions";
@@ -85,7 +86,24 @@ const Actions = ({ row }) => {
 };
 
 export const columns = [
-  { id: "sl_no", header: "Sl. No", cell: ({ row, index }) => index + 1 },
+  // {
+  //   id: "sl_no",
+  //   header: "Sl. No",
+  //   cell: ({ row }) => row.index + 1,
+  // },
+  {
+    id: "product_image",
+    header: "Product Image",
+    cell: () => (
+      <Image
+        src="https://c8.alamy.com/comp/W7R7YN/modern-desktop-computer-with-vivid-wallpaper-3d-illustration-W7R7YN.jpg" // your image URL
+        alt="Product"
+        width={48} // width in pixels (12 * 4 for size scaling)
+        height={48} // height in pixels (12 * 4 for size scaling)
+        className="object-cover rounded-md"
+      />
+    ),
+  },
   { accessorKey: "product_name", header: "Product Name" },
   { accessorKey: "category", header: "Category" },
   { accessorKey: "brand", header: "Brand" },
