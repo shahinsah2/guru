@@ -1,4 +1,4 @@
-// @/app/(admin)/inventory/products/page.jsx
+
 
 "use server";
 
