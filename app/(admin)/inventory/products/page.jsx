@@ -3,8 +3,8 @@
 
 import { getProducts } from "@/actions/inventory/productActions";
 import { DataTable } from "@/components/DataTable";
-import { columns, CreateNewProductButton } from "@/components/inventoryColumns/productColumn";
-
+// import { columns, CreateNewProductButton } from "@/components/inventoryColumns/productColumn";
+import { columns, CreateNewProductButton } from "@/components/inventoryColumns/productColumn"
 
 export default async function ProductsPage() {
   const products = await getProducts();
