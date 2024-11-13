@@ -61,7 +61,7 @@ export default function ProductForm({ type, data }) {
   const onSubmit = handleSubmit(async (formData) => {
     setState((prevState) => ({ ...prevState, loading: true })); // Set loading to true on submit
 
-    // Ensure total_price is treated as a number before submission
+    // Ensure total_prices is treated as a number before submission
     const parsedFormData = {
       ...formData,
       total_price: formData.total_price ? 1 : 0, // Convert boolean to 1 or 0

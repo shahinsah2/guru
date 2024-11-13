@@ -83,7 +83,7 @@ export const columns = [
     cell: () => (
       <div className="relative w-12 h-12">
         <Image
-          src="/path-to-default-group-image.jpg"
+          src="/home.png"
           alt="Group"
           layout="fill"
           objectFit="cover"
