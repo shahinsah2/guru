@@ -17,5 +17,4 @@ export default async function ProductsPage() {
     </div>
   );
 }
-// ./app/(admin)/inventory/products/page.jsx
-// Module not found: Can't resolve '@/components/inventoryColumns/productColumn'
+
