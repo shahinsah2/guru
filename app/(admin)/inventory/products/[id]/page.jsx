@@ -13,7 +13,7 @@
 
 import { useEffect, useState } from "react";
 import ProductForm from "@/components/inventoryForm/ProductForm";
-import { getProductById } from "@/actions/inventory/productActions"; // Corrected import path
+import { getProductById } from "@/actions/inventory/productActions"; 
 import { useRouter } from "next/navigation";
 
 export default function EditProducts({ params }) {
