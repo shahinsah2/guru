@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-// Schema for validation
+
 const schema = z.object({
   owner: z.string().min(1, { message: "Owner is required!" }),
   select_supplier: z.string().min(1, { message: "Supplier is required!" }),
