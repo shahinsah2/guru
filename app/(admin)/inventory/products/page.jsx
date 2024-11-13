@@ -1,5 +1,4 @@
 
-
 "use server";
 
 import { getProducts } from "@/actions/inventory/productActions";
