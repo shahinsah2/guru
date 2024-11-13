@@ -100,11 +100,7 @@ const Actions = ({ row }) => {
 };
 
 export const columns = [
-  {
-    id: "sl_no",
-    header: "Sl. No",
-    cell: ({ row, index }) => index + 1, // Display row index + 1 as Sl. No
-  },
+  { id: "sl_no", header: "Sl. No", cell: ({ row }) => row.index + 1 },
   {
     accessorKey: "type",
     header: "Item Type",

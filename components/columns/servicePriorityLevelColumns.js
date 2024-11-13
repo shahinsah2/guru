@@ -75,7 +75,7 @@ const ActionsCell = ({ row }) => {
 };
 
 export const columns = [
-  { accessorKey: "slNo", header: "Sl.no" },
+  { id: "sl_no", header: "Sl. No", cell: ({ row }) => row.index + 1 },
   { accessorKey: "priority_level", header: "Priority Level" },
   { accessorKey: "description", header: "Description" },
   {

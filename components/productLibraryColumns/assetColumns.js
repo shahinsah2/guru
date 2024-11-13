@@ -94,7 +94,7 @@ const ActionsCellContent = ({ row, onDelete }) => {
 
 // Columns definition using ActionsCellContent
 export const columns = [
-  { id: "sl_no", header: "Sl. No", cell: ({ row, index }) => index + 1 },
+  { id: "sl_no", header: "Sl. No", cell: ({ row }) => row.index + 1 },
   { accessorKey: "item_name", header: "Item Name" },
   { accessorKey: "item_type", header: "Item Type" },
   { accessorKey: "brand", header: "Brand" },

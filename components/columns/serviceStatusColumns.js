@@ -74,7 +74,7 @@ const ActionsCell = ({ row }) => {
 };
 
 export const columns = [
-  { accessorKey: "slNo", header: "Sl.no" },
+  { id: "sl_no", header: "Sl. No", cell: ({ row }) => row.index + 1 },
   { accessorKey: "status_name", header: "Status" },
   { accessorKey: "description", header: "Description" },
   {
