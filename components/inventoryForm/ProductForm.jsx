@@ -129,7 +129,7 @@ export default function ProductForm({ type, data }) {
               </div>
 
               <div>
-                 <label className="text-sm font-medium">Are you sure?</label> {/* Total Price  */}
+                 <label className="text-sm font-medium">(Price list will come here) <span className="font-bold">Are you sure?</span></label> {/* Total Price  */}
                 <Checkbox
                   {...register("total_price")}
                   checked={watch("total_price")}
