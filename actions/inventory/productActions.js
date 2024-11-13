@@ -3,7 +3,7 @@
 "use server";
 
 import { connectToDatabase } from '@/lib/database';
-import Product from '@/lib/database/models/Inventory/Products.model'; // Ensure correct import path
+import Product from '@/lib/database/models/inventory/Products.model'; // Ensure correct import path
 
 // Get all products
 export const getProducts = async () => {
