@@ -80,10 +80,10 @@ export const columns = [
   {
     id: "group_image",
     header: "Group Image",
-    cell: () => (
+    cell: ({ row }) => (
       <div className="relative w-12 h-12">
         <Image
-          src="/home.png"
+          src={row.original.image || "/home.png"}
           alt="Group"
           layout="fill"
           objectFit="cover"

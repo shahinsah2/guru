@@ -66,6 +66,8 @@ export const columns = [
   { accessorKey: "supplier_name", header: "Supplier Name" },
   { accessorKey: "supplier_mail", header: "Supplier Email" },
   { accessorKey: "total_price", header: "Total Price" },
+  
+  
   {
     accessorKey: "active_status",
     header: "Status",

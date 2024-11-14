@@ -86,6 +86,33 @@ export default function ProductForm({ type, data }) {
     }
   });
 
+
+  // const onSubmit = async (formData) => {
+  //   try {
+  //     // If an image file is selected, upload to Cloudinary
+  //     if (formData.image && formData.image.length > 0) {
+  //       const file = formData.image[0];
+  //       const formDataCloudinary = new FormData();
+  //       formDataCloudinary.append("file", file);
+  //       formDataCloudinary.append("upload_preset", "your_upload_preset");
+
+  //       const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+  //         method: "POST",
+  //         body: formDataCloudinary,
+  //       });
+  //       const data = await response.json();
+  //       formData.image = data.secure_url; // Store Cloudinary image URL
+  //     }
+
+  //     // Call the create or update function here with formData
+  //     // For example: type === "create" ? await createGroup(formData) : await updateGroup(formData);
+
+  //     toast.success(`Group ${type === "create" ? "created" : "updated"} successfully!`);
+  //   } catch (error) {
+  //     toast.error("An error occurred during the upload.");
+  //   }
+  // };
+
   useEffect(() => {
     if (state.success) {
       toast.success(state.message);
