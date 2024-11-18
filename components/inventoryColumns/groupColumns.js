@@ -77,13 +77,15 @@ const Actions = ({ row }) => {
 };
 
 export const columns = [
+  { id: "sl_no", header: "Sl. No", cell: ({ row }) => row.index + 1 },
   {
-    id: "group_image",
+    accessorKey: "group_image",
     header: "Group Image",
     cell: ({ row }) => (
-      <div className="relative w-12 h-12">
+      <div className="relative w-32 h-16
+       ">
         <Image
-          src={row.original.image || "/home.png"}
+          src={row.original.image || "/groups.png"}
           alt="Group"
           layout="fill"
           objectFit="cover"
@@ -93,7 +95,7 @@ export const columns = [
   },
   { accessorKey: "group_name", header: "Group Name" },
   { accessorKey: "description", header: "Description" },
-  { accessorKey: "category", header: "Category" },
+  // { accessorKey: "category", header: "Category" },
   {
     accessorKey: "active_status",
     header: "Status",

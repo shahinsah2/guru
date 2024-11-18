@@ -43,9 +43,9 @@ const GroupForm = ({ type, data }) => {
       if (formData.image && formData.image instanceof File) {
         const formDataToUpload = new FormData();
         formDataToUpload.append("file", formData.image);
-        formDataToUpload.append("upload_preset", "your_cloudinary_upload_preset");  // Add your preset here
+        formDataToUpload.append("upload_preset", "f7qcu316");  // Add your preset here
   
-        const cloudinaryResponse = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/image/upload", {
+        const cloudinaryResponse = await fetch("https://api.cloudinary.com/v1_1/ds8msc40y/image/upload", {
           method: "POST",
           body: formDataToUpload,
         });
