@@ -1,6 +1,5 @@
 "use client";
 
-import Image from 'next/image';
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteProductTemplate } from "@/actions/productLibrary/productTemplateActions";
@@ -14,12 +13,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
-// Reusable button styles
-const buttonClass = "bg-blue-500 text-white hover:bg-blue-600";
-
-// Actions component for Edit and Delete
-const Actions = ({ row }) => {
+const ActionCell = ({ row }) => {
   const router = useRouter();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
@@ -33,8 +29,8 @@ const Actions = ({ row }) => {
       toast.success("Product Template deleted successfully!");
       setIsDeleteConfirmOpen(false);
       router.refresh();
-    } catch (error) {
-      toast.error(`Failed to delete product template: ${error.message || error}`);
+    } catch {
+      toast.error("Failed to delete product template.");
     }
   };
 
@@ -56,7 +52,6 @@ const Actions = ({ row }) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Render Delete Confirmation Popup */}
       {isDeleteConfirmOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-md max-w-sm mx-auto">
@@ -71,10 +66,7 @@ const Actions = ({ row }) => {
               >
                 Cancel
               </Button>
-              <Button
-                className="bg-red-500 text-white"
-                onClick={onDelete}
-              >
+              <Button className="bg-red-500 text-white" onClick={onDelete}>
                 Yes, Delete
               </Button>
             </div>
@@ -86,51 +78,92 @@ const Actions = ({ row }) => {
 };
 
 export const columns = [
-  // {
-  //   id: "sl_no",
-  //   header: "Sl. No",
-  //   cell: ({ row }) => row.index + 1,
-  // },
   {
-    id: "product_image",
+    accessorKey: "image",
     header: "Product Image",
-    cell: () => (
-      <Image
-        src="/login_img.png" // your image URL
-        alt="Product"
-        width={48} // width in pixels (12 * 4 for size scaling)
-        height={48} // height in pixels (12 * 4 for size scaling)
-        className="object-cover rounded-md"
-      />
+    cell: ({ row }) => (
+      <div className="flex justify-center">
+        <Image
+          src={row.original.image || "/avatar.png"} // Placeholder if no image
+          width={64}
+          height={64}
+          alt="Product"
+          className="w-16 h-16 object-cover border rounded"
+        />
+      </div>
     ),
   },
   { accessorKey: "product_name", header: "Product Name" },
-  { accessorKey: "category", header: "Category" },
-  { accessorKey: "brand", header: "Brand" },
+  {
+    accessorKey: "category",
+    header: "Category",
+    cell: ({ row }) => row.original.category || "N/A",
+  },
+  {
+    accessorKey: "brand",
+    header: "Brand",
+    cell: ({ row }) => row.original.brand || "N/A",
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => (
+      <div className="truncate max-w-[150px]">
+        {row.original.description || "No description"}
+      </div>
+    ),
+  },
+  {
+    id: "specifications",
+    header: "Specifications",
+    cell: ({ row }) => {
+      const specs = row.original.specifications || {};
+      return (
+        <ul className="text-sm">
+          {Object.entries(specs).map(([key, spec]) => (
+            <li key={key}>
+              <strong className="capitalize">{key}:</strong>{" "}
+              {spec?.brand?.brand_name || "N/A"} - {spec?.type?.type || "N/A"}
+            </li>
+          ))}
+        </ul>
+      );
+    },
+  },
   {
     accessorKey: "active_status",
-    header: "Status",
+    header: "Active Status",
     cell: ({ row }) => (
-      <span>{row.original.active_status ? "Active" : "Inactive"}</span>
+      <div className="flex justify-center">
+        {row.original.active_status ? (
+          <span className="bg-green-100 text-green-700 px-2 py-1 rounded">
+            Active
+          </span>
+        ) : (
+          <span className="bg-red-100 text-red-700 px-2 py-1 rounded">
+            Inactive
+          </span>
+        )}
+      </div>
     ),
   },
   {
     id: "actions",
-    cell: ({ row }) => <Actions row={row} />,
+    header: "Action",
+    cell: ({ row }) => <ActionCell row={row} />,
   },
 ];
 
-// Create New Product Template Button
 export const CreateNewProductTemplateButton = () => {
   const router = useRouter();
 
   return (
-    <div className="flex justify-end mb-1">
+    <div className="flex justify-end mb-4">
       <Button
-        className={buttonClass}
+        className="bg-blue-500 text-white"
         onClick={() => router.push("/product-library/product-template/new")}
       >
-        Create New Product Template
+        + Create Product Template
       </Button>
     </div>
   );

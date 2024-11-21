@@ -1,12 +1,10 @@
-// @/components/columns/productColumns.js
-
 "use client";
 
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deleteProduct } from '@/actions/inventory/productActions';
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import Image from "next/image";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -15,8 +13,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { deleteProduct } from "@/actions/inventory/productActions";
 
-const ProductActionsCell = ({ row }) => {
+const ActionCell = ({ row }) => {
   const router = useRouter();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
@@ -26,8 +25,9 @@ const ProductActionsCell = ({ row }) => {
       await deleteProduct(row.original._id);
       toast.success("Product deleted successfully!");
       setIsDeleteConfirmOpen(false);
-      router.refresh();
-    } catch {
+      router.push(router.asPath); // Refresh the page
+    } catch (error) {
+      console.error("Error deleting product:", error);
       toast.error("Failed to delete product.");
     }
   };
@@ -63,19 +63,68 @@ const ProductActionsCell = ({ row }) => {
 };
 
 export const columns = [
-  { accessorKey: "supplier_name", header: "Supplier Name" },
-  { accessorKey: "supplier_mail", header: "Supplier Email" },
-  { accessorKey: "total_price", header: "Total Price" },
-  
-  
+  {
+    accessorKey: "z",
+    header: "Product Image",
+    cell: ({ row }) => (
+      <div className="flex justify-center">
+        <Image
+          src={row.original.image || "/avatar.png"} // Placeholder if no image
+          alt="Product"
+          width={64} // Adjust width as needed
+          height={64} // Adjust height as needed
+          className="w-16 h-16 object-cover border rounded"
+        />
+      </div>
+    ),
+  },
+  {
+    accessorKey: "product_name",
+    header: "Product Name",
+  },
+  {
+    accessorKey: "product_qty",
+    header: "Product QTY",
+  },
+  {
+    accessorKey: "category",
+    header: "Category",
+  },
+  {
+    accessorKey: "brand",
+    header: "Brand",
+  },
+  {
+    id: "specifications",
+    header: "Specifications",
+    cell: ({ row }) => {
+      const specs = row.original.specifications || {};
+      return (
+        <ul className="text-sm">
+          {Object.entries(specs).map(([key, spec]) => (
+            <li key={key}>
+              <strong className="capitalize">{key}:</strong>{" "}
+              {spec?.brand?.brand_name || "N/A"} - {spec?.type?.type || "N/A"}
+            </li>
+          ))}
+        </ul>
+      );
+    },
+  },
+  {
+    accessorKey: "purchase_price",
+    header: "Purchase Price",
+  },
   {
     accessorKey: "active_status",
     header: "Status",
-    cell: ({ row }) => <span>{row.original.active_status ? "Active" : "Inactive"}</span>,
+    cell: ({ row }) => (
+      <span>{row.original.active_status ? "Active" : "Inactive"}</span>
+    ),
   },
   {
     id: "actions",
-    cell: ProductActionsCell,
+    cell: ActionCell, // Use the ActionCell component here
   },
 ];
 

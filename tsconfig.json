@@ -67,7 +67,7 @@
     "components/settingsForms/FormModal.jsx",
     "components/settingsForms/InputField.jsx",
     "components/Pagination.jsx"
-, "app/(admin)/layout.jsx"  ],
+, "app/(admin)/layout.jsx", "app/(admin)/inventory/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]

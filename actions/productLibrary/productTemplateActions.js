@@ -7,6 +7,8 @@ import ProductTemplate from '@/lib/database/models/productLibrary/ProductTemplat
 import ProductCategory from '@/lib/database/models/productLibrary/ProductCategory.model';
 import Brand from '@/lib/database/models/productLibrary/Brand.model';
 import ItemVariant from '@/lib/database/models/productLibrary/ItemVariant.model';
+import fs from "fs/promises";
+
 
 // Fetch active Product Categories
 export const getActiveProductCategories = async () => {
@@ -32,7 +34,19 @@ export const getProductTemplates = async () => {
   const templates = await ProductTemplate.find({})
     .populate('category', 'category_name')
     .populate('brand', 'brand_name')
+    .populate("specifications.ram.brand", "brand_name")
+    .populate("specifications.ram.type", "type")
+    .populate("specifications.processor.brand", "brand_name")
+    .populate("specifications.processor.type", "type")
+    .populate("specifications.storage.brand", "brand_name")
+    .populate("specifications.storage.type", "type")
+    .populate("specifications.graphics.brand", "brand_name")
+    .populate("specifications.graphics.type", "type")
+    .populate("specifications.os.brand", "brand_name")
+    .populate("specifications.os.type", "type")
     .lean();
+    
+    
   return templates.map(template => ({
     ...template,
     _id: template._id.toString(),

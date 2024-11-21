@@ -13,7 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from 'next/image';
+import Image from "next/image";
 
 const buttonClass = "bg-blue-500 text-white hover:bg-blue-600";
 
@@ -62,7 +62,10 @@ const Actions = ({ row }) => {
               Are you sure you want to delete this group?
             </p>
             <div className="flex justify-end gap-4 mt-4">
-              <Button variant="outline" onClick={() => setIsDeleteConfirmOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteConfirmOpen(false)}
+              >
                 Cancel
               </Button>
               <Button className="bg-red-500 text-white" onClick={onDelete}>
@@ -78,24 +81,23 @@ const Actions = ({ row }) => {
 
 export const columns = [
   { id: "sl_no", header: "Sl. No", cell: ({ row }) => row.index + 1 },
-  {
-    accessorKey: "group_image",
-    header: "Group Image",
-    cell: ({ row }) => (
-      <div className="relative w-32 h-16
-       ">
-        <Image
-          src={row.original.image || "/groups.png"}
-          alt="Group"
-          layout="fill"
-          objectFit="cover"
-        />
-      </div>
-    ),
-  },
+  // {
+  //   accessorKey: "image",
+  //   header: "Image",
+  //   cell: ({ row }) => (
+  //     row.index +1,
+  //     <div className="flex justify-center">
+  //     <img
+  //       src={row.original.image || "/avatar.png"} // Placeholder if no image
+  //       alt="Product"
+  //       className="w-16 h-16 object-cover border rounded"
+  //     />
+  //   </div>
+  //   ),
+  // },
   { accessorKey: "group_name", header: "Group Name" },
   { accessorKey: "description", header: "Description" },
-  // { accessorKey: "category", header: "Category" },
+  { accessorKey: "category", header: "Product Quantity" },
   {
     accessorKey: "active_status",
     header: "Status",
