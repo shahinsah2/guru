@@ -2,7 +2,7 @@
 
 import { getProducts} from '@/actions/inventory/productActions'
 import { DataTable } from "@/components/DataTable";
-import {columns} from '@/components/InventoryColumns/view_productColumn';
+import {columns} from '@/components/inventoryColumns/view_productColumn';
 
 
 export default async function ProductPage() {
