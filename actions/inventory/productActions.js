@@ -1,9 +1,8 @@
-
-  
+ 
   "use server";
   
   import { connectToDatabase } from "@/lib/database";
-  import Product from "@/lib/database/models/Inventory/Products.model";
+  import Product from "@/lib/database/models/inventory/Products.model";
   import ProductCategory from "@/lib/database/models/productLibrary/ProductCategory.model";
   import Brand from "@/lib/database/models/productLibrary/Brand.model";
   import ItemVariant from "@/lib/database/models/productLibrary/ItemVariant.model";
