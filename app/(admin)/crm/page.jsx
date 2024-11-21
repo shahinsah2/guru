@@ -1,9 +1,21 @@
-import React from 'react'
+"use client"
 
-const CRM = () => {
+import React from 'react'
+import { useUser  } from '@clerk/nextjs'
+
+const Inventory = () => {
+
+  const { isLoaded, isSignedIn, user } = useUser()
+
+
+   // In case the user signs out while on the page.
+   if (!isLoaded || !isSignedIn) {
+    return null
+  }
+  
   return (
-    <div>CRM 332</div>
+    <div>Hello, {user?.username} , welcome to Guru Goutham</div>
   )
 }
 
-export default CRM
+export default Inventory

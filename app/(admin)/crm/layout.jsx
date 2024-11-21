@@ -6,10 +6,9 @@ export default async function CRMLayout({ children }) {
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar with links */}
+     
       <Sidebar />
 
-      {/* Main Content Area */}
       <main className="flex-1 p-8">
       <UserPermissionsProvider>
         {children}
