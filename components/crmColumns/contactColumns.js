@@ -103,7 +103,7 @@ export const columns = [
     header: "Customer ID",
   },
   {
-    accessorKey: "contact_name",
+    accessorKey: "first_name",
     header: "Contact Name",
   },
   {

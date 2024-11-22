@@ -49,7 +49,7 @@ export const getRoleById = async (id) => {
 
 // Create a new role
 export const createRole = async (currentState, roleData) => {
-  await connectToDatabase();
+  await connectToDatabase();    
   const newRole = new Role(roleData);
   const savedRole = await newRole.save();
   return { success: true, role: savedRole.toObject() };
