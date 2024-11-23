@@ -46,6 +46,8 @@ const RolesForm = ({ type, data }) => {
         { module_name: "Users", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
         { module_name: "Roles", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
         { module_name: "Inventory", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
+        { module_name: "Product", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
+        { module_name: "Group", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
         { module_name: "Stock Location", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
         { module_name: "Grade", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
         { module_name: "Asset", permissions: permissionKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {}) },
