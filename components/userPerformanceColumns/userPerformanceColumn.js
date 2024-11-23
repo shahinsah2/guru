@@ -2,9 +2,10 @@
 
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deletePoQuotation } from "@/actions/procurement/po_quotationAction";
+import { deleteUserPerformance } from "@/actions/user-performance/userPerformanceActions"; 
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useUserPermissions } from "@/context/UserPermissionsContext";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -13,7 +14,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUserPermissions } from "@/context/UserPermissionsContext";
 
 // Utility function for permission checks
 const checkPermissions = (roles, moduleName, permissionKey) => {
@@ -28,46 +28,25 @@ const checkPermissions = (roles, moduleName, permissionKey) => {
   return false;
 };
 
-// Move-to-Next Button Component
-const MoveToNextCell = ({ row }) => {
-  const router = useRouter();
-  return (
-    <div className="flex flex-col items-start">
-      <p className="text-gray-700 mb-2">{row.original.move_to_next || " "}</p>
-      <Button
-        variant="solid"
-        className="bg-blue-500 text-white hover:bg-blue-600"
-        onClick={() => router.push("/procurement/purchase_order")}
-      >
-        Add purchase orders
-      </Button>
-    </div>
-  );
-};
-
-// Action Buttons Component
-const ActionCell = ({ row }) => {
+// Actions Component
+const Actions = ({ row }) => {
   const router = useRouter();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-
   const userPermissions = useUserPermissions();
-  const canEdit = checkPermissions(userPermissions, "Po_quotation", "can_edit");
-  const canDelete = checkPermissions(
-    userPermissions,
-    "Po_quotation",
-    "can_delete"
-  );
+  const canEdit = checkPermissions(userPermissions, "UserPerformance", "can_edit");
+  const canDelete = checkPermissions(userPermissions, "UserPerformance", "can_delete");
 
-  const onEdit = () =>
-    router.push(`/procurement/po_quotation/${row.original._id}`);
+  const onEdit = () => {
+    router.push(`/user-performance/user/${row.original._id}`);
+  };
+
   const onDelete = async () => {
     try {
-      await deletePoQuotation(row.original._id);
-      toast.success("Purchase deleted successfully!");
-      setIsDeleteConfirmOpen(false);
+      await deleteUserPerformance(row.original._id);
+      toast.success("User performance record deleted successfully!");
       router.refresh();
     } catch {
-      toast.error("Failed to delete purchase.");
+      toast.error("Failed to delete user performance record.");
     }
   };
 
@@ -76,6 +55,7 @@ const ActionCell = ({ row }) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -84,7 +64,6 @@ const ActionCell = ({ row }) => {
           {canEdit && (
             <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
           )}
-
           {canDelete && (
             <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
               Delete
@@ -92,12 +71,13 @@ const ActionCell = ({ row }) => {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+
       {isDeleteConfirmOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-md max-w-sm mx-auto">
             <h3 className="text-lg font-medium">Delete Confirmation</h3>
             <p className="mt-2 text-sm">
-              Are you sure you want to delete this purchase?
+              Are you sure you want to delete this record?
             </p>
             <div className="flex justify-end gap-4 mt-4">
               <Button
@@ -117,37 +97,52 @@ const ActionCell = ({ row }) => {
   );
 };
 
-// Columns Definition
+// Column Definitions
 export const columns = [
-  { accessorKey: "quotation_id", header: "PR ID" },
-  { accessorKey: "quotation_date", header: "PR Date" },
-  { accessorKey: "quote_owner", header: "Owner" },
-  { accessorKey: "supplier", header: "Supplier" },
-  { accessorKey: "phone_number", header: "Total Product QTY" },
-  { accessorKey: "purchase_price", header: "Total Product QTY" },
   {
-    accessorKey: "move_to_next",
-    header: "Move to Next",
-    cell: ({ row }) => <MoveToNextCell row={row} />,
+    accessorKey: "user_code",
+    header: "User Code",
   },
   {
-    accessorKey: "active_status",
-    header: "Status",
-    cell: ({ row }) => (
-      <span>{row.original.active_status ? "Active" : "Inactive"}</span>
-    ),
+    accessorKey: "user_name",
+    header: "User Name",
+  },
+  {
+    accessorKey: "role.role_name",
+    header: "Role",
+    cell: ({ row }) => row.original.role?.role_name || "N/A",
+  },
+  {
+    accessorKey: "department.department_name",
+    header: "Department",
+    cell: ({ row }) => row.original.department?.department_name || "N/A",
+  },
+  {
+    accessorKey: "joining_date",
+    header: "Joining Date",
+    cell: ({ row }) =>
+      row.original.joining_date
+        ? new Date(row.original.joining_date).toLocaleDateString()
+        : "N/A",
+  },
+  {
+    accessorKey: "performance_score",
+    header: "Performance (%)",
+    cell: ({ row }) => `${row.original.performance_score || 0}%`,
   },
   {
     id: "actions",
-    cell: ({ row }) => <ActionCell row={row} />,
+    cell: ({ row }) => <Actions row={row} />,
   },
 ];
 
-export const CreateNewQuotationButton = () => {
+// Create New User Performance Button
+export const CreateNewUserPerformanceButton = () => {
   const userPermissions = useUserPermissions();
-  const canAdd = checkPermissions(userPermissions, "Po_quotation", "can_add");
-
-
+  const canAdd = checkPermissions(userPermissions, "Users", "can_add");
+  console.log(canAdd, "aaaaadddddddddddddddddd");
+  console.log(userPermissions, "ppppppppppppppppppppp");
+  
   const router = useRouter();
 
   if (!canAdd) {
@@ -158,9 +153,9 @@ export const CreateNewQuotationButton = () => {
     <div className="flex justify-end mb-1">
       <Button
         className="bg-blue-500 text-white"
-        onClick={() => router.push("/procurement/po_quotation/new")}
+        onClick={() => router.push("/user-performance/user/new")}
       >
-        Create New PR
+        Create New User Performance
       </Button>
     </div>
   );

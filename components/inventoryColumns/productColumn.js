@@ -14,10 +14,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteProduct } from "@/actions/inventory/productActions";
+import { useUserPermissions } from "@/context/UserPermissionsContext";
+
+// Utility function for permission checks
+const checkPermissions = (roles, moduleName, permissionKey) => {
+  for (const role of roles) {
+    const foundModule = role.module_access?.find(
+      (mod) => mod.module_name === moduleName
+    );
+    if (foundModule && foundModule.permissions[permissionKey]) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const ActionCell = ({ row }) => {
   const router = useRouter();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+
+  const userPermissions = useUserPermissions();
+  const canEdit = checkPermissions(userPermissions, "Product", "can_edit");
+  const canDelete = checkPermissions(
+    userPermissions,
+    "Product",
+    "can_delete"
+  );
 
   const onEdit = () => router.push(`/inventory/products/${row.original._id}`);
   const onDelete = async () => {
@@ -57,10 +79,15 @@ const ActionCell = ({ row }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
-                Delete
-              </DropdownMenuItem>
+              {canEdit && (
+            <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
+          )}
+
+          {canDelete && (
+            <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
+              Delete
+            </DropdownMenuItem>
+          )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -158,7 +185,15 @@ export const columns = [
 
 // Component to render the "Create New Product" button
 export const CreateNewProductButton = () => {
+  const userPermissions = useUserPermissions();
+  const canAdd = checkPermissions(userPermissions, "Product", "can_add");
+
+
   const router = useRouter();
+
+  if (!canAdd) {
+    return null;
+  }
   return (
     <div className="flex justify-end mb-1">
       <Button

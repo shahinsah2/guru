@@ -13,6 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUserPermissions } from "@/context/UserPermissionsContext";
 
 // Separate cell components for using hooks properly
 const MoveToNextCell = ({ row }) => {
@@ -36,6 +37,10 @@ const ActionsCell = ({ row }) => {
   const router = useRouter();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
+  const userPermissions = useUserPermissions();
+  const canEdit = checkPermissions(userPermissions, "Purchase_order", "can_edit");
+  const canDelete = checkPermissions(userPermissions, "Purchase_order", "can_delete");
+
   const onEdit = () => router.push(`/procurement/purchase_order/${row.original._id}`);
   const onDelete = async () => {
     try {
@@ -58,8 +63,13 @@ const ActionsCell = ({ row }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>Delete</DropdownMenuItem>
+          {canEdit && (
+            <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
+          )}
+          
+          {canDelete && (
+            <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>Delete</DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -102,7 +112,14 @@ export const columns = [
 
 // Create New PO Button
 export const CreateNewPOButton = () => {
+  const userPermissions = useUserPermissions();
+  const canAdd = checkPermissions(userPermissions, "Users", "can_add");
   const router = useRouter();
+
+  if (!canAdd) {
+    return null;
+  }
+
   return (
     <div className="flex justify-end mb-1">
       <Button className="bg-blue-500 text-white" onClick={() => router.push("/procurement/purchase_order/new")}>

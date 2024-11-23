@@ -13,13 +13,34 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
+import { useUserPermissions } from "@/context/UserPermissionsContext";
+
+// Utility function for permission checks
+const checkPermissions = (roles, moduleName, permissionKey) => {
+  for (const role of roles) {
+    const foundModule = role.module_access?.find(
+      (mod) => mod.module_name === moduleName
+    );
+    if (foundModule && foundModule.permissions[permissionKey]) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const buttonClass = "bg-blue-500 text-white hover:bg-blue-600";
 
 const Actions = ({ row }) => {
   const router = useRouter();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+
+  const userPermissions = useUserPermissions();
+  const canEdit = checkPermissions(userPermissions, "Group", "can_edit");
+  const canDelete = checkPermissions(
+    userPermissions,
+    "Group",
+    "can_delete"
+  );
 
   const onEdit = () => {
     router.push(`/inventory/group/${row.original._id}`);
@@ -47,10 +68,15 @@ const Actions = ({ row }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
-            Delete
-          </DropdownMenuItem>
+          {canEdit && (
+            <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
+          )}
+
+          {canDelete && (
+            <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
+              Delete
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -112,7 +138,15 @@ export const columns = [
 ];
 
 export const CreateNewGroupButton = () => {
+  const userPermissions = useUserPermissions();
+  const canAdd = checkPermissions(userPermissions, "Group", "can_add");
+
+
   const router = useRouter();
+
+  if (!canAdd) {
+    return null;
+  }
 
   return (
     <div className="flex justify-end mb-1">
