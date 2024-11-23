@@ -31,10 +31,13 @@ export const getUserPerformanceById = async (id) => {
 
 // Create a new user performance record
 export const createUserPerformance = async (performanceData) => {
+  console.log("Received data:", performanceData);
   await connectToDatabase();
   try {
     const newPerformance = new UserPerformance(performanceData);
     const savedPerformance = await newPerformance.save();
+    console.log(savedPerformance.toObject(), "Actionnnnn");
+    
     return { success: true, performance: savedPerformance.toObject() };
   } catch (error) {
     return { success: false, error: true, message: error.message || "Failed to create user performance" };

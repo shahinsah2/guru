@@ -2,7 +2,7 @@
 
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deleteUserPerformance } from "@/actions/user-performance/userPerformanceActions"; // Import delete action
+import { deleteUserPerformance } from "@/actions/user-performance/userPerformanceActions"; 
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useUserPermissions } from "@/context/UserPermissionsContext";
@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Check if the user has the given permission
+// Utility function for permission checks
 const checkPermissions = (roles, moduleName, permissionKey) => {
   for (const role of roles) {
     const foundModule = role.module_access?.find(
@@ -28,7 +28,7 @@ const checkPermissions = (roles, moduleName, permissionKey) => {
   return false;
 };
 
-// Actions component to handle Edit and Delete
+// Actions Component
 const Actions = ({ row }) => {
   const router = useRouter();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -97,14 +97,14 @@ const Actions = ({ row }) => {
   );
 };
 
-// Define columns for the User Performance table
+// Column Definitions
 export const columns = [
   {
-    accessorKey: "userCode",
+    accessorKey: "user_code",
     header: "User Code",
   },
   {
-    accessorKey: "userName",
+    accessorKey: "user_name",
     header: "User Name",
   },
   {
@@ -118,15 +118,17 @@ export const columns = [
     cell: ({ row }) => row.original.department?.department_name || "N/A",
   },
   {
-    accessorKey: "performance",
-    header: "Performance (%)",
+    accessorKey: "joining_date",
+    header: "Joining Date",
+    cell: ({ row }) =>
+      row.original.joining_date
+        ? new Date(row.original.joining_date).toLocaleDateString()
+        : "N/A",
   },
   {
-    accessorKey: "active_status",
-    header: "Status",
-    cell: ({ row }) => (
-      <span>{row.original.active_status ? "Active" : "Inactive"}</span>
-    ),
+    accessorKey: "performance_score",
+    header: "Performance (%)",
+    cell: ({ row }) => `${row.original.performance_score || 0}%`,
   },
   {
     id: "actions",
@@ -134,12 +136,13 @@ export const columns = [
   },
 ];
 
-// Create New User Performance Button component
+// Create New User Performance Button
 export const CreateNewUserPerformanceButton = () => {
   const userPermissions = useUserPermissions();
-  const canAdd = checkPermissions(userPermissions, "User Performance", "can_add");
-  console.log("canAddddddddddddddddd:", canAdd);
-  console.log("canAppppppppppppppppp:", userPermissions);
+  const canAdd = checkPermissions(userPermissions, "Users", "can_add");
+  console.log(canAdd, "aaaaadddddddddddddddddd");
+  console.log(userPermissions, "ppppppppppppppppppppp");
+  
   const router = useRouter();
 
   if (!canAdd) {
