@@ -3,7 +3,7 @@
 "use server";
 
 import { connectToDatabase } from '@/lib/database';
-import Invoice from '@/lib/database/models/operations/Invoice.model';
+import Invoice from '@/lib/database/models/operations/Invoice.model'
 
 
 // Get all delivery challans
