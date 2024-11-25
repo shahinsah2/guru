@@ -10,7 +10,7 @@ const menuItems = [
   { label: "Procurement", href: "/procurement" },
   { label: "Inventory", href: "/inventory" },
   { label: "CRM", href: "/crm" },
-  { label: "Operations", href: "/operations" },
+  { label: "Operations", href: "/operation" },
   { label: "User Performance", href: "/user-performance" },
   { label: "Client", href: "/client" },
 ];
