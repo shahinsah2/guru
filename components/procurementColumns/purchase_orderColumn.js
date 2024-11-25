@@ -15,6 +15,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useUserPermissions } from "@/context/UserPermissionsContext";
 
+
+// Utility function for permission checks
+const checkPermissions = (roles, moduleName, permissionKey) => {
+  for (const role of roles) {
+    const foundModule = role.module_access?.find(
+      (mod) => mod.module_name === moduleName
+    );
+    if (foundModule && foundModule.permissions[permissionKey]) {
+      return true;
+    }
+  }
+  return false;
+};
+
 // Separate cell components for using hooks properly
 const MoveToNextCell = ({ row }) => {
   const router = useRouter();
@@ -113,7 +127,7 @@ export const columns = [
 // Create New PO Button
 export const CreateNewPOButton = () => {
   const userPermissions = useUserPermissions();
-  const canAdd = checkPermissions(userPermissions, "Users", "can_add");
+  const canAdd = checkPermissions(userPermissions, "Purchase_order", "can_add");
   const router = useRouter();
 
   if (!canAdd) {
