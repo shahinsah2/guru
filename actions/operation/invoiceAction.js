@@ -4,7 +4,7 @@
 
 import { connectToDatabase } from '@/lib/database';
 import Invoice from '@/lib/database/models/operations/Invoice.model';
-import { FaFileInvoiceDollar } from 'react-icons/fa';
+
 
 // Get all delivery challans
 export const getInvoice = async () => {
