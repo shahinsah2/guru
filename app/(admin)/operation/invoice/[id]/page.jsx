@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import InvoiceForm from "@/components/operationForm/invoiceForm";
-import { getInvoiceById } from "@/actions/operation/InvoiceAction";
+import { getInvoiceById } from "@/actions/operation/invoiceAction"
 import { useRouter } from "next/navigation";
 
 export default function EditDepartmentPage({ params }) {
