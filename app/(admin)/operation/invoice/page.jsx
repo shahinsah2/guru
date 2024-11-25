@@ -5,7 +5,7 @@
 
 "use server";
 
-import { getInvoice } from "@/actions/operation/invoiceAction";
+import { getInvoice } from "@/actions/operation/InvoiceAction";
 import { DataTable } from "@/components/DataTable";
 import { columns, CreateNewInvoiceButton } from "@/components/operationColumn/invoiceColumn";
 
