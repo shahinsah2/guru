@@ -25,7 +25,7 @@ export default async function UserPage({ searchParams }) {
     console.log("User data by username:", userDataByUsername);
 
   return (
-    <div className="bg-white p-1 rounded-md mt-0 flex-1">
+    <div className="bg-white p-2 rounded-md mt-0 flex-1">
       <CreateNewUserButton />
       <DataTable columns={columns} data={users} />
     </div>
