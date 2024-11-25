@@ -29,7 +29,7 @@ export const getInvoiceById = async (id) => {
   };
 };
 
-// Create a new delivery challan
+
 // Create a new delivery challan
 export const createInvoice = async (currentState, challanData) => {
     await connectToDatabase();
@@ -71,3 +71,4 @@ export const deleteInvoice = async (id) => {
   }
   return { success: true, message: 'Delivery Challan deleted successfully' };
 };
+
