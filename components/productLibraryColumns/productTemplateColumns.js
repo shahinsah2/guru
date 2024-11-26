@@ -16,7 +16,7 @@ import {
 import Image from "next/image";
 import { useUserPermissions } from "@/context/UserPermissionsContext";
 
-// Utility function for permission checks
+
 const checkPermissions = (roles, moduleName, permissionKey) => {
   for (const role of roles) {
     const foundModule = role.module_access?.find(
