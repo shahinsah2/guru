@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useFormState } from "react-dom";
-import { createInvoice, updateInvoice } from "@/actions/operation/InvoiceAction";
+import { createInvoice, updateInvoice } from "@/actions/operation/invoiceAction";
 
 const schema = z.object({
   invoice_number: z
