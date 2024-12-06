@@ -102,7 +102,7 @@ const ProductTemplateForm = ({ type, data }) => {
   const onSubmit = handleSubmit(async (formData) => {
     try {
       console.log(img);
-      // Send plain data to the server action
+      
       const plainData = {
         ...formData,
         image: img?.secure_url || data?.image,
@@ -117,7 +117,7 @@ const ProductTemplateForm = ({ type, data }) => {
   });
 
   const handleImageUpload = (result) => {
-    setImg(result.info); // Save the uploaded image info
+    setImg(result.info); 
     setImagePreview(result.info.secure_url); // Update the preview with the new image
   };
 
