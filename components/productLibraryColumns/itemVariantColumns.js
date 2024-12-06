@@ -117,6 +117,7 @@ export const columns = [
     ),
   },
   {
+    header: "Actions",
     id: "actions",
     cell: ({ row }) => <Actions row={row} />,
   },

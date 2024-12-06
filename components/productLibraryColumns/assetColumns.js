@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Function to check permissions (renamed `module` to `assetModule`)
+// Function to check permissions
 const checkPermissions = (roles, moduleName, permissionKey) => {
   for (const role of roles) {
     const assetModule = role.module_access?.find(
@@ -28,8 +28,8 @@ const checkPermissions = (roles, moduleName, permissionKey) => {
   return false;
 };
 
-// ActionsCell component using hooks
-const ActionsCellContent = ({ row, onDelete }) => {
+// ActionsCell component
+const ActionsCellContent = ({ row }) => {
   const router = useRouter();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const userPermissions = useUserPermissions();
@@ -40,8 +40,14 @@ const ActionsCellContent = ({ row, onDelete }) => {
     router.push(`/product-library/assets/${row.original._id}`);
   };
 
-  const onDeleteConfirm = () => {
-    onDelete();
+  const onDeleteConfirm = async () => {
+    try {
+      await deleteAsset(row.original._id);
+      toast.success("Asset deleted successfully!");
+      router.refresh();
+    } catch {
+      toast.error("Failed to delete asset.");
+    }
     setIsDeleteConfirmOpen(false);
   };
 
@@ -92,7 +98,7 @@ const ActionsCellContent = ({ row, onDelete }) => {
   );
 };
 
-// Columns definition using ActionsCellContent
+// Columns definition
 export const columns = [
   { id: "sl_no", header: "Sl. No", cell: ({ row }) => row.index + 1 },
   { accessorKey: "item_name", header: "Item Name" },
@@ -110,23 +116,13 @@ export const columns = [
     ),
   },
   {
+    header: "Actions",
     id: "actions",
-    cell: ({ row }) => {
-      const onDelete = async () => {
-        try {
-          await deleteAsset(row.original._id);
-          toast.success("Asset deleted successfully!");
-        } catch {
-          toast.error("Failed to delete asset.");
-        }
-      };
-
-      return <ActionsCellContent row={row} onDelete={onDelete} />;
-    },
+    cell: ({ row }) => <ActionsCellContent row={row} />,
   },
 ];
 
-// CreateNewAssetButton component with permission check
+// CreateNewAssetButton component
 export const CreateNewAssetButton = () => {
   const userPermissions = useUserPermissions();
   const canAdd = checkPermissions(userPermissions, "Asset", "can_add");
