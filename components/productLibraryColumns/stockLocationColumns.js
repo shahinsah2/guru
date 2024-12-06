@@ -133,6 +133,7 @@ export const columns = [
     ),
   },
   {
+    header: "Actions",
     id: "actions",
     cell: ActionsCell, // Use the ActionsCell component here
   },
